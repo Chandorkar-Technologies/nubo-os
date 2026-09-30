@@ -1,0 +1,11 @@
+[Plymouth Theme]
+Name=Nubo Text
+Description=Text mode boot screen for Nubo OS
+ModuleName=ubuntu-text
+
+[ubuntu-text]
+title=Nubo OS 1
+black=0x000000
+white=0xffffff
+brown=0xf2f2f2
+blue=0x8c8c8c

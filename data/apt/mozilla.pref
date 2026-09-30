@@ -1,0 +1,4 @@
+# Prefer Mozilla's Firefox package over Ubuntu's snap wrapper of the same name.
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000

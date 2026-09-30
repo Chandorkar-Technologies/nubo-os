@@ -4,6 +4,8 @@ Priority: optional
 Maintainer: Ninad Chandorkar <ninad@chandorkartechnologies.com>
 Build-Depends: debhelper-compat (= 13),
                gnome-control-center-data,
+               gnome-software,
+               ubuntu-session,
                imagemagick,
                libglib2.0-dev-bin,
                librsvg2-bin,
@@ -72,14 +74,28 @@ Description: Sign in to Nubo OS with a Nubo account
 Package: nubo-branding
 Architecture: all
 Depends: plymouth,
+         plymouth-theme-ubuntu-text,
          ${misc:Depends}
 Description: Nubo OS logos, wallpapers, boot screen and desktop defaults
- Logo files, default wallpapers, the boot screen and the system-wide desktop
- defaults that select the Nubo look.
+ Logo files, default wallpapers, the boot screen, the system identity,
+ first-run defaults and the one-time cleanup after installation.
 
 Package: nubo-desktop
 Architecture: all
-Depends: gnome-shell-extensions,
+Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
+         fontconfig, fonts-dejavu-core, fonts-inter, fonts-jetbrains-mono,
+         fonts-liberation, fonts-noto-cjk, fonts-noto-color-emoji, fonts-noto-core,
+         foomatic-db-compressed-ppds, gdm3, ghostscript, gnome-control-center,
+         gnome-menus, gnome-session-canberra, gnome-settings-daemon, gnome-shell,
+         gnome-shell-extensions, gnome-shell-ubuntu-extensions, gnome-software,
+         gnome-software-plugin-flatpak, flatpak, gstreamer1.0-alsa,
+         gstreamer1.0-packagekit, gstreamer1.0-plugins-base-apps, inputattach, iw,
+         language-selector-common, language-selector-gnome, libatk-adaptor,
+         libnotify-bin, libsasl2-modules, nautilus, openprinting-ppds, pipewire-pulse,
+         printer-driver-pnm2ppa, rfkill, software-properties-common, spice-vdagent,
+         ubuntu-drivers-common, ubuntu-session, ubuntu-settings, unzip, wireplumber,
+         wpasupplicant, xdg-terminal-exec, xdg-user-dirs, xdg-user-dirs-gtk,
+         xkb-data, yelp, zenity, zip,
          nubo-account (= ${source:Version}),
          nubo-branding (= ${source:Version}),
          nubo-glass (= ${source:Version}),
@@ -87,6 +103,29 @@ Depends: gnome-shell-extensions,
          nubo-sounds (= ${source:Version}),
          nubo-theme (= ${source:Version}),
          ${misc:Depends}
-Recommends: bibata-cursor-theme
+Recommends: appstream, apt-config-icons-hidpi, avahi-daemon, baobab, bibata-cursor-theme,
+            bluez, bluez-cups, brltty, cups, cups-bsd, cups-client, cups-filters,
+            dirmngr, firefox, fwupd, fwupd-signed, gamemode, gir1.2-gmenu-3.0,
+            gnome-bluetooth-sendto, gnome-calculator, gnome-characters, gnome-clocks,
+            gnome-disk-utility, gnome-font-viewer, gnome-initial-setup, gnome-keyring,
+            gnome-logs, gnome-remote-desktop, gnome-text-editor, gpg-agent,
+            gsettings-ubuntu-schemas, gst-audio-thumbnailer, gst-video-thumbnailer,
+            gvfs-fuse, hplip, ibus, ibus-gtk, ibus-gtk3, ibus-table, im-config,
+            laptop-detect, libglib2.0-bin, libnss-mdns, libpam-fprintd,
+            libpam-gnome-keyring, libspa-0.2-bluetooth, loupe, memtest86+,
+            nautilus-sendto, network-manager, network-manager-openvpn-gnome,
+            network-manager-pptp-gnome, orca, packagekit, papers, pcmciautils,
+            policykit-desktop-privileges, ptyxis, resources, seahorse,
+            speech-dispatcher, systemd-oomd, wsdd, xcursor-themes,
+            xdg-desktop-portal-gnome, xdg-utils
+Conflicts: apport, apport-core-dump-handler, apport-gtk, gnome-package-updater,
+           landscape-common, popularity-contest, snap-store,
+           ubuntu-advantage-desktop-daemon, ubuntu-desktop, ubuntu-desktop-minimal,
+           ubuntu-insights, ubuntu-pro-client, ubuntu-pro-client-l10n,
+           ubuntu-release-upgrader-gtk, ubuntu-report, update-manager,
+           update-manager-core, update-notifier, update-notifier-common, whoopsie,
+           yaru-theme-gtk, yaru-theme-icon, yaru-theme-sound
 Description: Nubo OS desktop
- Installs the complete Nubo OS desktop look on top of Ubuntu Desktop.
+ The complete Nubo OS desktop: GNOME with the Nubo look, Nubo apps and
+ defaults. Replaces Ubuntu's desktop meta-package and its Ubuntu-specific
+ tools.

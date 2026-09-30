@@ -1,0 +1,14 @@
+#!/bin/sh
+# Nubo OS wrapper around GRUB's own 10_linux.
+#
+# The distributor name does two jobs in GRUB: it names the boot menu entries
+# and it names the directory the signed boot loader is installed to. The
+# second must stay "ubuntu" or Secure Boot machines stop booting. So the
+# original script runs unchanged and only the menu text is renamed here.
+set -e
+ORIGINAL=/usr/share/nubo/os/grub-10_linux.ubuntu
+[ -x "$ORIGINAL" ] || exit 0
+"$ORIGINAL" "$@" | sed \
+  -e "s/menuentry 'Ubuntu'/menuentry 'Nubo OS'/" \
+  -e "s/menuentry 'Ubuntu, /menuentry 'Nubo OS, /" \
+  -e "s/submenu 'Advanced options for Ubuntu'/submenu 'Advanced options for Nubo OS'/"

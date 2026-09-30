@@ -1,0 +1,13 @@
+[Unit]
+Description=Nubo OS first-boot cleanup
+ConditionPathExists=!/var/lib/nubo/first-boot-done
+After=network-online.target snapd.seeded.service snapd.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/nubo/nubo-first-boot
+TimeoutStartSec=15min
+
+[Install]
+WantedBy=multi-user.target

@@ -5,7 +5,9 @@ DIVERTED="/usr/lib/os-release
 /etc/issue
 /etc/lsb-release
 /etc/issue.net
-/usr/share/applications/gnome-ubuntu-panel.desktop"
+/usr/share/applications/gnome-ubuntu-panel.desktop
+/usr/share/applications/org.gnome.Software.desktop
+/etc/legal"
 
 if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     rm -f /etc/issue /etc/issue.net /etc/lsb-release
@@ -13,6 +15,11 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
         dpkg-divert --package nubo-branding --remove --rename \
             --divert "$file.ubuntu" "$file"
     done
+    dpkg-divert --package nubo-branding --remove --rename \
+        --divert /usr/share/nubo/os/grub-10_linux.ubuntu /etc/grub.d/10_linux
+    dpkg-divert --package nubo-branding --remove --rename \
+        --divert /usr/share/wayland-sessions/ubuntu.desktop.ubuntu /usr/share/wayland-sessions/ubuntu.desktop
+    update-alternatives --remove text.plymouth /usr/share/plymouth/themes/nubo-text/nubo-text.plymouth || true
     if command -v update-grub >/dev/null 2>&1; then
         update-grub || true
     fi

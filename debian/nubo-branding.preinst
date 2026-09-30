@@ -8,13 +8,23 @@ DIVERTED="/usr/lib/os-release
 /etc/issue
 /etc/lsb-release
 /etc/issue.net
-/usr/share/applications/gnome-ubuntu-panel.desktop"
+/usr/share/applications/gnome-ubuntu-panel.desktop
+/usr/share/applications/org.gnome.Software.desktop
+/etc/legal"
 
 if [ "$1" = "install" ] || [ "$1" = "upgrade" ]; then
     for file in $DIVERTED; do
         dpkg-divert --package nubo-branding --add --rename \
             --divert "$file.ubuntu" "$file"
     done
+    # GRUB runs every executable in /etc/grub.d, so the original 10_linux
+    # is parked outside that directory and called from the Nubo wrapper.
+    dpkg-divert --package nubo-branding --add --rename \
+        --divert /usr/share/nubo/os/grub-10_linux.ubuntu /etc/grub.d/10_linux
+    # The session entry keeps its file name (it is the session id users and
+    # the login manager remember); only the displayed name changes.
+    dpkg-divert --package nubo-branding --add --rename \
+        --divert /usr/share/wayland-sessions/ubuntu.desktop.ubuntu /usr/share/wayland-sessions/ubuntu.desktop
 fi
 
 #DEBHELPER#

@@ -1,7 +1,7 @@
 PRETTY_NAME="Nubo OS 1"
 NAME="Nubo OS"
 VERSION_ID="26.04"
-VERSION="1 (Ubuntu 26.04 LTS base)"
+VERSION="1"
 VERSION_CODENAME=resolute
 ID=ubuntu
 ID_LIKE=debian

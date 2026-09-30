@@ -20,6 +20,18 @@ if [ "$1" = "configure" ]; then
     # Other systems' installers name this one from here (dual-boot menus).
     install -m 0644 /usr/share/nubo/os/lsb-release /etc/lsb-release
 
+    install -m 0644 /usr/share/nubo/os/legal /etc/legal
+    update-alternatives --install /usr/share/plymouth/themes/text.plymouth \
+        text.plymouth /usr/share/plymouth/themes/nubo-text/nubo-text.plymouth 200
+
+    # Console message of the day: no Ubuntu news, help links or Pro adverts.
+    if [ -f /etc/default/motd-news ]; then
+        sed -i 's/^ENABLED=1/ENABLED=0/' /etc/default/motd-news
+    fi
+    for hook in 10-help-text 50-motd-news 91-contract-ua-esm-status 91-release-upgrade 95-hwe-eol; do
+        [ -e "/etc/update-motd.d/$hook" ] && chmod -x "/etc/update-motd.d/$hook" || true
+    done
+
     # Pick up the pinned boot loader name.
     if command -v update-grub >/dev/null 2>&1; then
         update-grub || true

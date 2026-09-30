@@ -9,6 +9,10 @@ BLUR    := blur-my-shell@aunetx
 %:
 	dh $@
 
+override_dh_installsystemd:
+	dh_installsystemd -pnubo-account --name=nubo-account-setup
+	dh_installsystemd -pnubo-branding --name=nubo-first-boot
+
 override_dh_installsystemduser:
 	dh_installsystemduser --name=nubo-session-helper -pnubo-theme
 
@@ -53,13 +57,24 @@ override_dh_auto_build:
 	mv $(BUILD)/extensions/$(BLUR)/schemas/*.gschema.xml $(BUILD)/extension-schemas/
 	rm -rf $(BUILD)/extensions/$(BLUR)/schemas
 
-	# System identity: About-page logo and the renamed Settings panel.
+	# System identity: About-page logo and renamed desktop entries. On a
+	# machine where nubo-branding is already installed, the originals live
+	# under the diverted *.ubuntu names; read those, never our own copies.
 	mkdir -p $(BUILD)/os/icons
 	cp brand/logo/nubo-mark-black.svg $(BUILD)/os/icons/nubo-logo.svg
 	cp brand/logo/nubo-mark-black.svg $(BUILD)/os/icons/nubo-logo-text.svg
 	cp brand/logo/nubo-mark-white.svg $(BUILD)/os/icons/nubo-logo-text-dark.svg
-	grep -v '^Name\[' /usr/share/applications/gnome-ubuntu-panel.desktop \
-		| sed 's/^Name=.*/Name=Desktop/' > $(BUILD)/os/gnome-ubuntu-panel.desktop
+	grep -v '^Name\[' $(firstword $(wildcard /usr/share/applications/gnome-ubuntu-panel.desktop.ubuntu) /usr/share/applications/gnome-ubuntu-panel.desktop) \
+		| sed -e 's/^Name=.*/Name=Desktop/' -e 's/^Icon=.*/Icon=preferences-desktop/' \
+		> $(BUILD)/os/gnome-ubuntu-panel.desktop
+	grep -v -E '^(Name|Comment|GenericName)\[' $(firstword $(wildcard /usr/share/applications/org.gnome.Software.desktop.ubuntu) /usr/share/applications/org.gnome.Software.desktop) \
+		| sed -e 's/^Name=.*/Name=Nubo Store/' -e 's/^GenericName=.*/GenericName=App Store/' \
+		      -e 's/^Comment=.*/Comment=Find and install apps/' \
+		> $(BUILD)/os/org.gnome.Software.desktop
+	grep -v -E '^(Name|Comment)\[' $(firstword $(wildcard /usr/share/wayland-sessions/ubuntu.desktop.ubuntu) /usr/share/wayland-sessions/ubuntu.desktop) \
+		| sed -e 's/^Name=.*/Name=Nubo OS/' -e 's/^Comment=.*/Comment=The Nubo OS desktop/' \
+		> $(BUILD)/os/ubuntu.desktop
+	test -s $(BUILD)/os/ubuntu.desktop && grep -q '^Exec=' $(BUILD)/os/ubuntu.desktop
 
 	# Sign-in method icon shown on the login screen.
 	mkdir -p $(BUILD)/account

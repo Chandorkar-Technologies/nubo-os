@@ -8,6 +8,9 @@ icon-theme='Nubo-Dark'
 cursor-theme='Bibata-Modern-Classic'
 color-scheme='prefer-dark'
 accent-color='slate'
+font-name='Inter 11'
+document-font-name='Inter 12'
+monospace-font-name='JetBrains Mono 11'
 
 [org.gnome.desktop.interface:ubuntu]
 gtk-theme='Nubo-Grey-Dark'
@@ -15,6 +18,15 @@ icon-theme='Nubo-Dark'
 cursor-theme='Bibata-Modern-Classic'
 color-scheme='prefer-dark'
 accent-color='slate'
+font-name='Inter 11'
+document-font-name='Inter 12'
+monospace-font-name='JetBrains Mono 11'
+
+[org.gnome.desktop.wm.preferences]
+titlebar-font='Inter Bold 11'
+
+[org.gnome.desktop.wm.preferences:ubuntu]
+titlebar-font='Inter Bold 11'
 
 [org.gnome.desktop.sound]
 theme-name='Nubo'
@@ -51,9 +63,11 @@ name='Nubo-Grey-Dark'
 # Added on top of the extensions the Ubuntu session already turns on.
 [org.gnome.shell]
 enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx']
+favorite-apps=['firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.Settings.desktop', 'org.gnome.Ptyxis.desktop']
 
 [org.gnome.shell:ubuntu]
 enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx']
+favorite-apps=['firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.Settings.desktop', 'org.gnome.Ptyxis.desktop']
 
 # Dock: floating, centred at the bottom, sized to its contents.
 [org.gnome.shell.extensions.dash-to-dock]
@@ -107,8 +121,15 @@ unblur-in-overview=true
 [org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
 corner-radius=24
 
+# One radius family everywhere: 24 for large surfaces, 16 for menus.
 [org.gnome.shell.extensions.blur-my-shell.popup]
 blur=true
+corner-radius=16
+menu-corner-radius=16
+quick-settings-corner-radius=24
+notification-corner-radius=24
+osd-corner-radius=24
+dialog-corner-radius=24
 
 # Terminal: neutral palette instead of Ubuntu's purple.
 [org.gnome.Ptyxis.Profile]

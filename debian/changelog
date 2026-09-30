@@ -1,3 +1,18 @@
+nubo-os (0.7.0) resolute; urgency=medium
+
+  * Identity sweep: Inter and JetBrains Mono fonts, boot menu says Nubo OS,
+    session entry, text boot screen, legal text, console messages, About
+    version string, Settings panel icon.
+  * nubo-desktop now replaces ubuntu-desktop-minimal and conflicts with
+    Ubuntu's Pro, reporting, crash and update tools and the Yaru theme.
+  * Firefox from Mozilla's package repository instead of the snap; Ubuntu's
+    store and helper snaps removed on first boot; Flathub added.
+  * Nubo Store: GNOME Software renamed, with Flatpak support.
+  * Dock defaults: Firefox, Files, Nubo Store, Settings, Terminal.
+  * Uniform corner radii for dock, menus, notifications and dialogs.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 15:00:00 +0530
+
 nubo-os (0.6.0) resolute; urgency=medium
 
   * Light mode: modern apps follow the system setting again; GTK 3 and icon

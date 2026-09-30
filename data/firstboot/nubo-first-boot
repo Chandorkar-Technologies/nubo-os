@@ -1,0 +1,33 @@
+#!/bin/bash
+# One-time cleanup after installation: things the Ubuntu base brings that
+# Nubo OS does not use, which can only be removed on a running system.
+# Runs on every boot until it has finished once (needs snapd to be up).
+
+set -uo pipefail
+MARKER=/var/lib/nubo/first-boot-done
+[[ -e "${MARKER}" ]] && exit 0
+
+log() { echo "nubo-first-boot: $*"; }
+
+# Ubuntu's store, its helpers and the Firefox snap; Firefox comes from a
+# regular package on Nubo OS. Removed only when snapd is ready.
+if command -v snap >/dev/null && snap wait system seed.loaded 2>/dev/null; then
+  for s in snap-store firmware-updater desktop-security-center prompting-client snapd-desktop-integration firefox thunderbird; do
+    if snap list "$s" >/dev/null 2>&1; then
+      snap remove --purge "$s" >/dev/null 2>&1 && log "removed snap $s"
+    fi
+  done
+else
+  log "snapd not ready; trying again next boot"
+  exit 1
+fi
+
+# App store source: Flathub. Needs the network; harmless to retry later.
+if command -v flatpak >/dev/null; then
+  flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo >/dev/null 2>&1 \
+    && log "Flathub added" || log "Flathub not added yet (offline?)"
+fi
+
+mkdir -p "$(dirname "${MARKER}")"
+date -u +%FT%TZ >"${MARKER}"
+log "done"

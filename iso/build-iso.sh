@@ -94,6 +94,11 @@ mount_push -t overlay overlay \
   -o "lowerdir=${WORK}/mnt/minimal,upperdir=${WORK}/deps-upper,workdir=${WORK}/deps-work" \
   "${WORK}/deps-root"
 enter_prepare "${WORK}/deps-root"
+# Firefox comes from Mozilla's repository on Nubo OS; make it visible here so
+# its package and dependencies land on the media too.
+install -D -m 0644 "${HERE}/../data/apt/mozilla.sources" "${WORK}/deps-root/etc/apt/sources.list.d/mozilla.sources"
+install -D -m 0644 "${HERE}/../data/apt/mozilla.pref" "${WORK}/deps-root/etc/apt/preferences.d/mozilla.pref"
+install -D -m 0644 "${HERE}/../data/apt/packages.mozilla.org.asc" "${WORK}/deps-root/etc/apt/keyrings/packages.mozilla.org.asc"
 mkdir -p "${WORK}/deps-root/var/tmp/nubo"
 cp "${DEBS}"/nubo-*.deb "${WORK}/deps-root/var/tmp/nubo/"
 chroot "${WORK}/deps-root" sh -c '
