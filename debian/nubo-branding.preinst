@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+
+# Files owned by Ubuntu packages that Nubo OS replaces. The originals are
+# kept beside them with a .ubuntu suffix and come back if this package is
+# removed.
+DIVERTED="/usr/lib/os-release
+/etc/issue
+/etc/lsb-release
+/etc/issue.net
+/usr/share/applications/gnome-ubuntu-panel.desktop"
+
+if [ "$1" = "install" ] || [ "$1" = "upgrade" ]; then
+    for file in $DIVERTED; do
+        dpkg-divert --package nubo-branding --add --rename \
+            --divert "$file.ubuntu" "$file"
+    done
+fi
+
+#DEBHELPER#

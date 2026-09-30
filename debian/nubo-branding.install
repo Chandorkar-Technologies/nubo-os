@@ -1,0 +1,16 @@
+brand/logo/*.svg usr/share/nubo/logo/
+build/backgrounds/*.png usr/share/backgrounds/nubo/
+brand/wallpapers/photos/*.jpg usr/share/backgrounds/nubo/
+data/backgrounds/nubo.xml usr/share/gnome-background-properties/
+data/gschema/90_nubo.gschema.override usr/share/glib-2.0/schemas/
+data/plymouth/nubo/nubo.plymouth usr/share/plymouth/themes/nubo/
+data/plymouth/nubo/nubo.script usr/share/plymouth/themes/nubo/
+build/plymouth/logo.png usr/share/plymouth/themes/nubo/
+data/os/os-release usr/lib/
+data/os/issue usr/share/nubo/os/
+data/os/issue.net usr/share/nubo/os/
+data/os/lsb-release usr/share/nubo/os/
+data/os/zz-nubo-distributor.cfg etc/default/grub.d/
+build/os/gnome-ubuntu-panel.desktop usr/share/applications/
+build/os/icons/*.svg usr/share/icons/hicolor/scalable/apps/
+data/os/gnome-initial-setup/vendor.conf etc/gnome-initial-setup/

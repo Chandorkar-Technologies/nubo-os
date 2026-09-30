@@ -1,0 +1,3 @@
+build/installer/whitelabel.yaml usr/share/desktop-provision/
+build/installer/images/* usr/share/desktop-provision/images/
+build/installer/slides/* usr/share/desktop-provision/slides/

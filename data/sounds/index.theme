@@ -1,0 +1,8 @@
+[Sound Theme]
+Name=Nubo
+Comment=Nubo OS system sounds
+Inherits=ocean,freedesktop
+Directories=stereo
+
+[stereo]
+OutputProfile=stereo

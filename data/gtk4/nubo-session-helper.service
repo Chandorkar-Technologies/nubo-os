@@ -1,0 +1,16 @@
+[Unit]
+Description=Nubo theme helper
+# Current GNOME starts session helpers through systemd, not through the
+# old autostart folder.
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/nubo/nubo-session-helper
+Restart=on-failure
+RestartSec=5
+Slice=background.slice
+
+[Install]
+WantedBy=gnome-session.target

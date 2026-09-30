@@ -1,0 +1,55 @@
+nubo-os (0.6.0) resolute; urgency=medium
+
+  * Light mode: modern apps follow the system setting again; GTK 3 and icon
+    themes follow it through a session helper.
+  * New nubo-account package: Nubo account sign-in set up on first boot.
+  * Installer names the product without the Ubuntu base version.
+  * Installer app rebuilt with Nubo OS as the product name.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 12:00:00 +0530
+
+nubo-os (0.5.0) resolute; urgency=medium
+
+  * Six photographic monochrome wallpapers added to the four procedural ones.
+  * Login screen: user picture, sign-in method list and corner buttons styled.
+  * Installer illustrations in one neutral grey for both window themes.
+  * Installation media: rebuilt boot files now carry the media UUID.
+  * Dual-boot menus of other systems now list this one as Nubo OS.
+  * Welcome app and remaining Ubuntu logo icon names show the Nubo mark.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 09:30:00 +0530
+
+nubo-os (0.4.0) resolute; urgency=medium
+
+  * Wallpaper set: flow, contours, beam, shards, each dark and light.
+  * Installer: Nubo illustrations, slides, colours, window title; Ubuntu Pro
+    page hidden (new nubo-installer package).
+  * First-run welcome: Nubo mark instead of the Ubuntu mascot, Ubuntu Pro
+    and telemetry pages skipped.
+  * Installation media boots with the Nubo boot screen.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 03:00:00 +0530
+
+nubo-os (0.3.1) resolute; urgency=medium
+
+  * System identifies as Nubo OS; compatibility fields stay Ubuntu.
+  * Boot loader name pinned so Secure Boot keeps working.
+  * Login screen logo sized correctly.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 01:30:00 +0530
+
+nubo-os (0.2.0) resolute; urgency=medium
+
+  * Icons: thin layer over Papirus, grey folders, Nubo mark as logo.
+  * Sounds: new nubo-sounds package on top of Ocean.
+  * Glass: new nubo-glass package shipping Blur my Shell 72.
+  * Dock: floating at the bottom, Nubo mark as the app-grid button.
+  * Login screen: own theme bundle.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 01:10:00 +0530
+
+nubo-os (0.1.0) resolute; urgency=medium
+
+  * First build: theme, icons, branding and desktop metapackage.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Tue, 29 Sep 2026 23:55:00 +0530

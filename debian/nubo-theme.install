@@ -1,0 +1,5 @@
+build/themes/* usr/share/themes/
+build/gtk-4.0/* usr/share/nubo/gtk-4.0/
+build/gdm/nubo-gdm-theme.gresource usr/share/gnome-shell/theme/Nubo/
+data/gtk4/nubo-session-helper usr/libexec/nubo/
+data/gtk4/nubo-session-helper.service usr/lib/systemd/user/

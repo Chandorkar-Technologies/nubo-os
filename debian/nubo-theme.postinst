@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+GDM_THEME=/usr/share/gnome-shell/theme/Nubo/nubo-gdm-theme.gresource
+
+if [ "$1" = "configure" ]; then
+    # Ubuntu's own login theme registers at 15; go above it.
+    update-alternatives --install /usr/share/gnome-shell/gdm-theme.gresource \
+        gdm-theme.gresource "$GDM_THEME" 50
+fi
+
+#DEBHELPER#

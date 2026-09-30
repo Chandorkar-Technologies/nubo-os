@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+DIVERTED="/usr/lib/os-release
+/etc/issue
+/etc/lsb-release
+/etc/issue.net
+/usr/share/applications/gnome-ubuntu-panel.desktop"
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    rm -f /etc/issue /etc/issue.net /etc/lsb-release
+    for file in $DIVERTED; do
+        dpkg-divert --package nubo-branding --remove --rename \
+            --divert "$file.ubuntu" "$file"
+    done
+    if command -v update-grub >/dev/null 2>&1; then
+        update-grub || true
+    fi
+fi
+
+#DEBHELPER#

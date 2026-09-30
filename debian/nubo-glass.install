@@ -1,0 +1,2 @@
+build/extensions/blur-my-shell@aunetx usr/share/gnome-shell/extensions/
+build/extension-schemas/*.xml usr/share/glib-2.0/schemas/

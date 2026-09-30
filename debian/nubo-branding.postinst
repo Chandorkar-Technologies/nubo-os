@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+
+THEME=/usr/share/plymouth/themes/nubo/nubo.plymouth
+
+if [ "$1" = "configure" ]; then
+    update-alternatives --install /usr/share/plymouth/themes/default.plymouth \
+        default.plymouth "$THEME" 200
+
+    # The boot screen lives in the initramfs, so it must be rebuilt to show.
+    if command -v update-initramfs >/dev/null 2>&1; then
+        update-initramfs -u || true
+    fi
+
+    # Console login banner. Copied rather than shipped under /etc: a packaged
+    # file there is a configuration file, and replacing another package's
+    # configuration file makes every install stop and ask what to do.
+    install -m 0644 /usr/share/nubo/os/issue /etc/issue
+    install -m 0644 /usr/share/nubo/os/issue.net /etc/issue.net
+    # Other systems' installers name this one from here (dual-boot menus).
+    install -m 0644 /usr/share/nubo/os/lsb-release /etc/lsb-release
+
+    # Pick up the pinned boot loader name.
+    if command -v update-grub >/dev/null 2>&1; then
+        update-grub || true
+    fi
+fi
+
+#DEBHELPER#

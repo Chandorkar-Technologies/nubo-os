@@ -1,0 +1,36 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: nubo-os
+Source: https://github.com/Chandorkar-Technologies
+
+Files: *
+Copyright: 2026 Chandorkar Technologies
+License: GPL-3+
+
+Files: brand/logo/* brand/src/*
+Copyright: 2026 Chandorkar Technologies
+License: Nubo-Brand
+ The Nubo name and logo are trademarks of Chandorkar Technologies. These
+ files may be redistributed unmodified as part of Nubo OS. They may not be
+ used to brand any other product without written permission.
+
+Files: brand/wallpapers/photos/*
+Copyright: 2026 Chandorkar Technologies
+License: GPL-3+
+ Generated with an image model from Nubo prompts; no third-party artwork.
+
+Files: vendor/colloid-gtk/*
+Copyright: vinceliuice and Colloid GTK theme contributors
+License: GPL-3+
+
+Files: vendor/blur-my-shell.zip
+Copyright: aunetx and Blur my Shell contributors
+License: GPL-3+
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the Free
+ Software Foundation, either version 3 of the License, or (at your option)
+ any later version.
+ .
+ On Debian systems, the full text of the GNU General Public License version 3
+ can be found in the file "/usr/share/common-licenses/GPL-3".

@@ -1,0 +1,15 @@
+.DS_Store
+/build/
+/out/
+/vendor/colloid-gtk/
+/vendor/blur-my-shell.zip
+/debian/.debhelper/
+/debian/files
+/debian/*.substvars
+/debian/*.debhelper.log
+/debian/debhelper-build-stamp
+/debian/nubo-*/
+# Audition clips are copies of other projects' sound themes; regenerate with brand/sounds/make-audition.py
+/brand/sounds/audition/
+*.iso
+*.snap

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Nubo Flow</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-flow-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/nubo-flow-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Contours</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-contours-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/nubo-contours-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Beam</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-beam-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/nubo-beam-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Shards</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-shards-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/nubo-shards-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Silk</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-silk-dark.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Glass</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-glass-dark.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Dunes</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-dunes-dark.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Water</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-water-dark.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Paper</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-paper-light.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Nubo Cloud</name>
+    <filename>/usr/share/backgrounds/nubo/nubo-cloud-light.jpg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#060606</pcolor>
+    <scolor>#060606</scolor>
+  </wallpaper>
+</wallpapers>

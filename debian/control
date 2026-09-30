@@ -1,0 +1,92 @@
+Source: nubo-os
+Section: misc
+Priority: optional
+Maintainer: Ninad Chandorkar <ninad@chandorkartechnologies.com>
+Build-Depends: debhelper-compat (= 13),
+               gnome-control-center-data,
+               imagemagick,
+               libglib2.0-dev-bin,
+               librsvg2-bin,
+               papirus-icon-theme,
+               python3-numpy,
+               python3-pil,
+               adwaita-icon-theme,
+               sassc,
+               unzip
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+
+Package: nubo-theme
+Architecture: all
+Depends: gnome-themes-extra,
+         gtk2-engines-murrine,
+         ${misc:Depends}
+Description: Nubo OS application, shell and login screen theme
+ Monochrome theme for applications, the GNOME Shell, libadwaita apps and the
+ login screen. Built from the Colloid GTK theme (grey variant, black tweak).
+
+Package: nubo-icons
+Architecture: all
+Depends: hicolor-icon-theme,
+         papirus-icon-theme,
+         ${misc:Depends}
+Description: Nubo OS icon theme
+ A thin layer over the Papirus icon theme: grey folders and the Nubo mark in
+ place of distributor logos. All other icons come from Papirus and update
+ with it.
+
+Package: nubo-sounds
+Architecture: all
+Depends: ocean-sound-theme,
+         sound-theme-freedesktop,
+         ${misc:Depends}
+Description: Nubo OS system sounds
+ Sound theme for Nubo OS. Currently maps onto the Ocean sound theme.
+
+Package: nubo-glass
+Architecture: all
+Depends: gnome-shell (>= 46),
+         ${misc:Depends}
+Description: Nubo OS glass effect for the desktop shell
+ Frosted-glass blur for the top bar, dock, overview and lock screen.
+ Ships the Blur my Shell extension system-wide.
+
+Package: nubo-installer
+Architecture: all
+Depends: ${misc:Depends}
+Description: Nubo OS installer appearance
+ Configuration, illustrations and slides that give the Ubuntu Desktop
+ installer the Nubo OS look. Only used on installation media.
+
+Package: nubo-account
+Architecture: all
+Depends: authd,
+         curl,
+         librsvg2-bin,
+         snapd,
+         ${misc:Depends}
+Description: Sign in to Nubo OS with a Nubo account
+ Connects the login screen to Nubo SSO. Sets itself up on the first boot
+ with a network connection.
+
+Package: nubo-branding
+Architecture: all
+Depends: plymouth,
+         ${misc:Depends}
+Description: Nubo OS logos, wallpapers, boot screen and desktop defaults
+ Logo files, default wallpapers, the boot screen and the system-wide desktop
+ defaults that select the Nubo look.
+
+Package: nubo-desktop
+Architecture: all
+Depends: gnome-shell-extensions,
+         nubo-account (= ${source:Version}),
+         nubo-branding (= ${source:Version}),
+         nubo-glass (= ${source:Version}),
+         nubo-icons (= ${source:Version}),
+         nubo-sounds (= ${source:Version}),
+         nubo-theme (= ${source:Version}),
+         ${misc:Depends}
+Recommends: bibata-cursor-theme
+Description: Nubo OS desktop
+ Installs the complete Nubo OS desktop look on top of Ubuntu Desktop.

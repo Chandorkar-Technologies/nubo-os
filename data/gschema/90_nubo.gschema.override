@@ -1,0 +1,115 @@
+# Nubo OS desktop defaults.
+# Ubuntu ships its own defaults scoped to the "ubuntu" session, which win over
+# unscoped ones, so every section is given both ways.
+
+[org.gnome.desktop.interface]
+gtk-theme='Nubo-Grey-Dark'
+icon-theme='Nubo-Dark'
+cursor-theme='Bibata-Modern-Classic'
+color-scheme='prefer-dark'
+accent-color='slate'
+
+[org.gnome.desktop.interface:ubuntu]
+gtk-theme='Nubo-Grey-Dark'
+icon-theme='Nubo-Dark'
+cursor-theme='Bibata-Modern-Classic'
+color-scheme='prefer-dark'
+accent-color='slate'
+
+[org.gnome.desktop.sound]
+theme-name='Nubo'
+
+[org.gnome.desktop.sound:ubuntu]
+theme-name='Nubo'
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+picture-options='zoom'
+primary-color='#060606'
+
+[org.gnome.desktop.background:ubuntu]
+picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+picture-options='zoom'
+primary-color='#060606'
+
+[org.gnome.desktop.screensaver]
+picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+primary-color='#060606'
+
+[org.gnome.desktop.screensaver:ubuntu]
+picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+primary-color='#060606'
+
+[org.gnome.login-screen]
+logo='/usr/share/nubo/logo/nubo-mark-white-small.svg'
+
+[org.gnome.shell.extensions.user-theme]
+name='Nubo-Grey-Dark'
+
+# Added on top of the extensions the Ubuntu session already turns on.
+[org.gnome.shell]
+enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx']
+
+[org.gnome.shell:ubuntu]
+enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx']
+
+# Dock: floating, centred at the bottom, sized to its contents.
+[org.gnome.shell.extensions.dash-to-dock]
+dock-position='BOTTOM'
+extend-height=false
+dock-fixed=true
+dash-max-icon-size=44
+show-apps-at-top=true
+show-apps-always-in-the-edge=true
+show-mounts=false
+show-trash=true
+custom-theme-shrink=true
+transparency-mode='FIXED'
+background-opacity=0.35
+
+[org.gnome.shell.extensions.dash-to-dock:ubuntu]
+dock-position='BOTTOM'
+extend-height=false
+dock-fixed=true
+dash-max-icon-size=44
+show-apps-at-top=true
+show-apps-always-in-the-edge=true
+show-mounts=false
+show-trash=true
+custom-theme-shrink=true
+transparency-mode='FIXED'
+background-opacity=0.35
+
+# Desktop icons off: a clean desktop shows the wallpaper and the glass.
+[org.gnome.shell.extensions.ding]
+show-home=false
+show-trash=false
+show-volumes=false
+
+[org.gnome.shell.extensions.ding:ubuntu]
+show-home=false
+show-trash=false
+show-volumes=false
+
+# Glass. Both stock pipelines are redefined so every blurred surface (top bar,
+# dock, menus, overview, lock screen) gets the same frosted look: lighter than
+# the default so it reads as glass on a dark wallpaper, a faint white tint and
+# a touch of grain.
+[org.gnome.shell.extensions.blur-my-shell]
+pipelines={'pipeline_default': {'name': <'Nubo glass'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_nubo_blur_a'>, 'params': <{'radius': <36>, 'brightness': <0.82>}>}>, <{'type': <'color'>, 'id': <'effect_nubo_tint_a'>, 'params': <{'color': <(1.0, 1.0, 1.0, 0.07)>}>}>, <{'type': <'noise'>, 'id': <'effect_nubo_noise_a'>, 'params': <{'noise': <0.05>, 'lightness': <1.0>}>}>]>}, 'pipeline_default_rounded': {'name': <'Nubo glass, rounded'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_nubo_blur_b'>, 'params': <{'radius': <36>, 'brightness': <0.82>}>}>, <{'type': <'color'>, 'id': <'effect_nubo_tint_b'>, 'params': <{'color': <(1.0, 1.0, 1.0, 0.07)>}>}>, <{'type': <'noise'>, 'id': <'effect_nubo_noise_b'>, 'params': <{'noise': <0.05>, 'lightness': <1.0>}>}>, <{'type': <'corner'>, 'id': <'effect_nubo_corner_b'>, 'params': <{'radius': <24>}>}>]>}}
+
+[org.gnome.shell.extensions.blur-my-shell.panel]
+static-blur=true
+unblur-in-overview=true
+
+[org.gnome.shell.extensions.blur-my-shell.dash-to-dock]
+corner-radius=24
+
+[org.gnome.shell.extensions.blur-my-shell.popup]
+blur=true
+
+# Terminal: neutral palette instead of Ubuntu's purple.
+[org.gnome.Ptyxis.Profile]
+palette='gnome'

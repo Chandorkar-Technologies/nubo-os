@@ -1,0 +1,113 @@
+/* Nubo additions to the shell theme. Appended to the upstream stylesheet at
+   build time. Covers login-screen widgets the upstream theme leaves unstyled
+   on current GNOME: the user picture, the sign-in method list and the corner
+   buttons. */
+
+/* User picture: a neutral disc with the person's initial or a generic icon,
+   never a blank white circle. */
+.user-icon {
+  background-size: contain;
+  border-radius: 999px;
+  icon-size: 64px;
+  background-color: rgba(255, 255, 255, 0.10);
+  color: #f2f2f2;
+}
+.user-icon StIcon { padding: 12px; }
+.user-icon.user-avatar { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); }
+.login-dialog .user-widget .user-icon,
+.unlock-dialog .user-widget .user-icon {
+  background-color: rgba(255, 255, 255, 0.10);
+  color: #f2f2f2;
+}
+.login-dialog .user-widget.vertical .user-icon,
+.unlock-dialog .user-widget.vertical .user-icon { icon-size: 128px; }
+.login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item .user-icon {
+  border: 2px solid transparent;
+}
+.login-dialog-user-list-view .login-dialog-user-list .login-dialog-user-list-item:logged-in .user-icon {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Sign-in method list ("Nubo Account" / "local"). */
+.login-dialog-auth-list-title {
+  color: rgba(242, 242, 242, 0.6);
+  margin-left: 0;
+  padding-bottom: 8px;
+}
+.login-dialog .login-dialog-auth-list-item,
+.unlock-dialog .login-dialog-auth-list-item {
+  min-width: 300px;
+  color: #f2f2f2;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 3px 0;
+  font-weight: bold;
+}
+.login-dialog .login-dialog-auth-list-item:hover,
+.login-dialog .login-dialog-auth-list-item:focus,
+.login-dialog .login-dialog-auth-list-item:selected,
+.unlock-dialog .login-dialog-auth-list-item:hover,
+.unlock-dialog .login-dialog-auth-list-item:focus,
+.unlock-dialog .login-dialog-auth-list-item:selected {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+.login-dialog .login-dialog-auth-list-item:active,
+.unlock-dialog .login-dialog-auth-list-item:active {
+  background-color: rgba(255, 255, 255, 0.26);
+}
+.login-dialog-auth-list-label:ltr { padding-left: 12px; text-align: left; }
+.login-dialog-auth-list-label:rtl { padding-right: 12px; text-align: right; }
+
+/* Corner buttons: accessibility menu, session chooser, cancel, switch user. */
+.login-dialog-button.login-dialog-auth-menu-button,
+.login-dialog-button.web-login-intro-button,
+.login-dialog-button.a11y-button,
+.login-dialog-button.cancel-button,
+.login-dialog-button.switch-user-button,
+.login-dialog-button.login-dialog-session-list-button {
+  padding: 9px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #f2f2f2;
+  font-weight: bold;
+}
+.login-dialog-button.login-dialog-auth-menu-button:hover,
+.login-dialog-button.web-login-intro-button:hover,
+.login-dialog-button.a11y-button:hover,
+.login-dialog-button.cancel-button:hover,
+.login-dialog-button.switch-user-button:hover,
+.login-dialog-button.login-dialog-session-list-button:hover,
+.login-dialog-button.login-dialog-auth-menu-button:focus,
+.login-dialog-button.web-login-intro-button:focus,
+.login-dialog-button.a11y-button:focus,
+.login-dialog-button.cancel-button:focus,
+.login-dialog-button.switch-user-button:focus,
+.login-dialog-button.login-dialog-session-list-button:focus {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+.login-dialog-button.login-dialog-auth-menu-button:checked,
+.login-dialog-button.a11y-button:checked,
+.login-dialog-button.login-dialog-session-list-button:checked {
+  background-color: rgba(255, 255, 255, 0.26);
+}
+.login-dialog-button StIcon,
+.login-dialog-session-list-button StIcon,
+.a11y-button StIcon { icon-size: 16px; }
+.login-dialog-button-box { spacing: 12px; }
+
+/* Password field. */
+.login-dialog .login-dialog-prompt-entry,
+.unlock-dialog .login-dialog-prompt-entry {
+  border-radius: 10px;
+  padding: 9px 12px;
+  background-color: rgba(255, 255, 255, 0.10);
+  color: #f2f2f2;
+  selection-background-color: rgba(255, 255, 255, 0.3);
+  selected-color: #ffffff;
+}
+.login-dialog .login-dialog-prompt-entry:focus,
+.unlock-dialog .login-dialog-prompt-entry:focus {
+  background-color: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}

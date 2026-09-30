@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+
+NAME    := Nubo
+VARIANT := grey
+TWEAKS  := black rimless float
+BUILD   := $(CURDIR)/build
+BLUR    := blur-my-shell@aunetx
+
+%:
+	dh $@
+
+override_dh_installsystemduser:
+	dh_installsystemduser --name=nubo-session-helper -pnubo-theme
+
+override_dh_auto_build:
+	@test -d vendor/colloid-gtk/src || { echo "vendor/colloid-gtk missing: run vendor/fetch.sh" >&2; exit 1; }
+	@test -f vendor/blur-my-shell.zip || { echo "vendor/blur-my-shell.zip missing: run vendor/fetch.sh" >&2; exit 1; }
+	rm -rf $(BUILD)
+	mkdir -p $(BUILD)/themes $(BUILD)/icons $(BUILD)/home $(BUILD)/backgrounds \
+		$(BUILD)/plymouth $(BUILD)/gdm $(BUILD)/extensions $(BUILD)/extension-schemas
+
+	# Theme. The upstream installer edits its own source tree while building,
+	# so it runs on a copy. HOME is redirected because the libadwaita step
+	# writes into ~/.config; the result is shipped system-wide instead.
+	cp -a vendor/colloid-gtk $(BUILD)/colloid-gtk
+	cd $(BUILD)/colloid-gtk && HOME=$(BUILD)/home ./install.sh \
+		--dest $(BUILD)/themes --name $(NAME) --theme $(VARIANT) \
+		--tweaks $(TWEAKS) --libadwaita
+	# Modern apps get a second build without the black tweak: that one keeps
+	# libadwaita's own colours, so light and dark mode keep following the
+	# system setting. The black tweak would pin them to dark.
+	cp -a vendor/colloid-gtk $(BUILD)/colloid-adw
+	cd $(BUILD)/colloid-adw && HOME=$(BUILD)/home-adw ./install.sh \
+		--dest $(BUILD)/adw-unused --name $(NAME) --theme $(VARIANT) \
+		--color light --tweaks rimless float --libadwaita
+	mkdir -p $(BUILD)/gtk-4.0
+	cp -rL $(BUILD)/home-adw/.config/gtk-4.0/. $(BUILD)/gtk-4.0/
+
+	# Nubo additions to the shell stylesheets (login screen widgets).
+	for css in $(BUILD)/themes/$(NAME)-Grey*/gnome-shell/gnome-shell.css; do \
+		printf '\n' >> $$css; cat data/theme/nubo-shell-extra.css >> $$css; done
+
+	# Login screen, from the dark shell theme just built.
+	brand/make-gdm-theme.sh $(BUILD)/themes/$(NAME)-Grey-Dark/gnome-shell \
+		$(BUILD)/gdm/nubo-gdm-theme.gresource
+
+	# Icons.
+	brand/make-icon-overlay.sh $(BUILD)/icons brand/logo
+
+	# Glass extension. Its settings schema moves to the system location so
+	# that system-wide defaults can be set for it.
+	unzip -q vendor/blur-my-shell.zip -d $(BUILD)/extensions/$(BLUR)
+	mv $(BUILD)/extensions/$(BLUR)/schemas/*.gschema.xml $(BUILD)/extension-schemas/
+	rm -rf $(BUILD)/extensions/$(BLUR)/schemas
+
+	# System identity: About-page logo and the renamed Settings panel.
+	mkdir -p $(BUILD)/os/icons
+	cp brand/logo/nubo-mark-black.svg $(BUILD)/os/icons/nubo-logo.svg
+	cp brand/logo/nubo-mark-black.svg $(BUILD)/os/icons/nubo-logo-text.svg
+	cp brand/logo/nubo-mark-white.svg $(BUILD)/os/icons/nubo-logo-text-dark.svg
+	grep -v '^Name\[' /usr/share/applications/gnome-ubuntu-panel.desktop \
+		| sed 's/^Name=.*/Name=Desktop/' > $(BUILD)/os/gnome-ubuntu-panel.desktop
+
+	# Sign-in method icon shown on the login screen.
+	mkdir -p $(BUILD)/account
+	rsvg-convert -w 128 -h 128 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/account/nubo-account.png
+
+	# Artwork.
+	python3 brand/wallpapers/generate.py $(BUILD)/backgrounds
+	installer/make-installer-branding.sh $(BUILD)/installer brand/logo
+	rsvg-convert -w 512 -h 512 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/plymouth/logo.png
+
+override_dh_auto_clean:
+	rm -rf $(BUILD)
+
+# Icon folders are symlinks into Papirus by design; keep them absolute.
+override_dh_link:
+	dh_link -Nnubo-icons
+
+override_dh_strip_nondeterminism:
+override_dh_compress:

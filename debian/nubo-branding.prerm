@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+THEME=/usr/share/plymouth/themes/nubo/nubo.plymouth
+
+if [ "$1" = "remove" ]; then
+    update-alternatives --remove default.plymouth "$THEME" || true
+    if command -v update-initramfs >/dev/null 2>&1; then
+        update-initramfs -u || true
+    fi
+fi
+
+#DEBHELPER#

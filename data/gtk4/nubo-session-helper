@@ -1,0 +1,46 @@
+#!/bin/sh
+# Runs at login. Two jobs:
+#  1. Point the user's GTK 4 config at the system copy of the app theme, so
+#     modern GNOME apps pick it up (they only read it from the user's folder).
+#  2. Keep the GTK 3 and icon themes in step with the light/dark preference
+#     for as long as the session lasts. GNOME switches modern apps by itself
+#     but leaves the older theme setting alone.
+#
+# Users who chose a theme of their own are left alone: the follower only
+# acts while a Nubo theme is selected.
+
+set -u
+
+SRC=/usr/share/nubo/gtk-4.0
+DST="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
+IFACE=org.gnome.desktop.interface
+
+if [ -d "$SRC" ]; then
+  mkdir -p "$DST"
+  for item in gtk.css gtk-dark.css assets; do
+    [ -e "$SRC/$item" ] || continue
+    if [ -L "$DST/$item" ] || [ ! -e "$DST/$item" ]; then
+      ln -sfn "$SRC/$item" "$DST/$item"
+    fi
+  done
+fi
+
+command -v gsettings >/dev/null 2>&1 || exit 0
+
+follow() {
+  case "$(gsettings get $IFACE gtk-theme)" in
+    "'Nubo-"*) ;;
+    *) return ;;
+  esac
+  case "$(gsettings get $IFACE color-scheme)" in
+    "'prefer-dark'") gtk=Nubo-Grey-Dark; icons=Nubo-Dark ;;
+    *)               gtk=Nubo-Grey-Light; icons=Nubo ;;
+  esac
+  [ "$(gsettings get $IFACE gtk-theme)" = "'$gtk'" ] || gsettings set $IFACE gtk-theme "$gtk"
+  [ "$(gsettings get $IFACE icon-theme)" = "'$icons'" ] || gsettings set $IFACE icon-theme "$icons"
+}
+
+follow
+gsettings monitor $IFACE color-scheme | while read -r _; do
+  follow
+done

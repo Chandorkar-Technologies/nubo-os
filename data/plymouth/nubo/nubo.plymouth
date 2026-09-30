@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Nubo
+Description=Nubo OS boot screen
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/nubo
+ScriptFile=/usr/share/plymouth/themes/nubo/nubo.script

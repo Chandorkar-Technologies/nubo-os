@@ -1,0 +1,73 @@
+#!/bin/bash
+# Lets people sign in to this machine with their Nubo account.
+#
+# Runs as a system service on every boot until it has succeeded once. It
+# needs the network (to fetch the sign-in connector and to reach Nubo SSO),
+# so on a machine that is offline at first boot it simply tries again next
+# time. Success is recorded in /var/lib/nubo/account-setup-done.
+#
+# Sign-in uses the device flow: the login screen shows a short code and a web
+# address (also as a QR code); the person approves on their phone or another
+# computer, and the desktop session opens.
+
+set -uo pipefail
+
+ISSUER="${ISSUER:-https://mail.nubo.email}"
+CLIENT_ID="${CLIENT_ID:-nubo-os}"
+BROKER_CONF=/var/snap/authd-oidc/current/broker.conf
+MARKER=/var/lib/nubo/account-setup-done
+
+log() { echo "nubo-account-setup: $*"; }
+
+[[ -e "${MARKER}" ]] && exit 0
+
+# Wait for the network and for snapd to finish first-boot seeding.
+for _ in $(seq 1 30); do
+  curl -fsS -m 10 "${ISSUER}/.well-known/openid-configuration" >/dev/null 2>&1 && break
+  sleep 10
+done
+if ! curl -fsS -m 15 "${ISSUER}/.well-known/openid-configuration" | grep -q '"device_authorization_endpoint"'; then
+  log "Nubo SSO not reachable; will try again next boot"
+  exit 1
+fi
+
+if ! snap list authd-oidc >/dev/null 2>&1; then
+  for _ in $(seq 1 6); do
+    snap install authd-oidc && break
+    sleep 30
+  done
+fi
+if ! snap list authd-oidc >/dev/null 2>&1; then
+  log "sign-in connector not installed yet; will try again next boot"
+  exit 1
+fi
+
+umask 077
+cat >"${BROKER_CONF}" <<EOF
+[oidc]
+issuer = ${ISSUER}
+client_id = ${CLIENT_ID}
+# Lets the session be renewed without signing in again each time.
+extra_scopes = offline_access
+
+[users]
+# The first Nubo account to sign in owns the machine and can administer it.
+# Everyone else is refused until the owner allows them.
+allowed_users = OWNER
+owner_extra_groups = sudo,lpadmin
+EOF
+
+umask 022
+systemctl restart snap.authd-oidc.authd-oidc.service
+
+# The login service reads its list of sign-in methods at start, and the
+# package ships ours, so a restart is only needed when it started before the
+# connector existed. Never restart it under a running desktop: user lookups
+# go through it, and the desktop stalls while it is away.
+if ! loginctl list-sessions --no-legend 2>/dev/null | grep -q .; then
+  systemctl restart authd.service
+fi
+
+mkdir -p "$(dirname "${MARKER}")"
+date -u +%FT%TZ >"${MARKER}"
+log "Nubo account sign-in ready"

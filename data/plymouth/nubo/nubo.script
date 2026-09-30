@@ -1,0 +1,63 @@
+# Nubo OS boot screen: white mark on black, slow breathing pulse.
+
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+screen_w = Window.GetWidth();
+screen_h = Window.GetHeight();
+
+logo.source = Image("logo.png");
+logo.size = Math.Min(screen_w, screen_h) * 0.18;
+logo.image = logo.source.Scale(logo.size, logo.size);
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetX(Window.GetX() + screen_w / 2 - logo.size / 2);
+logo.sprite.SetY(Window.GetY() + screen_h / 2 - logo.size / 2);
+logo.sprite.SetZ(10);
+
+tick = 0;
+fun on_refresh() {
+  tick++;
+  logo.sprite.SetOpacity(0.72 + 0.28 * Math.Cos(tick / 28));
+}
+Plymouth.SetRefreshFunction(on_refresh);
+
+# Messages and disk-unlock prompt sit under the mark.
+text_y = Window.GetY() + screen_h / 2 + logo.size / 2 + 48;
+
+message.sprite = Sprite();
+fun on_message(text) {
+  message.image = Image.Text(text, 0.8, 0.8, 0.8);
+  message.sprite.SetImage(message.image);
+  message.sprite.SetX(Window.GetX() + screen_w / 2 - message.image.GetWidth() / 2);
+  message.sprite.SetY(text_y + 64);
+  message.sprite.SetZ(20);
+}
+Plymouth.SetMessageFunction(on_message);
+
+prompt.sprite = Sprite();
+bullets.sprite = Sprite();
+
+fun on_password(prompt_text, bullet_count) {
+  prompt.image = Image.Text(prompt_text, 1, 1, 1);
+  prompt.sprite.SetImage(prompt.image);
+  prompt.sprite.SetX(Window.GetX() + screen_w / 2 - prompt.image.GetWidth() / 2);
+  prompt.sprite.SetY(text_y);
+  prompt.sprite.SetZ(20);
+  prompt.sprite.SetOpacity(1);
+
+  dots = "";
+  for (i = 0; i < bullet_count; i++) dots += "• ";
+  bullets.image = Image.Text(dots, 1, 1, 1);
+  bullets.sprite.SetImage(bullets.image);
+  bullets.sprite.SetX(Window.GetX() + screen_w / 2 - bullets.image.GetWidth() / 2);
+  bullets.sprite.SetY(text_y + 32);
+  bullets.sprite.SetZ(20);
+  bullets.sprite.SetOpacity(1);
+}
+Plymouth.SetDisplayPasswordFunction(on_password);
+
+fun on_normal() {
+  prompt.sprite.SetOpacity(0);
+  bullets.sprite.SetOpacity(0);
+}
+Plymouth.SetDisplayNormalFunction(on_normal);

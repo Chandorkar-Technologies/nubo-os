@@ -1,0 +1,19 @@
+# Read by the installer from the root of the install media.
+#
+# Every screen stays interactive: the person installing answers the usual
+# questions. The only addition is the last step, which installs the Nubo
+# packages carried on the media into the freshly installed system. Doing it
+# here, rather than inside the system images, works the same for every
+# language and install type and survives Ubuntu re-cutting its images.
+autoinstall:
+  version: 1
+  interactive-sections:
+    - "*"
+  late-commands:
+    - mkdir -p /target/var/tmp/nubo
+    - cp /cdrom/nubo/pool/*.deb /target/var/tmp/nubo/
+    - >-
+      curtin in-target --target=/target -- sh -c
+      'DEBIAN_FRONTEND=noninteractive apt-get install -y
+      -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb'
+    - rm -rf /target/var/tmp/nubo

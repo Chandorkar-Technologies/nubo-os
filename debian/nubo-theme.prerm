@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+GDM_THEME=/usr/share/gnome-shell/theme/Nubo/nubo-gdm-theme.gresource
+
+if [ "$1" = "remove" ]; then
+    update-alternatives --remove gdm-theme.gresource "$GDM_THEME" || true
+fi
+
+#DEBHELPER#

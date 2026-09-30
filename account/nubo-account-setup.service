@@ -1,0 +1,13 @@
+[Unit]
+Description=Nubo account sign-in setup
+ConditionPathExists=!/var/lib/nubo/account-setup-done
+After=network-online.target snapd.seeded.service snapd.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/nubo/nubo-account-setup
+TimeoutStartSec=20min
+
+[Install]
+WantedBy=multi-user.target

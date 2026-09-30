@@ -1,0 +1,4 @@
+account/nubo-account-setup usr/libexec/nubo/
+account/nubo-account-setup.service usr/lib/systemd/system/
+account/brokers.d/nubo.conf etc/authd/brokers.d/
+build/account/nubo-account.png usr/share/nubo/logo/
