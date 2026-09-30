@@ -5,6 +5,8 @@
 
 set -uo pipefail
 MARKER=/var/lib/nubo/first-boot-done
+# Belt and braces: never touch the installation media.
+mountpoint -q /cdrom && exit 0
 [[ -e "${MARKER}" ]] && exit 0
 
 log() { echo "nubo-first-boot: $*"; }
@@ -26,6 +28,21 @@ fi
 if command -v flatpak >/dev/null; then
   flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo >/dev/null 2>&1 \
     && log "Flathub added" || log "Flathub not added yet (offline?)"
+fi
+
+# Apps that come from Flathub. Needs the network; retried next boot until done.
+FLATPAKS="com.toolstack.Folio org.localsend.localsend_app io.github.qwersyk.Newelle"
+missing=""
+for app in ${FLATPAKS}; do
+  flatpak info --system "${app}" >/dev/null 2>&1 || missing="${missing} ${app}"
+done
+if [[ -n "${missing}" ]]; then
+  if flatpak install --system --noninteractive --or-update flathub ${missing} >/dev/null 2>&1; then
+    log "installed:${missing}"
+  else
+    log "Flathub apps not installed yet (offline?); trying again next boot"
+    exit 1
+  fi
 fi
 
 mkdir -p "$(dirname "${MARKER}")"

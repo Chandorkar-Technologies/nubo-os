@@ -13,7 +13,6 @@ data/os/lsb-release usr/share/nubo/os/
 data/os/zz-nubo-distributor.cfg etc/default/grub.d/
 build/os/gnome-ubuntu-panel.desktop usr/share/applications/
 build/os/icons/*.svg usr/share/icons/hicolor/scalable/apps/
-data/os/gnome-initial-setup/vendor.conf etc/gnome-initial-setup/
 data/os/legal usr/share/nubo/os/
 data/os/grub/10_linux etc/grub.d/
 data/os/plymouth-text/nubo-text.plymouth usr/share/plymouth/themes/nubo-text/
@@ -24,3 +23,4 @@ data/firstboot/nubo-first-boot usr/libexec/nubo/
 data/firstboot/nubo-first-boot.service usr/lib/systemd/system/
 build/os/ubuntu.desktop usr/share/wayland-sessions/
 build/os/org.gnome.Software.desktop usr/share/applications/
+build/apps/*.desktop usr/share/nubo/applications/

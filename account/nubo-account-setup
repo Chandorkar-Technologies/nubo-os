@@ -16,6 +16,8 @@ ISSUER="${ISSUER:-https://mail.nubo.email}"
 CLIENT_ID="${CLIENT_ID:-nubo-os}"
 BROKER_CONF=/var/snap/authd-oidc/current/broker.conf
 MARKER=/var/lib/nubo/account-setup-done
+# Belt and braces: never touch the installation media.
+mountpoint -q /cdrom && exit 0
 
 log() { echo "nubo-account-setup: $*"; }
 

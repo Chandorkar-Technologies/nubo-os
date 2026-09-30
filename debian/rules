@@ -76,6 +76,9 @@ override_dh_auto_build:
 		> $(BUILD)/os/ubuntu.desktop
 	test -s $(BUILD)/os/ubuntu.desktop && grep -q '^Exec=' $(BUILD)/os/ubuntu.desktop
 
+	# Renamed first-party app entries (override /usr/share/applications via /usr/local/share).
+	brand/make-app-entries.sh data/apps/rebrand.list $(BUILD)/apps
+
 	# Sign-in method icon shown on the login screen.
 	mkdir -p $(BUILD)/account
 	rsvg-convert -w 128 -h 128 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/account/nubo-account.png

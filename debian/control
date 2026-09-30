@@ -3,6 +3,10 @@ Section: misc
 Priority: optional
 Maintainer: Ninad Chandorkar <ninad@chandorkartechnologies.com>
 Build-Depends: debhelper-compat (= 13),
+               deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-contacts,
+               gnome-maps, gnome-podcasts, gnome-sound-recorder, gnome-weather,
+               nautilus, gnome-text-editor, loupe, ptyxis, showtime, simple-scan,
+               gnome-calculator, gnome-characters, gnome-font-viewer, gnome-logs, baobab,
                gnome-control-center-data,
                gnome-software,
                ubuntu-session,
@@ -64,7 +68,11 @@ Package: nubo-account
 Architecture: all
 Depends: authd,
          curl,
+         gir1.2-adw-1,
+         gir1.2-gtk-4.0,
+         libsecret-tools,
          librsvg2-bin,
+         python3-gi,
          snapd,
          ${misc:Depends}
 Description: Sign in to Nubo OS with a Nubo account
@@ -103,11 +111,14 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          nubo-sounds (= ${source:Version}),
          nubo-theme (= ${source:Version}),
          ${misc:Depends}
-Recommends: appstream, apt-config-icons-hidpi, avahi-daemon, baobab, bibata-cursor-theme,
+Recommends: deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-contacts,
+            gnome-maps, gnome-podcasts, gnome-sound-recorder, gnome-weather, papers,
+            showtime, simple-scan, libsecret-tools, python3-gi, gir1.2-adw-1, gir1.2-gtk-4.0,
+            appstream, apt-config-icons-hidpi, avahi-daemon, baobab, bibata-cursor-theme,
             bluez, bluez-cups, brltty, cups, cups-bsd, cups-client, cups-filters,
             dirmngr, firefox, fwupd, fwupd-signed, gamemode, gir1.2-gmenu-3.0,
             gnome-bluetooth-sendto, gnome-calculator, gnome-characters, gnome-clocks,
-            gnome-disk-utility, gnome-font-viewer, gnome-initial-setup, gnome-keyring,
+            gnome-disk-utility, gnome-font-viewer, gnome-keyring,
             gnome-logs, gnome-remote-desktop, gnome-text-editor, gpg-agent,
             gsettings-ubuntu-schemas, gst-audio-thumbnailer, gst-video-thumbnailer,
             gvfs-fuse, hplip, ibus, ibus-gtk, ibus-gtk3, ibus-table, im-config,
@@ -124,6 +135,7 @@ Conflicts: apport, apport-core-dump-handler, apport-gtk, gnome-package-updater,
            ubuntu-insights, ubuntu-pro-client, ubuntu-pro-client-l10n,
            ubuntu-release-upgrader-gtk, ubuntu-report, update-manager,
            update-manager-core, update-notifier, update-notifier-common, whoopsie,
+           gnome-initial-setup,
            yaru-theme-gtk, yaru-theme-icon, yaru-theme-sound
 Description: Nubo OS desktop
  The complete Nubo OS desktop: GNOME with the Nubo look, Nubo apps and

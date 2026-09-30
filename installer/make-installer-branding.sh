@@ -65,14 +65,14 @@ icon_svg() {
   local src
   src="$(find "${ADWAITA}" -name "${name}-symbolic.svg" | head -1)"
   [[ -n "${src}" ]] || { echo "icon not found: ${name}" >&2; exit 1; }
+  # The installer's SVG renderer drops nested transforms, so the icon's own
+  # 16-unit drawing is placed with a viewBox instead of a transform group.
   local inner
-  inner="$(sed -e '1,/<svg[^>]*>/d' -e '/<\/svg>/,$d' "${src}")"
+  inner="$(sed -e '1,/<svg[^>]*>/d' -e '/<\/svg>/,$d' "${src}" | sed -e 's/ fill="[^"]*"//g')"
   cat >"${out}" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="380" height="380" viewBox="0 0 16 16">
-  <g fill="${INK}" transform="translate(4 4) scale(0.5)">
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="380" viewBox="-4 -4 24 24" fill="${INK}">
 ${inner}
-  </g>
 </svg>
 EOF
 }
@@ -98,20 +98,18 @@ mark_svg() {
   for entry in "${PAGES[@]}"; do
     page="${entry%%:*}"
     icon="${entry##*:}"
-    # Page pictures go in as PNG: the installer's SVG renderer drops some of
-    # these drawings, while the slide viewer shows them fine.
+    # Pictures stay SVG: raster pictures stall the installer while it starts
+    # as a session service, before the display is fully up.
     if [[ "${icon}" == mark ]]; then
       mark_svg "${OUT}/images/${page}.svg"
     else
       icon_svg "${icon}" "${OUT}/images/${page}.svg"
     fi
-    rsvg-convert -w 760 -h 760 -a "${OUT}/images/${page}.svg" -o "${OUT}/images/${page}.png"
-    rm -f "${OUT}/images/${page}.svg"
     # Both keys, same file: the built-in defaults set a dark variant for some
     # pages, and a dark variant wins over a light one in dark mode.
     echo "  ${page}:"
-    echo "    image: \"${page}.png\""
-    echo "    image-dark: \"${page}.png\""
+    echo "    image: \"${page}.svg\""
+    echo "    image-dark: \"${page}.svg\""
   done
   # Commercial pages that do not apply to Nubo OS.
   echo "  ubuntu-pro-onboarding:"

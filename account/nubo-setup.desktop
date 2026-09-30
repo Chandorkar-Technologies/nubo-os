@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Account
+Comment=Sign in or create your Nubo account
+Exec=/usr/libexec/nubo/nubo-setup
+Icon=avatar-default
+Categories=Settings;
+StartupNotify=true

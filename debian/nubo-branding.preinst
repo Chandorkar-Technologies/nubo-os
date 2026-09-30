@@ -18,7 +18,8 @@ if [ "$1" = "install" ] || [ "$1" = "upgrade" ]; then
             --divert "$file.ubuntu" "$file"
     done
     # GRUB runs every executable in /etc/grub.d, so the original 10_linux
-    # is parked outside that directory and called from the Nubo wrapper.
+    # is parked outside that directory (which must exist before the divert).
+    mkdir -p /usr/share/nubo/os
     dpkg-divert --package nubo-branding --add --rename \
         --divert /usr/share/nubo/os/grub-10_linux.ubuntu /etc/grub.d/10_linux
     # The session entry keeps its file name (it is the session id users and

@@ -1,5 +1,11 @@
 nubo-os (0.7.0) resolute; urgency=medium
 
+  * App set: Calendar, Contacts, Weather, Maps, Videos, Scanner, Archive
+    Manager, Podcasts, Books, Voice Memos, Backup, Reminders; Folio, LocalSend
+    and Newelle from Flathub on first boot. Entries renamed Nubo-style.
+  * Nubo Setup: first-run sign-in and account creation (device flow).
+  * First-boot and account services now skip the installation media by
+    testing for the /cdrom mount (the earlier test never matched).
   * Identity sweep: Inter and JetBrains Mono fonts, boot menu says Nubo OS,
     session entry, text boot screen, legal text, console messages, About
     version string, Settings panel icon.
@@ -10,6 +16,8 @@ nubo-os (0.7.0) resolute; urgency=medium
   * Nubo Store: GNOME Software renamed, with Flatpak support.
   * Dock defaults: Firefox, Files, Nubo Store, Settings, Terminal.
   * Uniform corner radii for dock, menus, notifications and dialogs.
+  * Ubuntu's first-run wizard removed: every page left in it was Ubuntu's.
+    A Nubo first run (account sign-in) replaces it later.
 
  -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 30 Sep 2026 15:00:00 +0530
 

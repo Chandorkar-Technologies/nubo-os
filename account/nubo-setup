@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+"""Nubo Setup: first-run sign-in for a Nubo account.
+
+Shown once after the first login on an installed system (never on the
+installation media). Two ways in:
+  - Sign in: device flow against Nubo SSO. The screen shows a code and a
+    web address; the person approves on a phone or another computer.
+  - Create account: posts the chosen name, address and password to the Nubo
+    signup service, then signs in the same way.
+The result (email address and refresh token) is kept in the login keyring.
+"""
+
+import json
+import os
+import subprocess
+import sys
+import threading
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+import gi
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+from gi.repository import Adw, GLib, Gtk  # noqa: E402
+
+ISSUER = os.environ.get("NUBO_ISSUER", "https://mail.nubo.email")
+CLIENT_ID = os.environ.get("NUBO_CLIENT_ID", "nubo-os")
+SIGNUP_URL = os.environ.get("NUBO_SIGNUP_URL", "https://admin.nubo.email/api/personal/signup")
+STATE_DIR = os.path.join(os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "nubo")
+DONE = os.path.join(STATE_DIR, "setup-done")
+
+
+def post(url, data, as_json=False, timeout=20):
+    body = json.dumps(data).encode() if as_json else urllib.parse.urlencode(data).encode()
+    headers = {"Content-Type": "application/json" if as_json else "application/x-www-form-urlencoded",
+               "Accept": "application/json"}
+    req = urllib.request.Request(url, data=body, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, json.load(r)
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.load(e)
+        except Exception:
+            return e.code, {}
+
+
+def keyring_store(label, secret, **attrs):
+    args = ["secret-tool", "store", "--label", label]
+    for k, v in attrs.items():
+        args += [k, v]
+    subprocess.run(args, input=secret.encode(), check=False)
+
+
+class Setup(Adw.Application):
+    def __init__(self):
+        super().__init__(application_id="tech.nubosuite.Setup")
+        self.win = None
+        self.stop = threading.Event()
+
+    def do_activate(self):
+        if os.path.exists(DONE) or os.path.ismount("/cdrom"):
+            self.quit()
+            return
+        self.win = Adw.ApplicationWindow(application=self, title="Nubo", default_width=520, default_height=640)
+        self.nav = Adw.NavigationView()
+        self.win.set_content(self.nav)
+        self.nav.push(self.welcome_page())
+        self.win.present()
+
+    # -- pages ---------------------------------------------------------------
+    def page(self, title, child):
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=18, margin_top=32, margin_bottom=32,
+                      margin_start=32, margin_end=32, valign=Gtk.Align.CENTER)
+        box.append(child)
+        clamp = Adw.Clamp(maximum_size=420, child=box)
+        toolbar = Adw.ToolbarView()
+        toolbar.add_top_bar(Adw.HeaderBar())
+        toolbar.set_content(clamp)
+        return Adw.NavigationPage(title=title, child=toolbar)
+
+    def label(self, text, css=None):
+        l = Gtk.Label(label=text, wrap=True, justify=Gtk.Justification.CENTER)
+        if css:
+            l.add_css_class(css)
+        return l
+
+    def welcome_page(self):
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        col.append(self.label("Welcome to Nubo", "title-1"))
+        col.append(self.label("Sign in with your Nubo account to set up mail, calendar, contacts and files."))
+        signin = Gtk.Button(label="Sign in", css_classes=["suggested-action", "pill"])
+        signin.connect("clicked", lambda *_: self.start_sign_in())
+        create = Gtk.Button(label="Create a Nubo account", css_classes=["pill"])
+        create.connect("clicked", lambda *_: self.nav.push(self.create_page()))
+        later = Gtk.Button(label="Not now", css_classes=["flat"])
+        later.connect("clicked", lambda *_: self.finish(skipped=True))
+        for b in (signin, create, later):
+            col.append(b)
+        return self.page("Nubo", col)
+
+    def create_page(self):
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        col.append(self.label("Create your account", "title-2"))
+        group = Adw.PreferencesGroup()
+        self.f_name = Adw.EntryRow(title="Your name")
+        self.f_addr = Adw.EntryRow(title="Address (before @nubo.email)")
+        self.f_phone = Adw.EntryRow(title="Mobile number")
+        self.f_pass = Adw.PasswordEntryRow(title="Password")
+        for r in (self.f_name, self.f_addr, self.f_phone, self.f_pass):
+            group.add(r)
+        col.append(group)
+        self.create_msg = self.label("", "error")
+        col.append(self.create_msg)
+        go = Gtk.Button(label="Create account", css_classes=["suggested-action", "pill"])
+        go.connect("clicked", lambda *_: self.do_create())
+        col.append(go)
+        return self.page("Create account", col)
+
+    def do_create(self):
+        payload = {"name": self.f_name.get_text().strip(), "username": self.f_addr.get_text().strip().lower(),
+                   "phone": self.f_phone.get_text().strip(), "password": self.f_pass.get_text()}
+        if not all(payload.values()) or len(payload["password"]) < 8:
+            self.create_msg.set_label("Fill in every field. The password needs at least 8 characters.")
+            return
+        self.create_msg.set_label("Creating your account…")
+
+        def work():
+            try:
+                code, data = post(SIGNUP_URL, payload, as_json=True)
+            except Exception as e:  # network down, service not reachable
+                GLib.idle_add(self.create_msg.set_label, "Could not reach Nubo: %s" % e)
+                return
+            if code in (200, 201):
+                GLib.idle_add(self.start_sign_in)
+            else:
+                GLib.idle_add(self.create_msg.set_label, data.get("error", "Could not create the account."))
+        threading.Thread(target=work, daemon=True).start()
+
+    def start_sign_in(self):
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        col.append(self.label("Approve on your phone", "title-2"))
+        self.code_lbl = self.label("…", "title-1")
+        self.link_lbl = Gtk.LinkButton(uri=ISSUER + "/authorize", label="Open the approval page")
+        self.status = self.label("Contacting Nubo…")
+        for w in (self.label("Open the page below on any device and enter this code:"), self.code_lbl,
+                  self.link_lbl, self.status):
+            col.append(w)
+        self.nav.push(self.page("Sign in", col))
+        threading.Thread(target=self.device_flow, daemon=True).start()
+
+    # -- device flow -----------------------------------------------------------
+    def device_flow(self):
+        try:
+            code, d = post(ISSUER + "/auth/device", {"client_id": CLIENT_ID, "scope": "openid offline_access"})
+            if code != 200:
+                raise RuntimeError("Nubo did not start the sign-in")
+        except Exception as e:
+            GLib.idle_add(self.status.set_label, "Could not reach Nubo: %s" % e)
+            return
+        GLib.idle_add(self.code_lbl.set_label, d["user_code"])
+        GLib.idle_add(self.link_lbl.set_uri, d.get("verification_uri_complete", d["verification_uri"]))
+        GLib.idle_add(self.status.set_label, "Waiting for approval…")
+        deadline = time.time() + d.get("expires_in", 600)
+        interval = d.get("interval", 5)
+        while time.time() < deadline and not self.stop.is_set():
+            time.sleep(interval)
+            code, t = post(ISSUER + "/auth/token", {
+                "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+                "device_code": d["device_code"], "client_id": CLIENT_ID})
+            if code == 200 and "access_token" in t:
+                self.signed_in(t)
+                return
+            if t.get("error") == "slow_down":
+                interval += 5
+            elif t.get("error") not in (None, "authorization_pending"):
+                GLib.idle_add(self.status.set_label, "Sign-in was not approved.")
+                return
+        GLib.idle_add(self.status.set_label, "The code expired. Go back and try again.")
+
+    def signed_in(self, tokens):
+        email = ""
+        try:
+            req = urllib.request.Request(ISSUER + "/auth/userinfo",
+                                         headers={"Authorization": "Bearer " + tokens["access_token"]})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                email = json.load(r).get("email", "")
+        except Exception:
+            pass
+        if tokens.get("refresh_token"):
+            keyring_store("Nubo account", tokens["refresh_token"], service="nubo-account", kind="refresh-token")
+        os.makedirs(STATE_DIR, mode=0o700, exist_ok=True)
+        with open(os.path.join(STATE_DIR, "account.json"), "w") as f:
+            json.dump({"email": email, "issuer": ISSUER}, f)
+        GLib.idle_add(self.finish, False, email)
+
+    def finish(self, skipped=False, email=""):
+        os.makedirs(STATE_DIR, mode=0o700, exist_ok=True)
+        if not skipped or True:
+            open(DONE, "w").close()
+        if not skipped:
+            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+            col.append(self.label("You're signed in", "title-1"))
+            col.append(self.label(email or "Your Nubo account is connected."))
+            done = Gtk.Button(label="Done", css_classes=["suggested-action", "pill"])
+            done.connect("clicked", lambda *_: self.quit())
+            col.append(done)
+            self.nav.push(self.page("Done", col))
+        else:
+            self.quit()
+
+
+if __name__ == "__main__":
+    sys.exit(Setup().run(sys.argv))

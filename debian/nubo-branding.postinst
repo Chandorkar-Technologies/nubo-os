@@ -32,6 +32,13 @@ if [ "$1" = "configure" ]; then
         [ -e "/etc/update-motd.d/$hook" ] && chmod -x "/etc/update-motd.d/$hook" || true
     done
 
+    # Renamed app entries. /usr/local/share/applications is searched before
+    # /usr/share/applications, so a link there overrides the original entry.
+    mkdir -p /usr/local/share/applications
+    for f in /usr/share/nubo/applications/*.desktop; do
+        [ -e "$f" ] && ln -sf "$f" "/usr/local/share/applications/$(basename "$f")"
+    done
+
     # Pick up the pinned boot loader name.
     if command -v update-grub >/dev/null 2>&1; then
         update-grub || true

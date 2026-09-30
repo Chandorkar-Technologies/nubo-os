@@ -122,12 +122,16 @@ mount_push -t overlay overlay \
 enter_prepare "${WORK}/live-root"
 mkdir -p "${WORK}/live-root/var/tmp/nubo"
 cp "${WORK}"/stage/nubo/pool/*.deb "${WORK}/live-root/var/tmp/nubo/"
-chroot "${WORK}/live-root" sh -c '
+if ! chroot "${WORK}/live-root" sh -c '
   set -e
   export DEBIAN_FRONTEND=noninteractive
-  apt-get install -y -q -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb >/dev/null
+  apt-get install -y -q -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb
   rm -rf /var/tmp/nubo
-'
+' >"${WORK}/live-apt.log" 2>&1; then
+  echo "Package installation in the live session failed; last lines:" >&2
+  grep -v -E '^(Selecting|Preparing|Unpacking|\(Reading|Get:)' "${WORK}/live-apt.log" | tail -40 >&2
+  exit 1
+fi
 chroot "${WORK}/live-root" dpkg-query -W --showformat='${Package} ${Version}\n' \
   >"${WORK}/stage/casper/${LIVE_LAYER}.manifest"
 

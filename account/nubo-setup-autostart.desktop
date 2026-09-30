@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Setup
+Exec=/usr/libexec/nubo/nubo-setup
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=GNOME;

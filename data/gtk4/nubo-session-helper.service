@@ -1,9 +1,13 @@
 [Unit]
 Description=Nubo theme helper
 # Current GNOME starts session helpers through systemd, not through the
-# old autostart folder.
-PartOf=graphical-session.target
-After=graphical-session.target
+# old autostart folder. No ordering against graphical-session.target: the
+# live installer is a oneshot unit inside that target, and ordering behind
+# it deadlocked the installer's own systemd calls.
+
+# Not on the installation media: the live installer starts in the same
+# session target, and starting the helper beside it stalls the installer.
+ConditionPathIsMountPoint=!/cdrom
 
 [Service]
 Type=simple

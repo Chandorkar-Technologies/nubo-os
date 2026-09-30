@@ -4,6 +4,9 @@ set -e
 THEME=/usr/share/plymouth/themes/nubo/nubo.plymouth
 
 if [ "$1" = "remove" ]; then
+    for f in /usr/share/nubo/applications/*.desktop; do
+        [ -L "/usr/local/share/applications/$(basename "$f")" ] && rm -f "/usr/local/share/applications/$(basename "$f")"
+    done
     update-alternatives --remove default.plymouth "$THEME" || true
     if command -v update-initramfs >/dev/null 2>&1; then
         update-initramfs -u || true

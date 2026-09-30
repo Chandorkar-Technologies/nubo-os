@@ -1,6 +1,9 @@
 [Unit]
 Description=Nubo OS first-boot cleanup
 ConditionPathExists=!/var/lib/nubo/first-boot-done
+# Never on the installation media: the live installer waits for the snap
+# seed, and removing seeded snaps underneath it stalls it for good.
+ConditionPathIsMountPoint=!/cdrom
 After=network-online.target snapd.seeded.service snapd.service
 Wants=network-online.target
 
