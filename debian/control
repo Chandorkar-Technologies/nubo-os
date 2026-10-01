@@ -81,7 +81,8 @@ Description: Sign in to Nubo OS with a Nubo account
 
 Package: nubo-search
 Architecture: amd64
-Depends: ${misc:Depends}
+Depends: libopengl0, libgl1, libegl1, libglx0, libgbm1, libdrm2, libfontconfig1,
+         libfreetype6, libdbus-1-3, libx11-6, libxcb1, libwayland-client0, ${misc:Depends}
 Description: Nubo Search, the launcher opened with Super+Space
  A fast launcher for apps, files, calculations and clipboard history, built
  from Vicinae. Starts with the session and opens on Super+Space. Carries its

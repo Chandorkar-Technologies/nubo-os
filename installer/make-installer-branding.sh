@@ -107,12 +107,15 @@ mark_svg() {
       icon_svg "${icon}" "${OUT}/images/${page}.svg"
     fi
     rsvg-convert -w 760 -h 760 -a "${OUT}/images/${page}.svg" -o "${OUT}/images/${page}.png"
-    rm -f "${OUT}/images/${page}.svg"
+    # Dark-mode copy with lighter ink, so the picture does not sink into the window.
+    sed "s/${INK}/#d9d9d9/g" "${OUT}/images/${page}.svg" >"${OUT}/images/${page}-dark.svg"
+    rsvg-convert -w 760 -h 760 -a "${OUT}/images/${page}-dark.svg" -o "${OUT}/images/${page}-dark.png"
+    rm -f "${OUT}/images/${page}.svg" "${OUT}/images/${page}-dark.svg"
     # Both keys, same file: the built-in defaults set a dark variant for some
     # pages, and a dark variant wins over a light one in dark mode.
     echo "  ${page}:"
     echo "    image: \"${page}.png\""
-    echo "    image-dark: \"${page}.png\""
+    echo "    image-dark: \"${page}-dark.png\""
   done
   # Commercial pages that do not apply to Nubo OS.
   echo "  ubuntu-pro-onboarding:"

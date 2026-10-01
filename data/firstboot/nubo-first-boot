@@ -31,7 +31,7 @@ if command -v flatpak >/dev/null; then
 fi
 
 # Apps that come from Flathub. Needs the network; retried next boot until done.
-FLATPAKS="com.toolstack.Folio org.localsend.localsend_app io.github.qwersyk.Newelle"
+FLATPAKS="org.mozilla.firefox com.toolstack.Folio org.localsend.localsend_app io.github.qwersyk.Newelle"
 missing=""
 for app in ${FLATPAKS}; do
   flatpak info --system "${app}" >/dev/null 2>&1 || missing="${missing} ${app}"
