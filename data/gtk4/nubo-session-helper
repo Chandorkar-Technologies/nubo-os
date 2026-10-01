@@ -27,6 +27,16 @@ fi
 
 command -v gsettings >/dev/null 2>&1 || exit 0
 
+# Super+Space opens Nubo Search, unless the person already set shortcuts of their own.
+KB=org.gnome.settings-daemon.plugins.media-keys
+KP=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nubo-search/
+if [ "$(gsettings get $KB custom-keybindings)" = "@as []" ]; then
+  gsettings set $KB custom-keybindings "['$KP']"
+  gsettings set $KB.custom-keybinding:$KP name 'Nubo Search'
+  gsettings set $KB.custom-keybinding:$KP command '/usr/bin/nubo-search toggle'
+  gsettings set $KB.custom-keybinding:$KP binding '<Super>space'
+fi
+
 follow() {
   case "$(gsettings get $IFACE gtk-theme)" in
     "'Nubo-"*) ;;

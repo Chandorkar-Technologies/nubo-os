@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Search service
+Exec=/usr/bin/nubo-search server
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=GNOME;

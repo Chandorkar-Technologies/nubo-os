@@ -79,6 +79,14 @@ Description: Sign in to Nubo OS with a Nubo account
  Connects the login screen to Nubo SSO. Sets itself up on the first boot
  with a network connection.
 
+Package: nubo-search
+Architecture: amd64
+Depends: ${misc:Depends}
+Description: Nubo Search, the launcher opened with Super+Space
+ A fast launcher for apps, files, calculations and clipboard history, built
+ from Vicinae. Starts with the session and opens on Super+Space. Carries its
+ own libraries.
+
 Package: nubo-branding
 Architecture: all
 Depends: plymouth,
@@ -107,11 +115,13 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          nubo-account (= ${source:Version}),
          nubo-branding (= ${source:Version}),
          nubo-glass (= ${source:Version}),
+         nubo-search (= ${source:Version}),
          nubo-icons (= ${source:Version}),
          nubo-sounds (= ${source:Version}),
          nubo-theme (= ${source:Version}),
          ${misc:Depends}
-Recommends: deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-contacts,
+Recommends: libreoffice-writer, libreoffice-calc, libreoffice-impress, libreoffice-gtk3,
+            libreoffice-gnome, deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-contacts,
             gnome-maps, gnome-podcasts, gnome-sound-recorder, gnome-weather, papers,
             showtime, simple-scan, libsecret-tools, python3-gi, gir1.2-adw-1, gir1.2-gtk-4.0,
             appstream, apt-config-icons-hidpi, avahi-daemon, baobab, bibata-cursor-theme,
@@ -129,7 +139,7 @@ Recommends: deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-conta
             policykit-desktop-privileges, ptyxis, resources, seahorse,
             speech-dispatcher, systemd-oomd, wsdd, xcursor-themes,
             xdg-desktop-portal-gnome, xdg-utils
-Conflicts: apport, apport-core-dump-handler, apport-gtk, gnome-package-updater,
+Conflicts: apport, apport-core-dump-handler, apport-gtk, apport-symptoms, python3-apport, gnome-package-updater,
            landscape-common, popularity-contest, snap-store,
            ubuntu-advantage-desktop-daemon, ubuntu-desktop, ubuntu-desktop-minimal,
            ubuntu-insights, ubuntu-pro-client, ubuntu-pro-client-l10n,

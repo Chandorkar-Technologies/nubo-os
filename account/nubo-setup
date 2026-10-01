@@ -135,10 +135,22 @@ class Setup(Adw.Application):
                 GLib.idle_add(self.create_msg.set_label, "Could not reach Nubo: %s" % e)
                 return
             if code in (200, 201):
-                GLib.idle_add(self.start_sign_in)
+                GLib.idle_add(self.show_recovery_codes, data.get("email", ""), data.get("recoveryCodes", []))
             else:
                 GLib.idle_add(self.create_msg.set_label, data.get("error", "Could not create the account."))
         threading.Thread(target=work, daemon=True).start()
+
+    def show_recovery_codes(self, email, codes):
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        col.append(self.label("Your address is %s" % email, "title-3"))
+        col.append(self.label("Save these recovery codes. Each works once if you ever lose your phone or password. "
+                              "They will not be shown again."))
+        box = Gtk.Label(label="\n".join(codes), selectable=True, css_classes=["monospace"])
+        col.append(box)
+        go = Gtk.Button(label="I have saved them", css_classes=["suggested-action", "pill"])
+        go.connect("clicked", lambda *_: self.start_sign_in())
+        col.append(go)
+        self.nav.push(self.page("Recovery codes", col))
 
     def start_sign_in(self):
         col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)

@@ -1,0 +1,5 @@
+build/search/lib/nubo/search usr/lib/nubo/
+search/nubo-search.sh usr/bin/
+search/nubo.json usr/share/nubo/search/
+search/nubo-search.desktop usr/share/applications/
+search/nubo-search-server.desktop etc/xdg/autostart/

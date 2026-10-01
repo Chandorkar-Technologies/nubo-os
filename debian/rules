@@ -18,6 +18,7 @@ override_dh_installsystemduser:
 
 override_dh_auto_build:
 	@test -d vendor/colloid-gtk/src || { echo "vendor/colloid-gtk missing: run vendor/fetch.sh" >&2; exit 1; }
+	@test -f vendor/vicinae.AppImage || { echo "vendor/vicinae.AppImage missing: run vendor/fetch.sh" >&2; exit 1; }
 	@test -f vendor/blur-my-shell.zip || { echo "vendor/blur-my-shell.zip missing: run vendor/fetch.sh" >&2; exit 1; }
 	rm -rf $(BUILD)
 	mkdir -p $(BUILD)/themes $(BUILD)/icons $(BUILD)/home $(BUILD)/backgrounds \
@@ -79,9 +80,16 @@ override_dh_auto_build:
 	# Renamed first-party app entries (override /usr/share/applications via /usr/local/share).
 	brand/make-app-entries.sh data/apps/rebrand.list $(BUILD)/apps
 
+	# Launcher: unpack the pinned AppImage (it carries its own libraries).
+	mkdir -p $(BUILD)/search/lib/nubo
+	cp vendor/vicinae.AppImage $(BUILD)/vicinae.AppImage && chmod +x $(BUILD)/vicinae.AppImage
+	cd $(BUILD) && ./vicinae.AppImage --appimage-extract >/dev/null && mv squashfs-root search/lib/nubo/search
+	rm -rf $(BUILD)/search/lib/nubo/search/apprun-hooks
+
 	# Sign-in method icon shown on the login screen.
 	mkdir -p $(BUILD)/account
 	rsvg-convert -w 128 -h 128 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/account/nubo-account.png
+	cp brand/logo/nubo-mark-white.svg $(BUILD)/account/tech.nubosuite.Setup.svg
 
 	# Artwork.
 	python3 brand/wallpapers/generate.py $(BUILD)/backgrounds
@@ -97,3 +105,10 @@ override_dh_link:
 
 override_dh_strip_nondeterminism:
 override_dh_compress:
+
+# The launcher carries third-party binaries and libraries built elsewhere;
+# stripping, debug-info merging and shared-library scanning only break them.
+override_dh_dwz:
+override_dh_strip:
+override_dh_shlibdeps:
+override_dh_makeshlibs:

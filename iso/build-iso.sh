@@ -125,6 +125,7 @@ cp "${WORK}"/stage/nubo/pool/*.deb "${WORK}/live-root/var/tmp/nubo/"
 if ! chroot "${WORK}/live-root" sh -c '
   set -e
   export DEBIAN_FRONTEND=noninteractive
+  apt-get update -q >/dev/null
   apt-get install -y -q -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb
   rm -rf /var/tmp/nubo
 ' >"${WORK}/live-apt.log" 2>&1; then

@@ -14,7 +14,7 @@ log() { echo "nubo-first-boot: $*"; }
 # Ubuntu's store, its helpers and the Firefox snap; Firefox comes from a
 # regular package on Nubo OS. Removed only when snapd is ready.
 if command -v snap >/dev/null && snap wait system seed.loaded 2>/dev/null; then
-  for s in snap-store firmware-updater desktop-security-center prompting-client snapd-desktop-integration firefox thunderbird; do
+  for s in snap-store firmware-updater desktop-security-center prompting-client snapd-desktop-integration hwctl firefox thunderbird; do
     if snap list "$s" >/dev/null 2>&1; then
       snap remove --purge "$s" >/dev/null 2>&1 && log "removed snap $s"
     fi

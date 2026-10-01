@@ -44,3 +44,10 @@ fetch_git colloid-gtk https://github.com/vinceliuice/Colloid-gtk-theme.git \
 fetch_file blur-my-shell.zip \
   "https://github.com/aunetx/blur-my-shell/releases/download/v73/blur-my-shell%40aunetx.shell-extension.zip" \
   237a59e04b3cffd3fb86aa3cd18b32f929c61e2af8dcc781379364a59d53b129
+
+# Launcher behind Nubo Search, release 0.29.1 as an AppImage (it carries its own
+# Qt and C++ runtime; the plain tarball needs a newer C++ library than Ubuntu
+# 26.04 ships). GPL-3.0.
+fetch_file vicinae.AppImage \
+  "https://github.com/vicinaehq/vicinae/releases/download/v0.29.1/Vicinae-x86_64.AppImage" \
+  44906f2290f0934572f1977de8aa529c3b67d104025a489b32f226fe3b0f3dd9

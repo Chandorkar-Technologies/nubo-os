@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Search
+Comment=Search apps, files and more
+Exec=/usr/bin/nubo-search toggle
+Icon=system-search
+Categories=Utility;
+Terminal=false

@@ -3,6 +3,7 @@
 /out/
 /vendor/colloid-gtk/
 /vendor/blur-my-shell.zip
+/vendor/vicinae.AppImage
 /debian/.debhelper/
 /debian/files
 /debian/*.substvars
