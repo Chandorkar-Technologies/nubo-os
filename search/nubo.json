@@ -1,6 +1,7 @@
 {
   // Nubo defaults for the launcher. Imported by every user's settings.
   "telemetry": { "system_info": false },
+  "tray": { "enabled": false },
   "theme": {
     "light": { "name": "libadwaita-light", "icon_theme": "auto" },
     "dark": { "name": "libadwaita-dark", "icon_theme": "auto" }
