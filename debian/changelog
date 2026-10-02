@@ -1,3 +1,10 @@
+nubo-os (0.8.0~beta2) resolute; urgency=medium
+
+  * nubo-desktop no longer requires the exact same version of nubo-search, so
+    arm64 machines can install while the arm64 build is released separately.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Sat, 03 Oct 2026 00:40:00 +0530
+
 nubo-os (0.8.0~beta1) resolute; urgency=medium
 
   * Package archive at archive.nubosuite.tech with stable and beta channels.

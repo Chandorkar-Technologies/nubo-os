@@ -127,7 +127,9 @@ override_dh_auto_build:
 	rsvg-convert -w 512 -h 512 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/plymouth/logo.png
 
 override_dh_gencontrol:
-	dh_gencontrol -- "-Vnubo:search=nubo-search (= $$(dpkg-parsechangelog -SVersion)),"
+	# nubo-search is built per CPU and released on its own (the arm64 build waits for
+	# an arm64 builder), so the desktop asks for "this one or newer", not an exact version.
+	dh_gencontrol -- "-Vnubo:search=nubo-search (>= 0.7.0),"
 
 override_dh_auto_clean:
 	rm -rf $(BUILD)
