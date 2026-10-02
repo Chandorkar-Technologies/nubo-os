@@ -30,3 +30,11 @@ Package `nubo-archive` installs `/etc/apt/sources.list.d/nubo.sources` and the k
 ## Known gap
 `lsb_release` still reports Ubuntu. Renaming it must be paired with the
 unattended-upgrades origin patterns, otherwise security updates stop. Not done.
+
+## Cumulus (Ubuntu packages through Nubo)
+`archive.nubosuite.tech/cumulus` (x86-64) and `/cumulus-arm` (arm64) are a Cloudflare
+Worker (`nubo-cumulus`, route `archive.nubosuite.tech/cumulus*`) that caches Ubuntu's
+archive at the edge. Packages stay Ubuntu's and signed by Ubuntu. `mirrors.txt` lists
+Cumulus first and Ubuntu second, so apt falls back by itself. `nubo-archive` points
+`ubuntu.sources` at it (opt out: `sudo touch /etc/nubo/no-cumulus`, reinstall `nubo-archive`).
+Worker source: `repo/cumulus-worker.js`.

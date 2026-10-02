@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+UB=/etc/apt/sources.list.d/ubuntu.sources
+if [ "$1" = configure ] && [ ! -e /etc/nubo/no-cumulus ]; then
+  case "$(dpkg --print-architecture)" in
+    amd64) src=/usr/share/nubo/ubuntu-sources/ubuntu.sources.amd64 ;;
+    arm64) src=/usr/share/nubo/ubuntu-sources/ubuntu.sources.arm64 ;;
+    *) src= ;;
+  esac
+  if [ -n "$src" ] && [ -f "$src" ]; then
+    # Keep Ubuntu's own file under another name and put ours in its place.
+    if ! dpkg-divert --list "$UB" | grep -q nubo-archive; then
+      dpkg-divert --package nubo-archive --quiet --rename --divert "$UB.ubuntu" --add "$UB"
+    fi
+    install -m 0644 "$src" "$UB"
+  fi
+fi
+#DEBHELPER#

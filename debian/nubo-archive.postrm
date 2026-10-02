@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+UB=/etc/apt/sources.list.d/ubuntu.sources
+if [ "$1" = remove ] || [ "$1" = purge ]; then
+  if dpkg-divert --list "$UB" | grep -q nubo-archive; then
+    rm -f "$UB"
+    dpkg-divert --package nubo-archive --quiet --rename --remove "$UB"
+  fi
+fi
+#DEBHELPER#

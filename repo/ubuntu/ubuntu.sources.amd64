@@ -1,0 +1,9 @@
+# Nubo Cumulus: Ubuntu's own packages, fetched through Nubo's fast cache.
+# Packages are unchanged and signed by Ubuntu. If the cache is unreachable,
+# apt falls back to Ubuntu's servers (see mirrors.txt).
+# To use Ubuntu's servers directly: sudo touch /etc/nubo/no-cumulus, then reinstall nubo-archive.
+Types: deb
+URIs: mirror+https://archive.nubosuite.tech/cumulus/mirrors.txt
+Suites: resolute resolute-updates resolute-backports resolute-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
