@@ -1,0 +1,10 @@
+--- a/panels/online-accounts/cc-online-accounts-panel.c	2026-10-01 23:27:08.346236977 +0530
++++ b/panels/online-accounts/cc-online-accounts-panel.c	2026-10-01 23:27:08.369440993 +0530
+@@ -294,6 +294,7 @@
+ goa_provider_priority (const char *provider_type)
+ {
+   static const char *goa_priority[] = {
++    "nubo",         /* Nubo */
+     "google",       /* Google */
+     "ms_graph",     /* Microsoft 365 */
+     "exchange",     /* Microsoft Exchange */

@@ -1,0 +1,1208 @@
+diff -ruN a/data/icons/meson.build b/data/icons/meson.build
+--- a/data/icons/meson.build	2026-03-15 05:06:17.000000000 +0530
++++ b/data/icons/meson.build	2026-10-01 23:23:16.975070621 +0530
+@@ -11,6 +11,7 @@
+     'goa-account-fedora.svg',
+     'goa-account-google.svg',
+     'goa-account-ms365.svg',
++    'goa-account-nubo.svg',
+     'goa-account-owncloud.svg',
+   ]
+   icon_symbolic_data += [
+diff -ruN a/data/icons/scalable/goa-account-nubo.svg b/data/icons/scalable/goa-account-nubo.svg
+--- a/data/icons/scalable/goa-account-nubo.svg	1970-01-01 05:30:00.000000000 +0530
++++ b/data/icons/scalable/goa-account-nubo.svg	2026-10-01 23:23:08.540638920 +0530
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
++  <rect x="8" y="8" width="240" height="240" rx="56" ry="56" fill="#2b2d31"/>
++  <g fill="#ffffff">
++    <circle cx="106" cy="138" r="32"/>
++    <circle cx="146" cy="116" r="42"/>
++    <circle cx="184" cy="144" r="28"/>
++    <rect x="78" y="138" width="134" height="34" rx="17" ry="17"/>
++  </g>
++</svg>
+diff -ruN a/meson.build b/meson.build
+--- a/meson.build	2026-03-15 05:06:17.000000000 +0530
++++ b/meson.build	2026-10-01 23:23:16.973308783 +0530
+@@ -198,6 +198,11 @@
+ endif
+ config_h.set('GOA_KERBEROS_ENABLED', enable_kerberos)
+ 
++# Nubo
++config_h.set_quoted('GOA_NUBO_NAME', 'nubo')
++enable_nubo = get_option('nubo')
++config_h.set('GOA_NUBO_ENABLED', enable_nubo)
++
+ # ownCloud
+ config_h.set_quoted('GOA_OWNCLOUD_NAME', 'owncloud')
+ enable_owncloud = get_option('owncloud')
+@@ -281,6 +286,7 @@
+     'IMAP/SMTP': enable_imap_smtp,
+     'Kerberos': enable_kerberos,
+     'Microsoft Exchange': enable_exchange,
++    'Nubo': enable_nubo,
+     'ownCloud': enable_owncloud,
+     'WebDAV': enable_webdav,
+     'Microsoft 365': enable_ms_graph,
+diff -ruN a/meson_options.txt b/meson_options.txt
+--- a/meson_options.txt	2026-03-15 05:06:17.000000000 +0530
++++ b/meson_options.txt	2026-10-01 23:23:16.972419739 +0530
+@@ -13,6 +13,8 @@
+ 
+ option('kerberos', type: 'boolean', value: true, description: 'Enable kerberos provider')
+ 
++option('nubo', type: 'boolean', value: true, description: 'Enable Nubo provider')
++
+ option('owncloud', type: 'boolean', value: true, description: 'Enable ownCloud provider')
+ 
+ option('webdav', type: 'boolean', value: true, description: 'Enable WebDAV provider')
+diff -ruN a/po/POTFILES.in b/po/POTFILES.in
+--- a/po/POTFILES.in	2026-03-15 05:06:17.000000000 +0530
++++ b/po/POTFILES.in	2026-10-01 23:23:16.975251330 +0530
+@@ -14,6 +14,7 @@
+ src/goabackend/goamailclient.c
+ src/goabackend/goamsgraphprovider.c
+ src/goabackend/goaoauth2provider.c
++src/goabackend/goanuboprovider.c
+ src/goabackend/goaowncloudprovider.c
+ src/goabackend/goaprovider.c
+ src/goabackend/goaproviderdialog.c
+diff -ruN a/src/goabackend/goanuboprovider.c b/src/goabackend/goanuboprovider.c
+--- a/src/goabackend/goanuboprovider.c	1970-01-01 05:30:00.000000000 +0530
++++ b/src/goabackend/goanuboprovider.c	2026-10-01 23:31:19.207810418 +0530
+@@ -0,0 +1,1054 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright © 2026 Nubo
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * Nubo account provider.
++ *
++ * One email address and one password configure Mail (IMAP + SMTP), Calendar
++ * (CalDAV), Contacts (CardDAV) and Files (WebDAV) against a single host,
++ * mail.nubo.email by default.
++ *
++ * The provider is a thin layer over GoaWebDavProvider, which already owns the
++ * DAV services, the password-based D-Bus interface and the DAV credential
++ * check. This file adds the mail service on top, a two-field sign-in dialog and
++ * the combined credential check.
++ *
++ * The host can be overridden for testing, in order of precedence, with the
++ * NUBO_GOA_HOST environment variable and the "Host" key of the [nubo] group in
++ * goa.conf. Certificate errors are only ever ignored when the host has been
++ * overridden and NUBO_GOA_ACCEPT_SSL_ERRORS=1 (or AcceptSslErrors=true in the
++ * [nubo] group) is set.
++ */
++
++#include "config.h"
++
++#include <string.h>
++
++#include <glib/gi18n-lib.h>
++
++#include "goabackendenums-priv.h"
++#include "goadavclient.h"
++#include "goadavconfig.h"
++#include "goaimapauthlogin.h"
++#include "goamailclient.h"
++#include "goaobjectskeletonutils.h"
++#include "goaprovider.h"
++#include "goaproviderdialog.h"
++#include "goaserviceconfig.h"
++#include "goasmtpauth.h"
++#include "goautils.h"
++#include "goawebdavprovider-priv.h"
++
++#include "goanuboprovider.h"
++
++#define NUBO_DEFAULT_HOST   "mail.nubo.email"
++#define NUBO_PATH_CALDAV    "/dav/cal"
++#define NUBO_PATH_CARDDAV   "/dav/card"
++#define NUBO_PATH_WEBDAV    "/dav/file"
++
++struct _GoaNuboProvider
++{
++  GoaWebDavProvider parent_instance;
++};
++
++/* goa_provider_get_all() lists the extensions in ascending priority order, and
++ * the WebDAV base class registers itself before this type can. A priority below
++ * the default 0 is what puts Nubo ahead of every other provider in that list. */
++G_DEFINE_TYPE_WITH_CODE (GoaNuboProvider, goa_nubo_provider, GOA_TYPE_WEBDAV_PROVIDER,
++                         goa_provider_ensure_extension_points_registered ();
++                         g_io_extension_point_implement (GOA_PROVIDER_EXTENSION_POINT_NAME,
++                                                         g_define_type_id,
++                                                         GOA_NUBO_NAME,
++                                                         -1));
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++static const char *
++get_provider_type (GoaProvider *provider)
++{
++  return GOA_NUBO_NAME;
++}
++
++static char *
++get_provider_name (GoaProvider *provider,
++                   GoaObject   *object)
++{
++  return g_strdup (_("Nubo"));
++}
++
++static GoaProviderGroup
++get_provider_group (GoaProvider *provider)
++{
++  return GOA_PROVIDER_GROUP_BRANDED;
++}
++
++static GoaProviderFeatures
++get_provider_features (GoaProvider *provider)
++{
++  return GOA_PROVIDER_FEATURE_BRANDED |
++         GOA_PROVIDER_FEATURE_MAIL |
++         GOA_PROVIDER_FEATURE_CALENDAR |
++         GOA_PROVIDER_FEATURE_CONTACTS |
++         GOA_PROVIDER_FEATURE_FILES;
++}
++
++static GIcon *
++get_provider_icon (GoaProvider *provider,
++                   GoaObject   *object)
++{
++  return g_themed_icon_new_with_default_fallbacks ("goa-account-nubo");
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Server selection */
++
++typedef struct
++{
++  char       *host;               /* "host" or "host:port" */
++  char       *uri_webdav;
++  char       *uri_caldav;
++  char       *uri_carddav;
++  char       *imap_host;
++  char       *smtp_host;
++  GoaTlsType  imap_tls;
++  GoaTlsType  smtp_tls;
++  gboolean    accept_ssl_errors;
++} NuboEndpoints;
++
++static void
++nubo_endpoints_free (NuboEndpoints *ep)
++{
++  if (ep == NULL)
++    return;
++
++  g_free (ep->host);
++  g_free (ep->uri_webdav);
++  g_free (ep->uri_caldav);
++  g_free (ep->uri_carddav);
++  g_free (ep->imap_host);
++  g_free (ep->smtp_host);
++  g_free (ep);
++}
++
++G_DEFINE_AUTOPTR_CLEANUP_FUNC (NuboEndpoints, nubo_endpoints_free)
++
++static gboolean
++host_is_valid (const char *host)
++{
++  if (host == NULL || *host == '\0')
++    return FALSE;
++
++  for (const char *p = host; *p != '\0'; p++)
++    {
++      if (!g_ascii_isalnum (*p) && *p != '.' && *p != '-' && *p != ':')
++        return FALSE;
++    }
++
++  return TRUE;
++}
++
++static char *
++nubo_get_host (gboolean *out_overridden)
++{
++  const char *env = g_getenv ("NUBO_GOA_HOST");
++  g_autofree char *conf_host = NULL;
++  g_autoptr (GKeyFile) goa_conf = NULL;
++
++  if (out_overridden != NULL)
++    *out_overridden = FALSE;
++
++  if (host_is_valid (env))
++    {
++      if (out_overridden != NULL)
++        *out_overridden = TRUE;
++      return g_strdup (env);
++    }
++
++  goa_conf = goa_util_open_goa_conf ();
++  if (goa_conf != NULL)
++    conf_host = g_key_file_get_string (goa_conf, "nubo", "Host", NULL);
++
++  if (host_is_valid (conf_host))
++    {
++      if (out_overridden != NULL)
++        *out_overridden = TRUE;
++      return g_steal_pointer (&conf_host);
++    }
++
++  return g_strdup (NUBO_DEFAULT_HOST);
++}
++
++static gboolean
++nubo_get_accept_ssl_errors (gboolean host_overridden)
++{
++  const char *env;
++  g_autoptr (GKeyFile) goa_conf = NULL;
++
++  /* Never relax certificate checking for the real server */
++  if (!host_overridden)
++    return FALSE;
++
++  env = g_getenv ("NUBO_GOA_ACCEPT_SSL_ERRORS");
++  if (env != NULL)
++    return g_str_equal (env, "1") || g_ascii_strcasecmp (env, "true") == 0;
++
++  goa_conf = goa_util_open_goa_conf ();
++  return goa_conf != NULL && g_key_file_get_boolean (goa_conf, "nubo", "AcceptSslErrors", NULL);
++}
++
++static NuboEndpoints *
++nubo_endpoints_new_default (void)
++{
++  NuboEndpoints *ep = g_new0 (NuboEndpoints, 1);
++  gboolean overridden;
++
++  ep->host = nubo_get_host (&overridden);
++  ep->uri_webdav = g_strconcat ("https://", ep->host, NUBO_PATH_WEBDAV, NULL);
++  ep->uri_caldav = g_strconcat ("https://", ep->host, NUBO_PATH_CALDAV, NULL);
++  ep->uri_carddav = g_strconcat ("https://", ep->host, NUBO_PATH_CARDDAV, NULL);
++  ep->imap_host = g_strdup (ep->host);
++  ep->smtp_host = g_strdup (ep->host);
++  ep->imap_tls = GOA_TLS_TYPE_SSL;
++  ep->smtp_tls = GOA_TLS_TYPE_SSL;
++  ep->accept_ssl_errors = nubo_get_accept_ssl_errors (overridden);
++
++  return ep;
++}
++
++static GoaTlsType
++get_tls_type_from_object (GoaObject  *object,
++                          const char *ssl_key,
++                          const char *starttls_key)
++{
++  if (goa_util_lookup_keyfile_boolean (object, ssl_key))
++    return GOA_TLS_TYPE_SSL;
++  if (goa_util_lookup_keyfile_boolean (object, starttls_key))
++    return GOA_TLS_TYPE_STARTTLS;
++
++  /* Never fall back to an unencrypted connection */
++  return GOA_TLS_TYPE_SSL;
++}
++
++/* Endpoints of an existing account, as stored in accounts.conf */
++static NuboEndpoints *
++nubo_endpoints_new_from_object (GoaObject *object)
++{
++  NuboEndpoints *ep = nubo_endpoints_new_default ();
++  char *value;
++
++  /* The stored values win over the defaults */
++  if ((value = goa_util_lookup_keyfile_string (object, "Uri")) != NULL && *value != '\0')
++    g_set_str (&ep->uri_webdav, value);
++  g_free (value);
++  if ((value = goa_util_lookup_keyfile_string (object, "CalDavUri")) != NULL && *value != '\0')
++    g_set_str (&ep->uri_caldav, value);
++  g_free (value);
++  if ((value = goa_util_lookup_keyfile_string (object, "CardDavUri")) != NULL && *value != '\0')
++    g_set_str (&ep->uri_carddav, value);
++  g_free (value);
++  if ((value = goa_util_lookup_keyfile_string (object, "ImapHost")) != NULL && *value != '\0')
++    g_set_str (&ep->imap_host, value);
++  g_free (value);
++  if ((value = goa_util_lookup_keyfile_string (object, "SmtpHost")) != NULL && *value != '\0')
++    g_set_str (&ep->smtp_host, value);
++  g_free (value);
++
++  ep->imap_tls = get_tls_type_from_object (object, "ImapUseSsl", "ImapUseTls");
++  ep->smtp_tls = get_tls_type_from_object (object, "SmtpUseSsl", "SmtpUseTls");
++  ep->accept_ssl_errors = goa_util_lookup_keyfile_boolean (object, "AcceptSslErrors");
++
++  return ep;
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Credential checks (synchronous, to be run from a worker thread) */
++
++static gboolean
++error_is_auth_failure (const GError *error)
++{
++  if (g_error_matches (error, GOA_ERROR, GOA_ERROR_NOT_AUTHORIZED))
++    return TRUE;
++
++  /* The IMAP LOGIN check reports a rejected login as a generic failure */
++  return g_error_matches (error, GOA_ERROR, GOA_ERROR_FAILED) &&
++         g_strcmp0 (error->message, _("Authentication failed")) == 0;
++}
++
++static void
++nubo_wrap_error (GError     **error,
++                 const char  *what)
++{
++  if (error == NULL || *error == NULL)
++    return;
++
++  if (error_is_auth_failure (*error))
++    {
++      g_clear_error (error);
++      g_set_error_literal (error,
++                           GOA_ERROR,
++                           GOA_ERROR_NOT_AUTHORIZED,
++                           _("The email address or password is incorrect"));
++      return;
++    }
++
++  g_prefix_error (error, "%s: ", what);
++}
++
++static gboolean
++nubo_check_dav_sync (const char    *service,
++                     const char    *uri,
++                     const char    *username,
++                     const char    *password,
++                     gboolean       accept_ssl_errors,
++                     const char    *what,
++                     GCancellable  *cancellable,
++                     GError       **error)
++{
++  g_autoptr (GoaDavClient) client = goa_dav_client_new ();
++  g_autoptr (GoaDavConfig) config = goa_dav_config_new (service, uri, username);
++
++  if (!goa_dav_client_check_sync (client, config, password, accept_ssl_errors, cancellable, error))
++    {
++      nubo_wrap_error (error, what);
++      return FALSE;
++    }
++
++  return TRUE;
++}
++
++static gboolean
++nubo_check_mail_sync (const char    *imap_host,
++                      GoaTlsType     imap_tls,
++                      const char    *smtp_host,
++                      GoaTlsType     smtp_tls,
++                      const char    *email_address,
++                      const char    *password,
++                      gboolean       accept_ssl_errors,
++                      GCancellable  *cancellable,
++                      GError       **error)
++{
++  g_autoptr (GoaMailClient) mail_client = goa_mail_client_new ();
++  g_autoptr (GoaMailAuth) imap_auth = NULL;
++  g_autoptr (GoaMailAuth) smtp_auth = NULL;
++  g_autofree char *domain = NULL;
++
++  imap_auth = goa_imap_auth_login_new (email_address, password);
++  if (!goa_mail_client_check_sync (mail_client,
++                                   imap_host,
++                                   imap_tls,
++                                   accept_ssl_errors,
++                                   (imap_tls == GOA_TLS_TYPE_SSL) ? 993 : 143,
++                                   imap_auth,
++                                   cancellable,
++                                   error))
++    {
++      nubo_wrap_error (error, _("Mail (IMAP)"));
++      return FALSE;
++    }
++
++  goa_utils_parse_email_address (email_address, NULL, &domain);
++  smtp_auth = goa_smtp_auth_new (domain, email_address, password);
++  if (!goa_mail_client_check_sync (mail_client,
++                                   smtp_host,
++                                   smtp_tls,
++                                   accept_ssl_errors,
++                                   (smtp_tls == GOA_TLS_TYPE_SSL) ? 465 : 587,
++                                   smtp_auth,
++                                   cancellable,
++                                   error))
++    {
++      nubo_wrap_error (error, _("Mail (SMTP)"));
++      return FALSE;
++    }
++
++  return TRUE;
++}
++
++static gboolean
++nubo_check_all_sync (NuboEndpoints  *ep,
++                     const char     *email_address,
++                     const char     *password,
++                     GCancellable   *cancellable,
++                     GError        **error)
++{
++  /* Mail goes first: the IMAP and SMTP logins are what really verify the
++   * password (a DAV OPTIONS request is answered without credentials by some
++   * servers), and a wrong password then fails fast with one clear message. The
++   * DAV checks confirm the calendar, contacts and files endpoints respond. */
++  return nubo_check_mail_sync (ep->imap_host, ep->imap_tls, ep->smtp_host, ep->smtp_tls,
++                               email_address, password, ep->accept_ssl_errors, cancellable, error) &&
++         nubo_check_dav_sync (GOA_SERVICE_TYPE_CALDAV, ep->uri_caldav, email_address, password,
++                              ep->accept_ssl_errors, _("Calendar"), cancellable, error) &&
++         nubo_check_dav_sync (GOA_SERVICE_TYPE_CARDDAV, ep->uri_carddav, email_address, password,
++                              ep->accept_ssl_errors, _("Contacts"), cancellable, error) &&
++         nubo_check_dav_sync (GOA_SERVICE_TYPE_WEBDAV, ep->uri_webdav, email_address, password,
++                              ep->accept_ssl_errors, _("Files"), cancellable, error);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Account object */
++
++static gboolean
++build_object (GoaProvider         *provider,
++              GoaObjectSkeleton   *object,
++              GKeyFile            *key_file,
++              const char          *group,
++              GDBusConnection     *connection,
++              gboolean             just_added,
++              GError             **error)
++{
++  g_autoptr (GoaAccount) account = NULL;
++  g_autoptr (GoaMail) mail = NULL;
++  g_autoptr (GKeyFile) goa_conf = NULL;
++  const char *provider_type;
++  gboolean enabled;
++
++  /* Chain up: this sets up the account, the password-based interface and the
++   * Calendar, Contacts and Files services. */
++  if (!GOA_PROVIDER_CLASS (goa_nubo_provider_parent_class)->build_object (provider,
++                                                                          object,
++                                                                          key_file,
++                                                                          group,
++                                                                          connection,
++                                                                          just_added,
++                                                                          error))
++    return FALSE;
++
++  provider_type = goa_provider_get_provider_type (provider);
++  goa_conf = goa_util_open_goa_conf ();
++  account = goa_object_get_account (GOA_OBJECT (object));
++
++  /* Mail */
++  mail = goa_object_get_mail (GOA_OBJECT (object));
++  enabled = goa_util_provider_feature_is_enabled (goa_conf, provider_type, GOA_PROVIDER_FEATURE_MAIL) &&
++            g_key_file_get_boolean (key_file, group, "MailEnabled", NULL);
++
++  if (enabled)
++    {
++      if (mail == NULL)
++        {
++          g_autofree char *email_address = NULL;
++          g_autofree char *name = NULL;
++          g_autofree char *imap_host = NULL;
++          g_autofree char *imap_username = NULL;
++          g_autofree char *smtp_host = NULL;
++          g_autofree char *smtp_username = NULL;
++          gboolean smtp_use_auth;
++          gboolean smtp_auth_login = FALSE;
++          gboolean smtp_auth_plain = FALSE;
++
++          email_address = g_key_file_get_string (key_file, group, "EmailAddress", NULL);
++          name = g_key_file_get_string (key_file, group, "Name", NULL);
++
++          imap_host = g_key_file_get_string (key_file, group, "ImapHost", NULL);
++          imap_username = g_key_file_get_string (key_file, group, "ImapUserName", NULL);
++          if (imap_username == NULL)
++            imap_username = g_strdup (email_address);
++
++          smtp_host = g_key_file_get_string (key_file, group, "SmtpHost", NULL);
++          smtp_use_auth = g_key_file_get_boolean (key_file, group, "SmtpUseAuth", NULL);
++          if (smtp_use_auth)
++            {
++              smtp_username = g_key_file_get_string (key_file, group, "SmtpUserName", NULL);
++              if (smtp_username == NULL)
++                smtp_username = g_strdup (email_address);
++
++              smtp_auth_login = g_key_file_get_boolean (key_file, group, "SmtpAuthLogin", NULL);
++              smtp_auth_plain = g_key_file_get_boolean (key_file, group, "SmtpAuthPlain", NULL);
++              if (!smtp_auth_login && !smtp_auth_plain)
++                smtp_auth_plain = TRUE;
++            }
++
++          mail = goa_mail_skeleton_new ();
++          g_object_set (G_OBJECT (mail),
++                        "email-address", email_address,
++                        "name", name,
++                        "imap-supported", TRUE,
++                        "imap-host", imap_host,
++                        "imap-user-name", imap_username,
++                        "imap-use-ssl", g_key_file_get_boolean (key_file, group, "ImapUseSsl", NULL),
++                        "imap-use-tls", g_key_file_get_boolean (key_file, group, "ImapUseTls", NULL),
++                        "imap-accept-ssl-errors", g_key_file_get_boolean (key_file, group, "ImapAcceptSslErrors", NULL),
++                        "smtp-supported", (smtp_host != NULL),
++                        "smtp-host", smtp_host,
++                        "smtp-user-name", smtp_username,
++                        "smtp-use-auth", smtp_use_auth,
++                        "smtp-auth-login", smtp_auth_login,
++                        "smtp-auth-plain", smtp_auth_plain,
++                        "smtp-use-ssl", g_key_file_get_boolean (key_file, group, "SmtpUseSsl", NULL),
++                        "smtp-use-tls", g_key_file_get_boolean (key_file, group, "SmtpUseTls", NULL),
++                        "smtp-accept-ssl-errors", g_key_file_get_boolean (key_file, group, "SmtpAcceptSslErrors", NULL),
++                        NULL);
++          goa_object_skeleton_set_mail (object, mail);
++        }
++    }
++  else if (mail != NULL)
++    {
++      goa_object_skeleton_set_mail (object, NULL);
++    }
++
++  if (just_added)
++    {
++      goa_account_set_mail_disabled (account, !enabled);
++      g_signal_connect (account,
++                        "notify::mail-disabled",
++                        G_CALLBACK (goa_util_account_notify_property_cb),
++                        (gpointer) "MailEnabled");
++    }
++
++  return TRUE;
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++static gboolean
++ensure_credentials_sync (GoaProvider   *provider,
++                         GoaObject     *object,
++                         gint          *out_expires_in,
++                         GCancellable  *cancellable,
++                         GError       **error)
++{
++  g_autoptr (NuboEndpoints) ep = NULL;
++  g_autofree char *email_address = NULL;
++  g_autofree char *password = NULL;
++
++  /* Calendar, Contacts and Files */
++  if (!GOA_PROVIDER_CLASS (goa_nubo_provider_parent_class)->ensure_credentials_sync (provider,
++                                                                                     object,
++                                                                                     out_expires_in,
++                                                                                     cancellable,
++                                                                                     error))
++    return FALSE;
++
++  /* Mail. This runs even when the Mail toggle is off: the IMAP login is what
++   * actually verifies the password, as some servers answer the DAV checks
++   * above without asking for credentials. */
++  if (!goa_utils_get_credentials (provider, object, "imap-password", NULL, &password, cancellable, error))
++    {
++      if (error != NULL && *error != NULL)
++        {
++          (*error)->domain = GOA_ERROR;
++          (*error)->code = GOA_ERROR_NOT_AUTHORIZED;
++        }
++      return FALSE;
++    }
++
++  ep = nubo_endpoints_new_from_object (object);
++  email_address = goa_util_lookup_keyfile_string (object, "ImapUserName");
++  if (email_address == NULL)
++    email_address = goa_util_lookup_keyfile_string (object, "EmailAddress");
++
++  if (!nubo_check_mail_sync (ep->imap_host, ep->imap_tls, ep->smtp_host, ep->smtp_tls,
++                             email_address, password, ep->accept_ssl_errors, cancellable, error))
++    return FALSE;
++
++  if (out_expires_in != NULL)
++    *out_expires_in = 0;
++
++  return TRUE;
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Sign-in dialog */
++
++typedef struct
++{
++  GoaProviderDialog *dialog;
++  GoaClient         *client;
++  GoaObject         *object;
++  NuboEndpoints     *endpoints;
++  GtkWidget         *email;
++  GtkWidget         *password;
++  char              *email_address;
++} AddAccountData;
++
++static void
++add_account_data_free (gpointer user_data)
++{
++  AddAccountData *data = user_data;
++
++  g_clear_object (&data->client);
++  g_clear_object (&data->object);
++  g_clear_pointer (&data->endpoints, nubo_endpoints_free);
++  g_clear_pointer (&data->email_address, g_free);
++  g_free (data);
++}
++
++typedef struct
++{
++  NuboEndpoints *endpoints;
++  char          *email_address;
++  char          *password;
++} CheckData;
++
++static void
++check_data_free (gpointer user_data)
++{
++  CheckData *check = user_data;
++
++  g_clear_pointer (&check->endpoints, nubo_endpoints_free);
++  g_clear_pointer (&check->email_address, g_free);
++  if (check->password != NULL)
++    {
++      memset (check->password, 0, strlen (check->password));
++      g_free (check->password);
++    }
++  g_free (check);
++}
++
++static NuboEndpoints *
++nubo_endpoints_copy (const NuboEndpoints *src)
++{
++  NuboEndpoints *ep = g_new0 (NuboEndpoints, 1);
++
++  ep->host = g_strdup (src->host);
++  ep->uri_webdav = g_strdup (src->uri_webdav);
++  ep->uri_caldav = g_strdup (src->uri_caldav);
++  ep->uri_carddav = g_strdup (src->uri_carddav);
++  ep->imap_host = g_strdup (src->imap_host);
++  ep->smtp_host = g_strdup (src->smtp_host);
++  ep->imap_tls = src->imap_tls;
++  ep->smtp_tls = src->smtp_tls;
++  ep->accept_ssl_errors = src->accept_ssl_errors;
++
++  return ep;
++}
++
++static void
++check_thread (GTask        *task,
++              gpointer      source_object,
++              gpointer      task_data,
++              GCancellable *cancellable)
++{
++  CheckData *check = task_data;
++  GError *error = NULL;
++
++  if (nubo_check_all_sync (check->endpoints,
++                           check->email_address,
++                           check->password,
++                           cancellable,
++                           &error))
++    g_task_return_boolean (task, TRUE);
++  else
++    g_task_return_error (task, error);
++}
++
++/* Check the account against the server without blocking the UI */
++static void
++nubo_check_async (GoaProvider         *provider,
++                  AddAccountData      *data,
++                  GCancellable        *cancellable,
++                  GAsyncReadyCallback  callback,
++                  gpointer             user_data)
++{
++  g_autoptr (GTask) check_task = NULL;
++  CheckData *check;
++
++  check = g_new0 (CheckData, 1);
++  check->endpoints = nubo_endpoints_copy (data->endpoints);
++  check->email_address = g_strdup (data->email_address);
++  check->password = g_strdup (gtk_editable_get_text (GTK_EDITABLE (data->password)));
++
++  check_task = g_task_new (provider, cancellable, callback, user_data);
++  g_task_set_source_tag (check_task, nubo_check_async);
++  g_task_set_task_data (check_task, check, check_data_free);
++  g_task_run_in_thread (check_task, check_thread);
++}
++
++static gboolean
++email_address_is_valid (const char *email)
++{
++  const char *at;
++
++  if (email == NULL || *email == '\0')
++    return FALSE;
++
++  if (strpbrk (email, " \t\r\n") != NULL)
++    return FALSE;
++
++  at = strchr (email, '@');
++  return at != NULL && at != email && at[1] != '\0' && strchr (at + 1, '@') == NULL;
++}
++
++static void
++on_entry_changed (GtkEditable *editable,
++                  gpointer     user_data)
++{
++  AddAccountData *data = user_data;
++  const char *email = gtk_editable_get_text (GTK_EDITABLE (data->email));
++  const char *password = gtk_editable_get_text (GTK_EDITABLE (data->password));
++  gboolean can_add;
++
++  can_add = email_address_is_valid (email) && password != NULL && *password != '\0';
++  goa_provider_dialog_set_state (data->dialog, can_add ? GOA_DIALOG_READY : GOA_DIALOG_IDLE);
++}
++
++static void
++create_account_details_ui (GoaProvider    *provider,
++                           AddAccountData *data,
++                           gboolean        new_account)
++{
++  GoaProviderDialog *dialog = data->dialog;
++  GtkWidget *group;
++
++  goa_provider_dialog_add_page (dialog,
++                                _("Nubo"),
++                                _("Sign in with your Nubo email address and password to set up mail, calendar, contacts and files"));
++
++  group = goa_provider_dialog_add_group (dialog, NULL);
++  data->email = goa_provider_dialog_add_entry (dialog, group, _("_Email Address"));
++  data->password = goa_provider_dialog_add_password_entry (dialog, group, _("_Password"));
++
++  if (!new_account && data->object != NULL)
++    {
++      GoaAccount *account = goa_object_peek_account (data->object);
++      const char *identity = goa_account_get_identity (account);
++
++      gtk_editable_set_text (GTK_EDITABLE (data->email), identity);
++      gtk_editable_set_editable (GTK_EDITABLE (data->email), FALSE);
++      gtk_widget_grab_focus (data->password);
++    }
++  else
++    {
++      gtk_widget_grab_focus (data->email);
++    }
++
++  g_signal_connect (data->email, "changed", G_CALLBACK (on_entry_changed), data);
++  g_signal_connect (data->password, "changed", G_CALLBACK (on_entry_changed), data);
++}
++
++/* Credentials the keyring stores: Nubo uses one password for every service */
++static GVariant *
++build_credentials (const char *password)
++{
++  GVariantBuilder credentials;
++
++  g_variant_builder_init (&credentials, G_VARIANT_TYPE_VARDICT);
++  g_variant_builder_add (&credentials, "{sv}", "password", g_variant_new_string (password));
++  g_variant_builder_add (&credentials, "{sv}", "imap-password", g_variant_new_string (password));
++  g_variant_builder_add (&credentials, "{sv}", "smtp-password", g_variant_new_string (password));
++
++  return g_variant_builder_end (&credentials);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++static void
++add_account_credentials_cb (GoaManager   *manager,
++                            GAsyncResult *res,
++                            gpointer      user_data)
++{
++  g_autoptr (GTask) task = G_TASK (g_steal_pointer (&user_data));
++  AddAccountData *data = g_task_get_task_data (task);
++  GDBusObject *ret = NULL;
++  g_autofree char *object_path = NULL;
++  g_autoptr (GError) error = NULL;
++
++  if (!goa_manager_call_add_account_finish (manager, &object_path, res, &error))
++    {
++      goa_provider_task_return_error (task, g_steal_pointer (&error));
++      return;
++    }
++
++  ret = g_dbus_object_manager_get_object (goa_client_get_object_manager (data->client),
++                                          object_path);
++  goa_provider_task_return_account (task, GOA_OBJECT (ret));
++}
++
++static void
++add_account_credentials (GTask *task)
++{
++  GoaProvider *provider = g_task_get_source_object (task);
++  AddAccountData *data = g_task_get_task_data (task);
++  GCancellable *cancellable = g_task_get_cancellable (task);
++  NuboEndpoints *ep = data->endpoints;
++  GVariantBuilder details;
++  const char *real_name;
++  const char *password;
++
++  password = gtk_editable_get_text (GTK_EDITABLE (data->password));
++
++  /* The display name for outgoing mail, which the user can change in the mail
++   * client. Skip the placeholder GLib returns when there is none. */
++  real_name = g_get_real_name ();
++  if (real_name == NULL || g_str_equal (real_name, "Unknown"))
++    real_name = "";
++
++  g_variant_builder_init (&details, G_VARIANT_TYPE ("a{ss}"));
++
++  /* Mail */
++  g_variant_builder_add (&details, "{ss}", "MailEnabled", "true");
++  g_variant_builder_add (&details, "{ss}", "EmailAddress", data->email_address);
++  g_variant_builder_add (&details, "{ss}", "Name", real_name);
++  g_variant_builder_add (&details, "{ss}", "ImapHost", ep->imap_host);
++  g_variant_builder_add (&details, "{ss}", "ImapUserName", data->email_address);
++  g_variant_builder_add (&details, "{ss}", "ImapUseSsl", ep->imap_tls == GOA_TLS_TYPE_SSL ? "true" : "false");
++  g_variant_builder_add (&details, "{ss}", "ImapUseTls", ep->imap_tls == GOA_TLS_TYPE_STARTTLS ? "true" : "false");
++  g_variant_builder_add (&details, "{ss}", "ImapAcceptSslErrors", ep->accept_ssl_errors ? "true" : "false");
++  g_variant_builder_add (&details, "{ss}", "SmtpHost", ep->smtp_host);
++  g_variant_builder_add (&details, "{ss}", "SmtpUseAuth", "true");
++  g_variant_builder_add (&details, "{ss}", "SmtpUserName", data->email_address);
++  g_variant_builder_add (&details, "{ss}", "SmtpAuthLogin", "false");
++  g_variant_builder_add (&details, "{ss}", "SmtpAuthPlain", "true");
++  g_variant_builder_add (&details, "{ss}", "SmtpUseSsl", ep->smtp_tls == GOA_TLS_TYPE_SSL ? "true" : "false");
++  g_variant_builder_add (&details, "{ss}", "SmtpUseTls", ep->smtp_tls == GOA_TLS_TYPE_STARTTLS ? "true" : "false");
++  g_variant_builder_add (&details, "{ss}", "SmtpAcceptSslErrors", ep->accept_ssl_errors ? "true" : "false");
++
++  /* Calendar, Contacts and Files, as read by the WebDAV provider */
++  g_variant_builder_add (&details, "{ss}", "CalendarEnabled", "true");
++  g_variant_builder_add (&details, "{ss}", "CalDavUri", ep->uri_caldav);
++  g_variant_builder_add (&details, "{ss}", "ContactsEnabled", "true");
++  g_variant_builder_add (&details, "{ss}", "CardDavUri", ep->uri_carddav);
++  g_variant_builder_add (&details, "{ss}", "FilesEnabled", "true");
++  g_variant_builder_add (&details, "{ss}", "Uri", ep->uri_webdav);
++  g_variant_builder_add (&details, "{ss}", "AcceptSslErrors", ep->accept_ssl_errors ? "true" : "false");
++
++  goa_manager_call_add_account (goa_client_get_manager (data->client),
++                                goa_provider_get_provider_type (provider),
++                                data->email_address,
++                                data->email_address,
++                                build_credentials (password),
++                                g_variant_builder_end (&details),
++                                cancellable,
++                                (GAsyncReadyCallback) add_account_credentials_cb,
++                                g_object_ref (task));
++}
++
++static void
++add_account_check_cb (GObject      *source_object,
++                      GAsyncResult *result,
++                      gpointer      user_data)
++{
++  g_autoptr (GTask) task = G_TASK (g_steal_pointer (&user_data));
++  AddAccountData *data = g_task_get_task_data (task);
++  g_autoptr (GError) error = NULL;
++
++  if (!g_task_propagate_boolean (G_TASK (result), &error))
++    {
++      goa_provider_dialog_report_error (data->dialog, error);
++      return;
++    }
++
++  add_account_credentials (task);
++}
++
++static void
++add_account_action_cb (GoaProviderDialog *dialog,
++                       GParamSpec        *pspec,
++                       GTask             *task)
++{
++  GoaProvider *provider = g_task_get_source_object (task);
++  AddAccountData *data = g_task_get_task_data (task);
++  GCancellable *cancellable = g_task_get_cancellable (task);
++  g_autoptr (GError) error = NULL;
++
++  if (goa_provider_dialog_get_state (data->dialog) != GOA_DIALOG_BUSY)
++    return;
++
++  g_free (data->email_address);
++  data->email_address = g_strstrip (g_strdup (gtk_editable_get_text (GTK_EDITABLE (data->email))));
++
++  /* If this is a duplicate account we're finished */
++  if (!goa_utils_check_duplicate (data->client,
++                                  data->email_address,
++                                  data->email_address,
++                                  goa_provider_get_provider_type (provider),
++                                  (GoaPeekInterfaceFunc) goa_object_peek_password_based,
++                                  &error))
++    {
++      goa_provider_task_return_error (task, g_steal_pointer (&error));
++      return;
++    }
++
++  nubo_check_async (provider,
++                    data,
++                    cancellable,
++                    add_account_check_cb,
++                    g_object_ref (task));
++}
++
++static void
++add_account (GoaProvider         *provider,
++             GoaClient           *client,
++             GtkWidget           *parent,
++             GCancellable        *cancellable,
++             GAsyncReadyCallback  callback,
++             gpointer             user_data)
++{
++  AddAccountData *data;
++  g_autoptr (GTask) task = NULL;
++
++  data = g_new0 (AddAccountData, 1);
++  data->dialog = goa_provider_dialog_new (provider, client, parent);
++  data->client = g_object_ref (client);
++  data->endpoints = nubo_endpoints_new_default ();
++
++  task = g_task_new (provider, cancellable, callback, user_data);
++  g_task_set_check_cancellable (task, FALSE);
++  g_task_set_source_tag (task, add_account);
++  g_task_set_task_data (task, data, add_account_data_free);
++
++  create_account_details_ui (provider, data, TRUE);
++  g_signal_connect_object (data->dialog,
++                           "notify::state",
++                           G_CALLBACK (add_account_action_cb),
++                           task,
++                           G_CONNECT_DEFAULT);
++  goa_provider_task_run_in_dialog (task, data->dialog);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++/* Sign in again (the stored password was rejected or is missing) */
++
++static void
++refresh_account_credentials_cb (GoaAccount   *account,
++                                GAsyncResult *res,
++                                gpointer      user_data)
++{
++  g_autoptr (GTask) task = G_TASK (g_steal_pointer (&user_data));
++  GError *error = NULL;
++
++  if (!goa_account_call_ensure_credentials_finish (account, NULL, res, &error))
++    {
++      goa_provider_task_return_error (task, error);
++      return;
++    }
++
++  g_task_return_boolean (task, TRUE);
++}
++
++static void
++refresh_account_check_cb (GObject      *source_object,
++                          GAsyncResult *result,
++                          gpointer      user_data)
++{
++  g_autoptr (GTask) task = G_TASK (g_steal_pointer (&user_data));
++  GoaProvider *provider = g_task_get_source_object (task);
++  AddAccountData *data = g_task_get_task_data (task);
++  GCancellable *cancellable = g_task_get_cancellable (task);
++  g_autoptr (GError) error = NULL;
++  const char *password;
++
++  if (!g_task_propagate_boolean (G_TASK (result), &error))
++    {
++      goa_provider_dialog_report_error (data->dialog, error);
++      return;
++    }
++
++  password = gtk_editable_get_text (GTK_EDITABLE (data->password));
++
++  if (!goa_utils_store_credentials_for_object_sync (provider,
++                                                    data->object,
++                                                    build_credentials (password),
++                                                    cancellable,
++                                                    &error))
++    {
++      goa_provider_task_return_error (task, g_steal_pointer (&error));
++      return;
++    }
++
++  goa_account_call_ensure_credentials (goa_object_peek_account (data->object),
++                                       cancellable,
++                                       (GAsyncReadyCallback) refresh_account_credentials_cb,
++                                       g_steal_pointer (&task));
++}
++
++static void
++refresh_account_action_cb (GoaProviderDialog *dialog,
++                           GParamSpec        *pspec,
++                           GTask             *task)
++{
++  GoaProvider *provider = g_task_get_source_object (task);
++  AddAccountData *data = g_task_get_task_data (task);
++  GCancellable *cancellable = g_task_get_cancellable (task);
++
++  if (goa_provider_dialog_get_state (data->dialog) != GOA_DIALOG_BUSY)
++    return;
++
++  nubo_check_async (provider,
++                    data,
++                    cancellable,
++                    refresh_account_check_cb,
++                    g_object_ref (task));
++}
++
++static void
++refresh_account (GoaProvider         *provider,
++                 GoaClient           *client,
++                 GoaObject           *object,
++                 GtkWidget           *parent,
++                 GCancellable        *cancellable,
++                 GAsyncReadyCallback  callback,
++                 gpointer             user_data)
++{
++  AddAccountData *data;
++  g_autoptr (GTask) task = NULL;
++
++  g_assert (GOA_IS_NUBO_PROVIDER (provider));
++  g_assert (GOA_IS_CLIENT (client));
++  g_assert (GOA_IS_OBJECT (object));
++
++  data = g_new0 (AddAccountData, 1);
++  data->dialog = goa_provider_dialog_new (provider, client, parent);
++  data->client = g_object_ref (client);
++  data->object = g_object_ref (object);
++  data->endpoints = nubo_endpoints_new_from_object (object);
++  data->email_address = g_strdup (goa_account_get_identity (goa_object_peek_account (object)));
++
++  task = g_task_new (provider, cancellable, callback, user_data);
++  g_task_set_check_cancellable (task, FALSE);
++  g_task_set_source_tag (task, refresh_account);
++  g_task_set_task_data (task, data, add_account_data_free);
++
++  create_account_details_ui (provider, data, FALSE);
++  g_signal_connect_object (data->dialog,
++                           "notify::state",
++                           G_CALLBACK (refresh_account_action_cb),
++                           task,
++                           G_CONNECT_DEFAULT);
++  goa_provider_task_run_in_dialog (task, data->dialog);
++}
++
++/* ---------------------------------------------------------------------------------------------------- */
++
++static void
++goa_nubo_provider_init (GoaNuboProvider *self)
++{
++}
++
++static void
++goa_nubo_provider_class_init (GoaNuboProviderClass *klass)
++{
++  GoaProviderClass *provider_class;
++
++  provider_class = GOA_PROVIDER_CLASS (klass);
++  provider_class->get_provider_type          = get_provider_type;
++  provider_class->get_provider_name          = get_provider_name;
++  provider_class->get_provider_group         = get_provider_group;
++  provider_class->get_provider_features      = get_provider_features;
++  provider_class->get_provider_icon          = get_provider_icon;
++  provider_class->add_account                = add_account;
++  provider_class->refresh_account            = refresh_account;
++  provider_class->build_object               = build_object;
++  provider_class->ensure_credentials_sync    = ensure_credentials_sync;
++}
+diff -ruN a/src/goabackend/goanuboprovider.h b/src/goabackend/goanuboprovider.h
+--- a/src/goabackend/goanuboprovider.h	1970-01-01 05:30:00.000000000 +0530
++++ b/src/goabackend/goanuboprovider.h	2026-10-01 23:31:19.211810426 +0530
+@@ -0,0 +1,43 @@
++/* -*- mode: C; c-file-style: "gnu"; indent-tabs-mode: nil; -*- */
++/*
++ * Copyright © 2026 Nubo
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General
++ * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ */
++
++#if !defined (__GOA_BACKEND_INSIDE_GOA_BACKEND_H__) && !defined (GOA_BACKEND_COMPILATION)
++#error "Only <goabackend/goabackend.h> can be included directly."
++#endif
++
++#ifndef __GOA_NUBO_PROVIDER_H__
++#define __GOA_NUBO_PROVIDER_H__
++
++#include <glib-object.h>
++
++#include "goawebdavprovider-priv.h"
++
++G_BEGIN_DECLS
++
++#define GOA_TYPE_NUBO_PROVIDER (goa_nubo_provider_get_type ())
++
++/* Not part of the public ABI of libgoa-backend: the provider is only reached
++ * through the extension point, so keep the symbol out of the shared library's
++ * exported symbols (and out of debian/libgoa-backend-1.0-2.symbols). */
++G_GNUC_INTERNAL GType goa_nubo_provider_get_type (void) G_GNUC_CONST;
++
++G_DECLARE_FINAL_TYPE (GoaNuboProvider, goa_nubo_provider, GOA, NUBO_PROVIDER, GoaWebDavProvider);
++
++G_END_DECLS
++
++#endif /* __GOA_NUBO_PROVIDER_H__ */
+diff -ruN a/src/goabackend/goaprovider.c b/src/goabackend/goaprovider.c
+--- a/src/goabackend/goaprovider.c	2026-03-15 05:06:17.000000000 +0530
++++ b/src/goabackend/goaprovider.c	2026-10-01 23:23:16.974685787 +0530
+@@ -24,6 +24,7 @@
+ #include "goaproviderdialog.h"
+ #include "goaprovider-priv.h"
+ #include "goaexchangeprovider.h"
++#include "goanuboprovider.h"
+ #include "goagoogleprovider.h"
+ #include "goaimapsmtpprovider.h"
+ #include "goaowncloudprovider.h"
+@@ -1175,6 +1176,9 @@
+    * important because it affects the order in which they are
+    * returned by goa_provider_get_all.
+    */
++#ifdef GOA_NUBO_ENABLED
++  { GOA_NUBO_NAME, goa_nubo_provider_get_type },
++#endif
+ #ifdef GOA_GOOGLE_ENABLED
+   { GOA_GOOGLE_NAME, goa_google_provider_get_type },
+ #endif
+diff -ruN a/src/goabackend/meson.build b/src/goabackend/meson.build
+--- a/src/goabackend/meson.build	2026-03-15 05:06:17.000000000 +0530
++++ b/src/goabackend/meson.build	2026-10-01 23:23:16.973912243 +0530
+@@ -15,6 +15,7 @@
+   'goamailclient.c',
+   'goamailconfig.c',
+   'goamsgraphprovider.c',
++  'goanuboprovider.c',
+   'goaobjectskeletonutils.c',
+   'goaowncloudprovider.c',
+   'goaprovider.c',
