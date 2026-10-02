@@ -111,6 +111,12 @@ override_dh_auto_build:
 	cd $(BUILD) && ./vicinae.AppImage --appimage-extract >/dev/null && mv squashfs-root search/lib/nubo/search && \
 	rm -rf search/lib/nubo/search/apprun-hooks
 
+	# Default profile picture: the mark on a soft gradient disc.
+	mkdir -p $(BUILD)/avatar
+	rsvg-convert -w 300 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/avatar/mark.png
+	convert -size 512x512 gradient:'#F7B77A-#D9693F' \
+		\( -size 512x512 xc:black -fill white -draw 'circle 256,256 256,1' \) -alpha off -compose CopyOpacity -composite \
+		$(BUILD)/avatar/mark.png -gravity center -compose over -composite $(BUILD)/avatar/avatar.png
 	# Sign-in method icon shown on the login screen.
 	mkdir -p $(BUILD)/account
 	rsvg-convert -w 128 -h 128 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/account/nubo-account.png

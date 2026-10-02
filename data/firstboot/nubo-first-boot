@@ -30,6 +30,17 @@ if command -v flatpak >/dev/null; then
     && log "Flathub added" || log "Flathub not added yet (offline?)"
 fi
 
+# Login-screen picture for the account(s) made by the installer.
+if [[ -f /usr/share/nubo/avatar.png ]]; then
+  while IFS=: read -r user _ uid _ _ home _; do
+    [[ "${uid}" -ge 1000 && "${uid}" -lt 60000 && -d "${home}" ]] || continue
+    [[ -e "${home}/.face" ]] && continue
+    cp /usr/share/nubo/avatar.png "${home}/.face" && chown "${user}:" "${home}/.face"
+    mkdir -p /var/lib/AccountsService/users
+    printf '[User]\nIcon=%s/.face\n' "${home}" >"/var/lib/AccountsService/users/${user}"
+  done </etc/passwd
+fi
+
 # Notebook app (Folio) is not part of Nubo OS: Reminders and Text Editor cover it.
 flatpak uninstall --system --noninteractive com.toolstack.Folio >/dev/null 2>&1 || true
 

@@ -31,3 +31,4 @@ data/apps/nubo-maps.desktop usr/share/applications/
 data/icons/nubo-logo-symbolic.svg usr/share/icons/hicolor/scalable/apps/
 menu/extension/* usr/share/gnome-shell/extensions/nubo-menu@nubosuite.tech/
 build/os/pixmaps/* usr/share/pixmaps/
+build/avatar/avatar.png usr/share/nubo/

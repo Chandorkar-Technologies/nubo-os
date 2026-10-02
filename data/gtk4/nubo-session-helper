@@ -62,6 +62,19 @@ seed_extensions() {
 }
 seed_extensions
 
+# Profile picture: people who have not chosen one get the Nubo avatar, so the
+# login screen does not show the generic grey silhouette.
+set_default_avatar() {
+  avatar=/usr/share/nubo/avatar.png
+  [ -f "$avatar" ] || return 0
+  [ -e "$HOME/.face" ] && return 0
+  cp "$avatar" "$HOME/.face" || return 0
+  gdbus call --system --dest org.freedesktop.Accounts \
+    --object-path "/org/freedesktop/Accounts/User$(id -u)" \
+    --method org.freedesktop.Accounts.User.SetIconFile "$HOME/.face" >/dev/null 2>&1 || true
+}
+set_default_avatar
+
 SHELL_THEME=org.gnome.shell.extensions.user-theme
 
 follow() {
