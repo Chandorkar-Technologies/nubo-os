@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+# Ubuntu's identity files are kept beside ours with a .ubuntu suffix.
+if [ "$1" = install ] || [ "$1" = upgrade ]; then
+    for file in /usr/lib/os-release /etc/issue /etc/issue.net /etc/lsb-release; do
+        dpkg-divert --package nubo-server-base --add --rename --divert "$file.ubuntu" "$file"
+    done
+fi
+#DEBHELPER#

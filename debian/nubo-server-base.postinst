@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+if [ "$1" = configure ]; then
+    install -m 0644 /usr/share/nubo/server-os/issue /etc/issue
+    install -m 0644 /usr/share/nubo/server-os/issue.net /etc/issue.net
+    install -m 0644 /usr/share/nubo/server-os/lsb-release /etc/lsb-release
+    # Message of the day: no Ubuntu news, help links or Pro adverts.
+    [ -f /etc/default/motd-news ] && sed -i 's/^ENABLED=1/ENABLED=0/' /etc/default/motd-news
+    for hook in 10-help-text 50-motd-news 91-contract-ua-esm-status 91-release-upgrade 95-hwe-eol; do
+        [ -e "/etc/update-motd.d/$hook" ] && chmod -x "/etc/update-motd.d/$hook" || true
+    done
+    command -v update-grub >/dev/null 2>&1 && update-grub >/dev/null 2>&1 || true
+    # Closed firewall (SSH only) on first install.
+    if [ -z "$2" ] && command -v ufw >/dev/null 2>&1; then
+        /usr/libexec/nubo/nubo-server-firewall >/dev/null 2>&1 || true
+    fi
+fi
+#DEBHELPER#

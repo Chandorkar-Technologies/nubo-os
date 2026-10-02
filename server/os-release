@@ -1,0 +1,11 @@
+PRETTY_NAME="Nubo OS Server 1"
+NAME="Nubo OS Server"
+VERSION_ID="26.04"
+VERSION="1"
+VERSION_CODENAME=resolute
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://nubosuite.tech/"
+SUPPORT_URL="https://docs.nubosuite.tech/"
+BUG_REPORT_URL="mailto:support@nubo.email"
+UBUNTU_CODENAME=resolute

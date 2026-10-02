@@ -1,4 +1,9 @@
 server/90-nubo-server.conf usr/lib/sysctl.d/
 server/90-nubo-sshd.conf etc/ssh/sshd_config.d/
 server/nubo-server-firewall usr/libexec/nubo/
-server/nubo-motd etc/update-motd.d/
+server/99-nubo-motd etc/update-motd.d/
+server/os-release usr/lib/
+server/issue usr/share/nubo/server-os/
+server/issue.net usr/share/nubo/server-os/
+server/lsb-release usr/share/nubo/server-os/
+server/grub-nubo.cfg etc/default/grub.d/

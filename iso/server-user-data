@@ -1,0 +1,34 @@
+#cloud-config
+# Read by the Ubuntu server installer from /cdrom/server/ (see build-server-iso.sh).
+# Every screen stays interactive. The additions: Ubuntu's packages come through
+# Nubo Cumulus, the minimal server is installed, and the Nubo packages from the
+# media are installed as the last step.
+autoinstall:
+  version: 1
+  interactive-sections:
+    - "*"
+  source:
+    id: ubuntu-server-minimal
+    search_drivers: false
+  apt:
+    fallback: offline-install
+    geoip: false
+    mirror-selection:
+      primary:
+        - arches: [amd64, i386]
+          uri: https://archive.nubosuite.tech/cumulus
+        - arches: [arm64]
+          uri: https://archive.nubosuite.tech/cumulus-arm
+    security:
+      - arches: [amd64, i386]
+        uri: https://archive.nubosuite.tech/cumulus
+      - arches: [arm64]
+        uri: https://archive.nubosuite.tech/cumulus-arm
+  late-commands:
+    - mkdir -p /target/var/tmp/nubo
+    - cp /cdrom/nubo/pool/*.deb /target/var/tmp/nubo/
+    - >-
+      curtin in-target --target=/target -- sh -c
+      'DEBIAN_FRONTEND=noninteractive apt-get install -y
+      -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb'
+    - rm -rf /target/var/tmp/nubo

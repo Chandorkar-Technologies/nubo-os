@@ -57,6 +57,9 @@ if [[ "${INSTALL}" -eq 1 ]]; then
   "${SSH[@]}" "${VM_USER}@${VM_IP}" "
     set -euo pipefail
     cd '${REMOTE_DIR}/out'
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --reinstall -o Dpkg::Options::=--force-confnew ./nubo-*.deb </dev/null 2>&1 | tail -15
+    # The server packages replace the desktop identity (they conflict with
+    # nubo-branding), so a desktop machine never installs them.
+    debs=\$(ls ./nubo-*.deb | grep -v -e nubo-server-base -e nubo-incus)
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --reinstall --allow-downgrades -o Dpkg::Options::=--force-confnew \$debs </dev/null 2>&1 | tail -15
   "
 fi

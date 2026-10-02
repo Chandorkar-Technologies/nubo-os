@@ -193,6 +193,7 @@ Architecture: all
 Depends: ${misc:Depends}, nubo-archive (= ${source:Version}), openssh-server, ufw,
          unattended-upgrades, fail2ban, chrony, apparmor, needrestart, curl,
          ca-certificates, htop, less, vim-tiny
+Conflicts: nubo-branding, snapd, landscape-common, lxd-installer, ubuntu-pro-client, ubuntu-advantage-tools
 Description: Nubo OS Server base system
  Secure defaults for a headless Nubo OS machine: SSH without root login, a
  closed firewall except SSH, automatic security updates, time sync and kernel
