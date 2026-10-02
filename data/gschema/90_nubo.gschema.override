@@ -158,3 +158,8 @@ default-sort-in-reverse-order=false
 
 [org.gnome.nautilus.preferences:ubuntu]
 default-folder-viewer='icon-view'
+
+# Super+Space belongs to Nubo Search; switching keyboard layouts moves to Alt+Shift
+[org.gnome.desktop.wm.keybindings]
+switch-input-source=['<Alt>Shift_L', 'XF86Keyboard']
+switch-input-source-backward=['<Shift><Alt>Shift_L']
