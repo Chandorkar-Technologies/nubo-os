@@ -1,0 +1,6 @@
+/* Taller, easier-to-hit top bar and a larger Nubo logo */
+#panel { height: 40px; font-size: 14px; }
+#panel .panel-button { padding: 0 12px; }
+#panel .panel-button .system-status-icon { icon-size: 18px; }
+#panel .nubo-logo-icon { icon-size: 26px; }
+#panel .clock-display { font-size: 15px; font-weight: 600; }

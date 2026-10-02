@@ -199,8 +199,9 @@ Description: Nubo OS Server base system
 
 Package: nubo-incus
 Architecture: all
-Depends: ${misc:Depends}, nubo-server-base (= ${source:Version}), incus, qemu-system-x86 [amd64] | qemu-system-arm [arm64],
+Depends: ${misc:Depends}, nubo-server-base (= ${source:Version}), incus,
          zfsutils-linux, bridge-utils
+Recommends: qemu-system-x86 | qemu-system-arm
 Description: Nubo OS virtualization host
  Containers and virtual machines with Incus, set up by one command
  (nubo-incus-init) with a bridge and a storage pool.
