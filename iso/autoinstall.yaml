@@ -9,6 +9,23 @@ autoinstall:
   version: 1
   interactive-sections:
     - "*"
+  # Ubuntu's packages come through Nubo Cumulus (a cache of Ubuntu's archive,
+  # packages unchanged and signed by Ubuntu). If it cannot be reached the
+  # installer falls back to the packages on the media, as it does today.
+  apt:
+    fallback: offline-install
+    geoip: false
+    mirror-selection:
+      primary:
+        - arches: [amd64, i386]
+          uri: https://archive.nubosuite.tech/cumulus
+        - arches: [arm64]
+          uri: https://archive.nubosuite.tech/cumulus-arm
+    security:
+      - arches: [amd64, i386]
+        uri: https://archive.nubosuite.tech/cumulus
+      - arches: [arm64]
+        uri: https://archive.nubosuite.tech/cumulus-arm
   late-commands:
     - mkdir -p /target/var/tmp/nubo
     - cp /cdrom/nubo/pool/*.deb /target/var/tmp/nubo/
