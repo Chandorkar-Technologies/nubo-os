@@ -1,0 +1,14 @@
+networks:
+  - name: nubobr0
+    type: bridge
+    config:
+      ipv4.address: auto
+      ipv6.address: auto
+storage_pools:
+  - name: default
+    driver: dir
+profiles:
+  - name: default
+    devices:
+      eth0: {name: eth0, network: nubobr0, type: nic}
+      root: {path: /, pool: default, type: disk}

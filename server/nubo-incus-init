@@ -1,0 +1,7 @@
+#!/bin/sh
+# Set up Incus with a bridge and a storage pool, then let the current user manage it.
+set -e
+[ "$(id -u)" -eq 0 ] || { echo "Run with sudo." >&2; exit 1; }
+incus admin init --preseed </usr/share/nubo/incus-preseed.yaml
+[ -n "${SUDO_USER:-}" ] && adduser "$SUDO_USER" incus-admin >/dev/null && echo "Added $SUDO_USER to incus-admin. Log out and in again."
+echo "Try: incus launch images:ubuntu/24.04 first"

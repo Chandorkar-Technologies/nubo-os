@@ -1,0 +1,91 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  debs:
+    strategy:
+      matrix:
+        include:
+          - {arch: amd64, runner: ubuntu-24.04}
+          - {arch: arm64, runner: ubuntu-24.04-arm}
+    runs-on: ${{ matrix.runner }}
+    container: ubuntu:26.04
+    steps:
+      - name: Tools
+        run: |
+          apt-get update
+          apt-get install -y git curl ca-certificates build-essential devscripts equivs
+      - uses: actions/checkout@v4
+      - name: Vendor files
+        run: vendor/fetch.sh
+      - name: Build packages
+        env: {NUBO_RELEASE: "1"}
+        run: |
+          mk-build-deps -i -r -t 'apt-get -y' debian/control
+          dpkg-buildpackage -us -uc -b
+          mkdir -p out && mv ../*.deb out/
+      - uses: actions/upload-artifact@v4
+        with: {name: "debs-${{ matrix.arch }}", path: out/*.deb}
+
+  archive:
+    needs: debs
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {path: debs, pattern: "debs-*", merge-multiple: true}
+      - name: Publish apt archive
+        env:
+          GPG_KEY: ${{ secrets.NUBO_GPG_PRIVATE_KEY }}
+          RCLONE_CONFIG_NUBO_R2_TYPE: s3
+          RCLONE_CONFIG_NUBO_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_NUBO_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_NUBO_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_NUBO_R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y reprepro rclone
+          echo "$GPG_KEY" | gpg --batch --import
+          repo/publish.sh debs
+
+  iso:
+    needs: debs
+    strategy:
+      matrix:
+        include:
+          - {arch: amd64, runner: ubuntu-24.04}
+          - {arch: arm64, runner: ubuntu-24.04-arm}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {path: debs, name: "debs-${{ matrix.arch }}"}
+      - name: Build desktop ISO
+        run: |
+          sudo apt-get update && sudo apt-get install -y xorriso squashfs-tools
+          # Base image: Ubuntu's desktop ISO for this architecture
+          curl -fL -o base.iso "https://cdimage.ubuntu.com/daily-live/current/resolute-desktop-${{ matrix.arch }}.iso"
+          sudo ARCH=${{ matrix.arch }} iso/build-iso.sh base.iso debs "nubo-os-1-${{ matrix.arch }}.iso"
+          sha256sum nubo-os-1-${{ matrix.arch }}.iso >nubo-os-1-${{ matrix.arch }}.iso.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: iso-${{ matrix.arch }}
+          path: nubo-os-1-*
+
+  server-images:
+    needs: debs
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix: {arch: [amd64, arm64]}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {path: debs, name: "debs-${{ matrix.arch }}"}
+      - name: Cloud and VM images
+        run: |
+          sudo apt-get update && sudo apt-get install -y qemu-utils libguestfs-tools
+          sudo images/build-cloud.sh debs out ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with: {name: "server-${{ matrix.arch }}", path: out/*}

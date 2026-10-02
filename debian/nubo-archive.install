@@ -1,0 +1,2 @@
+repo/nubo.sources etc/apt/sources.list.d/
+repo/nubo-archive-keyring.gpg usr/share/keyrings/

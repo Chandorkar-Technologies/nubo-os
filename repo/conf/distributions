@@ -1,0 +1,7 @@
+Origin: Nubo
+Label: Nubo OS
+Codename: resolute
+Architectures: amd64 arm64 source
+Components: main
+Description: Nubo OS packages
+SignWith: default

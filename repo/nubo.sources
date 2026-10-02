@@ -1,0 +1,5 @@
+Types: deb
+URIs: https://os.nubosuite.tech/apt
+Suites: resolute
+Components: main
+Signed-By: /usr/share/keyrings/nubo-archive-keyring.gpg

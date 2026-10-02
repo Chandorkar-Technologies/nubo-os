@@ -1,0 +1,8 @@
+#!/bin/sh
+# Close everything except SSH. Run once by the first-boot step; safe to re-run.
+set -e
+ufw --force reset >/dev/null
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow OpenSSH
+ufw --force enable

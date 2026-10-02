@@ -1,0 +1,2 @@
+server/nubo-incus-init usr/bin/
+server/incus-preseed.yaml usr/share/nubo/

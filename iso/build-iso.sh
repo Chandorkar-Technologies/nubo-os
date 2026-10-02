@@ -19,7 +19,8 @@ OUT="$(readlink -f "${3:?output ISO path required}")"
 WORK="${WORK:-/var/tmp/nubo-iso}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
-VOLUME_ID="Nubo OS 1 amd64"
+ARCH="${ARCH:-$(dpkg --print-architecture)}"
+VOLUME_ID="Nubo OS 1 ${ARCH}"
 LIVE_LAYER="minimal.standard.live"
 
 if [[ "$(id -u)" -ne 0 ]]; then
@@ -202,7 +203,7 @@ done
 # Shown by the installer as the product name. The quoted codename is
 # required: the installer takes the text before the first quote and crashes
 # on a line without one.
-echo "Nubo OS 1 \"Flow\" - Release amd64 ($(date -u +%Y%m%d))" >"${WORK}/stage/.disk/info"
+echo "Nubo OS 1 \"Flow\" - Release ${ARCH} ($(date -u +%Y%m%d))" >"${WORK}/stage/.disk/info"
 sed -e 's/Ubuntu Desktop (minimized)/Nubo OS Desktop (minimal)/' \
     -e 's/Ubuntu Desktop/Nubo OS Desktop/' \
     "${WORK}/mnt/iso/casper/install-sources.yaml" >"${WORK}/stage/casper/install-sources.yaml"

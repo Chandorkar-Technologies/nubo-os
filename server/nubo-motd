@@ -1,0 +1,2 @@
+#!/bin/sh
+printf '\nNubo OS Server\n  Docs:    https://docs.nubosuite.tech\n  Support: support@nubo.email\n\n'

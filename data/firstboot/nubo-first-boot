@@ -38,17 +38,29 @@ apt-get purge -y -qq 'libreoffice*' >/dev/null 2>&1 && apt-get autoremove -y -qq
 
 # Apps that come from Flathub. Needs the network; retried next boot until done.
 FLATPAKS="org.mozilla.firefox org.localsend.localsend_app io.github.qwersyk.Newelle com.collaboraoffice.Office de.haeckerfelix.Shortwave com.spotify.Client org.videolan.VLC"
-missing=""
+# One app at a time: an app that does not exist for this CPU (Spotify is
+# x86-only) is skipped instead of blocking the others. Only a network failure
+# makes us retry on the next boot.
+retry=0
 for app in ${FLATPAKS}; do
-  flatpak info --system "${app}" >/dev/null 2>&1 || missing="${missing} ${app}"
-done
-if [[ -n "${missing}" ]]; then
-  if flatpak install --system --noninteractive --or-update flathub ${missing} >/dev/null 2>&1; then
-    log "installed:${missing}"
-  else
-    log "Flathub apps not installed yet (offline?); trying again next boot"
-    exit 1
+  flatpak info --system "${app}" >/dev/null 2>&1 && continue
+  if ! flatpak remote-info --system flathub "${app}" >/dev/null 2>&1; then
+    if flatpak remote-ls --system flathub >/dev/null 2>&1; then
+      log "${app}: not available for this CPU, skipped"
+    else
+      retry=1
+    fi
+    continue
   fi
+  if flatpak install --system --noninteractive --or-update flathub "${app}" >/dev/null 2>&1; then
+    log "installed: ${app}"
+  else
+    retry=1
+  fi
+done
+if [[ "${retry}" -eq 1 ]]; then
+  log "some Flathub apps not installed yet (offline?); trying again next boot"
+  exit 1
 fi
 
 mkdir -p "$(dirname "${MARKER}")"
