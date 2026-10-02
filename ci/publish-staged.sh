@@ -3,9 +3,8 @@
 set -euo pipefail
 TAG="${1:?tag}"
 . "$(dirname "$0")/rclone-env.sh"
-case "${TAG}" in *-*) CHANNEL=beta ;; *) CHANNEL=stable ;; esac
 rm -rf debs && mkdir debs
 rclone copy "r2:${R2_BUCKET}/_staging/${TAG}" debs
 ls debs
-repo/publish.sh debs "${CHANNEL}"
+repo/publish.sh debs beta
 rclone purge "r2:${R2_BUCKET}/_staging/${TAG}"

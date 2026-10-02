@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+if [ "$1" = configure ]; then
+    install -D -m 0644 /usr/share/nubo/base/nubo-ntp.sources /etc/chrony/sources.d/ubuntu-ntp-pools.sources
+    install -D -m 0644 /usr/share/nubo/base/elfutils.urls /etc/debuginfod/elfutils.urls
+    install -D -m 0644 /usr/share/nubo/base/release-upgrades /etc/update-manager/release-upgrades
+    # No reports or adverts sent to Canonical. Masking works in a chroot and offline.
+    mkdir -p /etc/systemd/system
+    for unit in motd-news.timer motd-news.service whoopsie.service whoopsie.path \
+                apport.service apport-autoreport.path apport-autoreport.timer apport-autoreport.service \
+                ua-timer.timer ua-timer.service apt-news.service esm-cache.service \
+                ubuntu-advantage.service ubuntu-advantage-desktop-daemon.service; do
+        ln -sf /dev/null "/etc/systemd/system/$unit"
+    done
+    [ -f /etc/default/apport ] && sed -i 's/^enabled=1/enabled=0/' /etc/default/apport || true
+    [ -f /etc/default/motd-news ] && sed -i 's/^ENABLED=1/ENABLED=0/' /etc/default/motd-news || true
+    systemctl daemon-reload >/dev/null 2>&1 || true
+    systemctl try-restart chrony.service systemd-timesyncd.service >/dev/null 2>&1 || true
+fi
+#DEBHELPER#

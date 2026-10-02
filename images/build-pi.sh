@@ -4,7 +4,7 @@
 # Usage: build-pi.sh DEBS_DIR OUT_DIR   (needs root, qemu-utils, libguestfs-tools, xz-utils)
 set -euo pipefail
 DEBS="$(readlink -f "${1:?debs dir}")"; OUT="$(readlink -f "${2:?out dir}")"
-URL="https://cdimage.ubuntu.com/releases/resolute/release/ubuntu-26.04-preinstalled-server-arm64+raspi.img.xz"
+URL="https://archive.nubosuite.tech/cumulus-images/releases/resolute/release/ubuntu-26.04-preinstalled-server-arm64+raspi.img.xz"
 mkdir -p "${OUT}"; IMG="${OUT}/nubo-os-server-raspi.img"
 curl -fL "${URL}" | xz -d >"${IMG}"
 virt-customize -a "${IMG}" \

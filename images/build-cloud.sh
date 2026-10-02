@@ -7,7 +7,7 @@ set -euo pipefail
 DEBS="$(readlink -f "${1:?debs dir}")"; OUT="$(readlink -f "${2:?out dir}")"
 ARCH="${3:-$(dpkg --print-architecture)}"
 SUITE=resolute
-BASE="https://cloud-images.ubuntu.com/${SUITE}/current/${SUITE}-server-cloudimg-${ARCH}.img"
+BASE="https://archive.nubosuite.tech/cumulus-cloud/${SUITE}/current/${SUITE}-server-cloudimg-${ARCH}.img"
 mkdir -p "${OUT}"; IMG="${OUT}/nubo-os-server-${ARCH}.qcow2"
 curl -fL -o "${IMG}" "${BASE}"
 qemu-img resize "${IMG}" 10G

@@ -1,0 +1,3 @@
+# Nubo OS time servers (replace Ubuntu's ntp.ubuntu.com pools).
+pool time.cloudflare.com iburst maxsources 2 nts
+pool pool.ntp.org iburst maxsources 3

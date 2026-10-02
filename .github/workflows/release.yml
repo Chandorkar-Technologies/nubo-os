@@ -68,7 +68,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y xorriso squashfs-tools
           # Base image: Ubuntu's desktop ISO for this architecture
-          curl -fL -o base.iso "https://cdimage.ubuntu.com/daily-live/current/resolute-desktop-${{ matrix.arch }}.iso"
+          curl -fL -o base.iso "https://archive.nubosuite.tech/cumulus-images/daily-live/current/resolute-desktop-${{ matrix.arch }}.iso"
           sudo ARCH=${{ matrix.arch }} iso/build-iso.sh base.iso debs "nubo-os-1-${{ matrix.arch }}.iso"
           sha256sum nubo-os-1-${{ matrix.arch }}.iso >nubo-os-1-${{ matrix.arch }}.iso.sha256
       - uses: actions/upload-artifact@v4

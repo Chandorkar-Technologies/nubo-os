@@ -1,5 +1,6 @@
 # Drone pipelines for ci.hostingduty.com. Runs on tags only.
-# Tag v0.8.0-beta1 (contains a dash) -> beta channel; v0.8.0 -> stable.
+# Tag v0.8.0-beta1 (contains a dash): build and publish to the beta channel.
+# Tag v0.8.0 (no dash): promote what beta carries into stable. No rebuild.
 # Needs Drone secrets: nubo_gpg_private_key, r2_access_key_id, r2_secret_access_key, r2_endpoint.
 # arm64 packages: see ci/debs-arm64.drone.yml (needs a Drone runner on an arm64
 # machine; until one exists, upload arm64 builds by hand, they stay in the archive).
@@ -8,7 +9,7 @@ type: docker
 name: debs-amd64
 
 platform: {os: linux, arch: amd64}
-trigger: {event: [tag]}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
 
 steps:
   - name: build
@@ -36,7 +37,7 @@ type: docker
 name: publish
 
 platform: {os: linux, arch: amd64}
-trigger: {event: [tag]}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
 depends_on: [debs-amd64]
 
 steps:
@@ -54,3 +55,27 @@ steps:
       - apt-get update -qq && apt-get install -y -qq reprepro rclone gnupg
       - echo "$GPG_KEY" | gpg --batch --import
       - ci/publish-staged.sh "$DRONE_TAG"
+
+---
+kind: pipeline
+type: docker
+name: promote
+
+platform: {os: linux, arch: amd64}
+trigger: {event: [tag], ref: {exclude: ['refs/tags/*-*']}}
+
+steps:
+  - name: promote
+    image: ubuntu:26.04
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      GPG_KEY: {from_secret: nubo_gpg_private_key}
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - apt-get update -qq && apt-get install -y -qq ca-certificates
+      - sh ci/use-cumulus.sh
+      - apt-get update -qq && apt-get install -y -qq reprepro rclone gnupg
+      - echo "$GPG_KEY" | gpg --batch --import
+      - ci/promote.sh

@@ -1,3 +1,13 @@
+nubo-os (0.8.0~beta1) resolute; urgency=medium
+
+  * Package archive at archive.nubosuite.tech with stable and beta channels.
+  * Nubo Cumulus: Ubuntu packages and images through Nubo, with Ubuntu as fallback.
+  * Server OS: nubo-server-base, nubo-incus; nubo-base (network check, time
+    servers, no reports or adverts to Canonical).
+  * Desktop: draggable widgets, Nubo Search on arm64, top bar, default avatar.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Sat, 03 Oct 2026 00:20:00 +0530
+
 nubo-os (0.7.0) resolute; urgency=medium
 
   * App set: Calendar, Contacts, Weather, Maps, Videos, Scanner, Archive

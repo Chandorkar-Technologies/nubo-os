@@ -24,6 +24,11 @@ else
   exit 1
 fi
 
+# Canonical's Pro client is not part of Nubo OS. snapd stays on the desktop for now:
+# the Nubo sign-in broker (authd-oidc) is distributed as a snap.
+apt-get purge -y -qq ubuntu-pro-client ubuntu-advantage-tools ubuntu-advantage-desktop-daemon >/dev/null 2>&1 \
+  && apt-get autoremove -y -qq >/dev/null 2>&1 || true
+
 # App store source: Flathub. Needs the network; harmless to retry later.
 if command -v flatpak >/dev/null; then
   flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo >/dev/null 2>&1 \

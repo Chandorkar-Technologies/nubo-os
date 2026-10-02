@@ -22,8 +22,11 @@ A full mirror of resolute (main, universe, both arches) is a later step: about
 Package `nubo-archive` installs `/etc/apt/sources.list.d/nubo.sources` and the keyring.
 
 ## Channels
-- `resolute` is stable, `resolute-beta` is for testers. A tag like `v0.8.0-beta1` publishes to beta, `v0.8.0` to stable.
-- Promote by tagging the same build as stable once beta is fine.
+- `resolute` is stable, `resolute-beta` is for testers.
+- Every release has a NEW version in `debian/changelog` (the package pool is shared).
+- Tag `v0.8.0-beta1`: Drone builds and publishes to beta.
+- Tag `v0.8.0` (no dash): Drone promotes what beta carries into stable. No rebuild.
+- Locally: `repo/publish.sh DEBS beta`, `repo/publish.sh --promote`.
 - On a machine: `sudo nubo-channel beta` / `sudo nubo-channel stable`.
 - Nubo packages install automatically (unattended upgrades) from the stable channel only.
 

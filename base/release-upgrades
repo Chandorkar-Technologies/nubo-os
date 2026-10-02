@@ -1,0 +1,3 @@
+# Nubo OS: release upgrades are delivered through the Nubo archive, not by do-release-upgrade.
+[DEFAULT]
+Prompt=never

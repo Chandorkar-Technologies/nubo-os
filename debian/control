@@ -136,6 +136,7 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          gnome-shell-extension-gsconnect, scrcpy,
          nubo-notify (= ${source:Version}),
          nubo-apps (= ${source:Version}), nubo-archive (= ${source:Version}),
+         nubo-base (= ${source:Version}),
          gstreamer1.0-alsa,
          gstreamer1.0-packagekit, gstreamer1.0-plugins-base-apps, inputattach, iw,
          language-selector-common, language-selector-gnome, libatk-adaptor,
@@ -190,7 +191,7 @@ Description: Nubo OS package archive configuration
 
 Package: nubo-server-base
 Architecture: all
-Depends: ${misc:Depends}, nubo-archive (= ${source:Version}), openssh-server, ufw,
+Depends: ${misc:Depends}, nubo-archive (= ${source:Version}), nubo-base (= ${source:Version}), openssh-server, ufw,
          unattended-upgrades, fail2ban, chrony, apparmor, needrestart, curl,
          ca-certificates, htop, less, vim-tiny
 Conflicts: nubo-branding, snapd, landscape-common, lxd-installer, ubuntu-pro-client, ubuntu-advantage-tools
@@ -207,3 +208,10 @@ Recommends: qemu-system-x86 | qemu-system-arm
 Description: Nubo OS virtualization host
  Containers and virtual machines with Incus, set up by one command
  (nubo-incus-init) with a bridge and a storage pool.
+
+Package: nubo-base
+Architecture: all
+Depends: ${misc:Depends}, nubo-archive (= ${source:Version})
+Description: Nubo OS base configuration
+ Network check, time servers and update settings that point to Nubo or to
+ neutral services, and no crash reports, news or adverts sent to Canonical.

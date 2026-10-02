@@ -1,0 +1,5 @@
+base/20-connectivity-ubuntu.conf etc/NetworkManager/conf.d/
+base/nubo-timesyncd.conf etc/systemd/timesyncd.conf.d/
+base/nubo-ntp.sources usr/share/nubo/base/
+base/elfutils.urls usr/share/nubo/base/
+base/release-upgrades usr/share/nubo/base/

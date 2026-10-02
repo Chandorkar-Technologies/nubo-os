@@ -27,7 +27,7 @@ CRED_FILE="${CRED_FILE:-/root/nubo-os-dev.cred}"
 
 RELEASE="26.04"
 IMG_NAME="ubuntu-${RELEASE}-server-cloudimg-amd64.img"
-IMG_BASE="https://cloud-images.ubuntu.com/releases/${RELEASE}/release"
+IMG_BASE="https://archive.nubosuite.tech/cumulus-cloud/releases/${RELEASE}/release"
 IMG_DIR="/var/lib/vz/template/iso"
 IMG_PATH="${IMG_DIR}/${IMG_NAME}"
 

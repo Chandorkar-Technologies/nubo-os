@@ -12,6 +12,8 @@ autoinstall:
   # Ubuntu's packages come through Nubo Cumulus (a cache of Ubuntu's archive,
   # packages unchanged and signed by Ubuntu). If it cannot be reached the
   # installer falls back to the packages on the media, as it does today.
+  refresh-installer:
+    update: false
   apt:
     fallback: offline-install
     geoip: false
