@@ -1,0 +1,13 @@
+#!/bin/sh
+# Choose which Nubo update channel this machine follows: stable (default) or beta.
+set -e
+[ "$(id -u)" -eq 0 ] || { echo "Run with sudo." >&2; exit 1; }
+SRC=/etc/apt/sources.list.d/nubo.sources
+case "${1:-}" in
+  stable) sed -i 's/^Suites:.*/Suites: resolute/' "$SRC" ;;
+  beta)   sed -i 's/^Suites:.*/Suites: resolute-beta/' "$SRC" ;;
+  "")     grep '^Suites:' "$SRC" | sed 's/Suites: resolute-beta/beta/;s/Suites: resolute$/stable/'; exit 0 ;;
+  *)      echo "Usage: nubo-channel [stable|beta]" >&2; exit 1 ;;
+esac
+apt-get update -o Dir::Etc::sourcelist=/dev/null -o Dir::Etc::sourceparts="$SRC" 2>/dev/null || apt-get update
+echo "Channel: $1. Run: sudo apt upgrade"

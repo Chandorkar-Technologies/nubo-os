@@ -1,5 +1,6 @@
+# Early builds, tested less. Switch with: sudo nubo-channel beta
 Types: deb
 URIs: https://archive.nubosuite.tech
-Suites: resolute
+Suites: resolute-beta
 Components: main
 Signed-By: /usr/share/keyrings/nubo-archive-keyring.gpg

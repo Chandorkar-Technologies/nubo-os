@@ -48,7 +48,9 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y reprepro rclone
           echo "$GPG_KEY" | gpg --batch --import
-          repo/publish.sh debs
+          # tags with a dash (v0.8.0-beta1) go to beta, plain tags (v0.8.0) to stable
+          case "${GITHUB_REF_NAME:-}" in *-*) CH=beta ;; *) CH=stable ;; esac
+          R2_BUCKET=nubo-archive repo/publish.sh debs "$CH"
 
   iso:
     needs: debs

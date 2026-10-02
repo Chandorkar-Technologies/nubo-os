@@ -1,5 +1,4 @@
 server/90-nubo-server.conf usr/lib/sysctl.d/
 server/90-nubo-sshd.conf etc/ssh/sshd_config.d/
-server/52-nubo-unattended.conf etc/apt/apt.conf.d/
 server/nubo-server-firewall usr/libexec/nubo/
 server/nubo-motd etc/update-motd.d/

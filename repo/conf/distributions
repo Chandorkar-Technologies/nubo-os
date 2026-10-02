@@ -3,5 +3,13 @@ Label: Nubo OS
 Codename: resolute
 Architectures: amd64 arm64 source
 Components: main
-Description: Nubo OS packages
+Description: Nubo OS packages, stable channel
+SignWith: default
+
+Origin: Nubo
+Label: Nubo OS Beta
+Codename: resolute-beta
+Architectures: amd64 arm64 source
+Components: main
+Description: Nubo OS packages, beta channel
 SignWith: default

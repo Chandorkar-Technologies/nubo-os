@@ -1,2 +1,4 @@
-repo/nubo.sources etc/apt/sources.list.d/
-repo/nubo-archive-keyring.gpg usr/share/keyrings/
+build/archive/nubo.sources etc/apt/sources.list.d/
+build/archive/nubo-archive-keyring.gpg usr/share/keyrings/
+repo/52-nubo-unattended.conf etc/apt/apt.conf.d/
+repo/nubo-channel usr/sbin/

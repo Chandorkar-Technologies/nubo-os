@@ -149,8 +149,12 @@ override_dh_makeshlibs:
 # The archive key is created once with repo/gen-key.sh. Development builds go
 # ahead without it; a release build (NUBO_RELEASE=1) must have it.
 override_dh_auto_install:
-	@if [ ! -f repo/nubo-archive-keyring.gpg ]; then \
+	mkdir -p $(BUILD)/archive
+	cp repo/nubo.sources $(BUILD)/archive/nubo.sources
+	@if [ -s repo/nubo-archive-keyring.gpg ]; then cp repo/nubo-archive-keyring.gpg $(BUILD)/archive/; \
+	else \
 		if [ -n "$$NUBO_RELEASE" ]; then echo "repo/nubo-archive-keyring.gpg missing" >&2; exit 1; fi; \
-		echo "warning: no archive key, nubo-archive will carry an empty keyring" >&2; : > repo/nubo-archive-keyring.gpg; \
+		echo "warning: no archive key: nubo-archive installs a disabled source" >&2; : > $(BUILD)/archive/nubo-archive-keyring.gpg; \
+		echo "Enabled: no" >> $(BUILD)/archive/nubo.sources; \
 	fi
 	dh_auto_install
