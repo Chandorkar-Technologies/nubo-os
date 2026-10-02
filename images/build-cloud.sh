@@ -13,6 +13,8 @@ curl -fL -o "${IMG}" "${BASE}"
 qemu-img resize "${IMG}" 10G
 virt-customize -a "${IMG}" \
   --copy-in "${DEBS}":/var/tmp \
+  --copy-in "$(dirname "$0")/../ci/use-cumulus.sh":/var/tmp \
+  --run-command 'sh /var/tmp/use-cumulus.sh' \
   --run-command 'apt-get update && apt-get install -y /var/tmp/debs/nubo-archive_*.deb /var/tmp/debs/nubo-server-base_*.deb /var/tmp/debs/nubo-branding_*.deb || true' \
   --run-command '/usr/libexec/nubo/nubo-server-firewall || true' \
   --run-command 'rm -rf /var/tmp/debs' \

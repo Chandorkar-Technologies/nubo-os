@@ -9,6 +9,8 @@ mkdir -p "${OUT}"; IMG="${OUT}/nubo-os-server-raspi.img"
 curl -fL "${URL}" | xz -d >"${IMG}"
 virt-customize -a "${IMG}" \
   --copy-in "${DEBS}":/var/tmp \
+  --copy-in "$(dirname "$0")/../ci/use-cumulus.sh":/var/tmp \
+  --run-command 'sh /var/tmp/use-cumulus.sh' \
   --run-command 'apt-get install -y /var/tmp/debs/nubo-archive_*.deb /var/tmp/debs/nubo-server-base_*.deb || true' \
   --run-command 'rm -rf /var/tmp/debs'
 xz -T0 -f "${IMG}"
