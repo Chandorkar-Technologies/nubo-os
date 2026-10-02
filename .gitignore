@@ -17,3 +17,4 @@
 goa/out/
 goa/src/
 /vendor/vicinae-arm64.AppImage
+PRIVATE-nubo-archive-key.asc
