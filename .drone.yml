@@ -29,7 +29,6 @@ steps:
       - ci/stage-upload.sh amd64 out
 
 ---
----
 kind: pipeline
 type: docker
 name: publish
