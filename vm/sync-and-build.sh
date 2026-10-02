@@ -6,14 +6,19 @@
 
 set -euo pipefail
 
+# A VM_IP passed on the command line means a local VM: ignore the Proxmox host.
+LOCAL_VM_IP="${VM_IP:-}"
 # Local settings (Proxmox host etc.) can live outside the repository.
 [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/nubo-os/env" ]] && . "${XDG_CONFIG_HOME:-$HOME/.config}/nubo-os/env"
-PVE_HOST="${PVE_HOST:?set PVE_HOST to the Proxmox host, e.g. root@proxmox.example.net}"
+# Set VM_IP (and leave PVE_HOST unset) to build in a local VM, e.g. UTM on a Mac.
+PVE_HOST="${PVE_HOST:-}"
+if [[ -n "${LOCAL_VM_IP}" ]]; then PVE_HOST=""; VM_IP="${LOCAL_VM_IP}"; fi
+[[ -n "${PVE_HOST}" || -n "${VM_IP:-}" ]] || { echo "set PVE_HOST (Proxmox) or VM_IP (local VM)" >&2; exit 1; }
 VM_USER="${VM_USER:-nubo}"
 VMID="${VMID:-301}"
 # The desktop's network manager takes its address from DHCP, so ask the
 # hypervisor where the VM currently is instead of assuming one.
-VM_IP="${VM_IP:-$(ssh -o BatchMode=yes "${PVE_HOST}" "qm guest cmd ${VMID} network-get-interfaces" \
+VM_IP="${VM_IP:-$([[ -n "${PVE_HOST}" ]] && ssh -o BatchMode=yes "${PVE_HOST}" "qm guest cmd ${VMID} network-get-interfaces" \
   | grep -o '"ip-address" : "10\.[0-9.]*"' | head -1 | cut -d'"' -f4)}"
 if [[ -z "${VM_IP}" ]]; then
   echo "Could not find the VM address; is VM ${VMID} running?" >&2
@@ -25,7 +30,8 @@ INSTALL=1
 
 cd "$(dirname "$0")/.."
 
-SSH=(ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -J "${PVE_HOST}")
+SSH=(ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new)
+[[ -n "${PVE_HOST}" ]] && SSH+=(-J "${PVE_HOST}")
 
 echo "==> Syncing sources"
 rsync -az --delete \

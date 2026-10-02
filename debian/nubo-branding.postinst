@@ -39,6 +39,11 @@ if [ "$1" = "configure" ]; then
         [ -e "$f" ] && ln -sf "$f" "/usr/local/share/applications/$(basename "$f")"
     done
 
+    # System-wide app grid folders (profile and database are shipped by this package).
+    if command -v dconf >/dev/null 2>&1; then
+        dconf update || true
+    fi
+
     # Pick up the pinned boot loader name.
     if command -v update-grub >/dev/null 2>&1; then
         update-grub || true

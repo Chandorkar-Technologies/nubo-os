@@ -15,10 +15,13 @@ override_dh_installsystemd:
 
 override_dh_installsystemduser:
 	dh_installsystemduser --name=nubo-session-helper -pnubo-theme
+	dh_installsystemduser --name=nubo-notify-agent -pnubo-notify
+	dh_installsystemduser --name=nubo-app-stubs -pnubo-apps
 
 override_dh_auto_build:
 	@test -d vendor/colloid-gtk/src || { echo "vendor/colloid-gtk missing: run vendor/fetch.sh" >&2; exit 1; }
 	@test -f vendor/vicinae.AppImage || { echo "vendor/vicinae.AppImage missing: run vendor/fetch.sh" >&2; exit 1; }
+	@test -f vendor/app-grid-tuner.zip -a -f vendor/glass-widgets.zip || { echo "extension zips missing: run vendor/fetch.sh" >&2; exit 1; }
 	@test -f vendor/blur-my-shell.zip || { echo "vendor/blur-my-shell.zip missing: run vendor/fetch.sh" >&2; exit 1; }
 	rm -rf $(BUILD)
 	mkdir -p $(BUILD)/themes $(BUILD)/icons $(BUILD)/home $(BUILD)/backgrounds \
@@ -47,7 +50,7 @@ override_dh_auto_build:
 
 	# Login screen, from the dark shell theme just built.
 	brand/make-gdm-theme.sh $(BUILD)/themes/$(NAME)-Grey-Dark/gnome-shell \
-		$(BUILD)/gdm/nubo-gdm-theme.gresource
+		$(BUILD)/gdm/nubo-gdm-theme.gresource brand/wallpapers/photos/06-golden-dunes.jpg
 
 	# Icons.
 	brand/make-icon-overlay.sh $(BUILD)/icons brand/logo
@@ -57,6 +60,18 @@ override_dh_auto_build:
 	unzip -q vendor/blur-my-shell.zip -d $(BUILD)/extensions/$(BLUR)
 	mv $(BUILD)/extensions/$(BLUR)/schemas/*.gschema.xml $(BUILD)/extension-schemas/
 	rm -rf $(BUILD)/extensions/$(BLUR)/schemas
+	# Same for the app grid and widget extensions.
+	for pair in app-grid-tuner:app-grid-tuner@m-lab glass-widgets:glass-widgets@peter-njoro.github.io; do \
+		zip=$${pair%%:*}; uuid=$${pair##*:}; \
+		unzip -q vendor/$$zip.zip -d $(BUILD)/extensions/$$uuid; \
+		mv $(BUILD)/extensions/$$uuid/schemas/*.gschema.xml $(BUILD)/extension-schemas/; \
+		rm -rf $(BUILD)/extensions/$$uuid/schemas; \
+	done
+	# Nubo build of the widgets: draggable cards, calendar, no blur layer.
+	W=$(BUILD)/extensions/glass-widgets@peter-njoro.github.io; \
+	cp data/glass-widgets/extension.js $$W/extension.js; \
+	cat data/glass-widgets/stylesheet.css >> $$W/stylesheet.css; \
+	sed -i 's|<key type="b" name="show-stats">|<key type="b" name="show-calendar"><default>true</default><summary>Show calendar widget</summary></key>\n    <key type="b" name="show-stats">|' $(BUILD)/extension-schemas/org.gnome.shell.extensions.glass-widgets.gschema.xml
 
 	# System identity: About-page logo and renamed desktop entries. On a
 	# machine where nubo-branding is already installed, the originals live
@@ -65,6 +80,14 @@ override_dh_auto_build:
 	cp brand/logo/nubo-mark-black.svg $(BUILD)/os/icons/nubo-logo.svg
 	cp brand/logo/nubo-mark-black.svg $(BUILD)/os/icons/nubo-logo-text.svg
 	cp brand/logo/nubo-mark-white.svg $(BUILD)/os/icons/nubo-logo-text-dark.svg
+	# The About page shows Ubuntu's own logo files from /usr/share/pixmaps (the
+	# originals are diverted); give those names the Nubo mark.
+	mkdir -p $(BUILD)/os/pixmaps
+	cp $(BUILD)/os/icons/nubo-logo.svg $(BUILD)/os/pixmaps/ubuntu-logo.svg
+	cp $(BUILD)/os/icons/nubo-logo-text.svg $(BUILD)/os/pixmaps/ubuntu-logo-text.svg
+	cp $(BUILD)/os/icons/nubo-logo-text-dark.svg $(BUILD)/os/pixmaps/ubuntu-logo-text-dark.svg
+	rsvg-convert -w 256 -a $(BUILD)/os/icons/nubo-logo-text.svg -o $(BUILD)/os/pixmaps/ubuntu-logo-text.png
+	rsvg-convert -w 256 -a $(BUILD)/os/icons/nubo-logo-text-dark.svg -o $(BUILD)/os/pixmaps/ubuntu-logo-text-dark.png
 	grep -v '^Name\[' $(firstword $(wildcard /usr/share/applications/gnome-ubuntu-panel.desktop.ubuntu) /usr/share/applications/gnome-ubuntu-panel.desktop) \
 		| sed -e 's/^Name=.*/Name=Desktop/' -e 's/^Icon=.*/Icon=preferences-desktop/' \
 		> $(BUILD)/os/gnome-ubuntu-panel.desktop
@@ -79,12 +102,17 @@ override_dh_auto_build:
 
 	# Renamed first-party app entries (override /usr/share/applications via /usr/local/share).
 	brand/make-app-entries.sh data/apps/rebrand.list $(BUILD)/apps
+	brand/make-hidden-entries.sh data/apps/hide.list $(BUILD)/apps
 
 	# Launcher: unpack the pinned AppImage (it carries its own libraries).
+	# The AppImage is x86-64 only, so other architectures (e.g. an arm64
+	# development VM) build without nubo-search.
 	mkdir -p $(BUILD)/search/lib/nubo
-	cp vendor/vicinae.AppImage $(BUILD)/vicinae.AppImage && chmod +x $(BUILD)/vicinae.AppImage
-	cd $(BUILD) && ./vicinae.AppImage --appimage-extract >/dev/null && mv squashfs-root search/lib/nubo/search
-	rm -rf $(BUILD)/search/lib/nubo/search/apprun-hooks
+	if [ "$$(dpkg --print-architecture)" = amd64 ]; then \
+		cp vendor/vicinae.AppImage $(BUILD)/vicinae.AppImage && chmod +x $(BUILD)/vicinae.AppImage && \
+		cd $(BUILD) && ./vicinae.AppImage --appimage-extract >/dev/null && mv squashfs-root search/lib/nubo/search && \
+		rm -rf search/lib/nubo/search/apprun-hooks; \
+	else echo "nubo-search skipped on $$(dpkg --print-architecture)"; fi
 
 	# Sign-in method icon shown on the login screen.
 	mkdir -p $(BUILD)/account
@@ -92,9 +120,15 @@ override_dh_auto_build:
 	cp brand/logo/nubo-mark-white.svg $(BUILD)/account/tech.nubosuite.Setup.svg
 
 	# Artwork.
-	python3 brand/wallpapers/generate.py $(BUILD)/backgrounds
 	installer/make-installer-branding.sh $(BUILD)/installer brand/logo
 	rsvg-convert -w 512 -h 512 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/plymouth/logo.png
+
+# nubo-search only exists for amd64; other architectures (e.g. an arm64
+# development VM) get a desktop without it.
+override_dh_gencontrol:
+	if [ "$$(dpkg --print-architecture)" = amd64 ]; then \
+		dh_gencontrol -- "-Vnubo:search=nubo-search (= $$(dpkg-parsechangelog -SVersion))," ; \
+	else dh_gencontrol -- "-Vnubo:search="; fi
 
 override_dh_auto_clean:
 	rm -rf $(BUILD)

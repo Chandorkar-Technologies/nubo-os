@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+"""Nubo notification agent.
+
+Keeps messaging apps running in the background, without a window, so they can
+receive messages and raise notifications even when the person has closed
+their window. Phones do the same thing; a desktop app that has quit cannot
+receive anything.
+
+Rules:
+  - Only apps that are installed are started.
+  - An app that is already running is left alone.
+  - An app that crashes (non-zero exit) is restarted with a growing delay.
+  - An app that exits cleanly (the person chose Quit) stays closed until the
+    next login.
+  - People can turn any app off: nubo-notify-agent disable <id>.
+
+Usage: nubo-notify-agent run | list | enable ID | disable ID
+"""
+
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+
+SYSTEM_CONFIG = os.environ.get("NUBO_NOTIFY_APPS", "/usr/share/nubo/notify/background-apps.json")
+USER_CONFIG = os.path.join(
+    os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "nubo", "notify.json")
+POLL_SECONDS = 30
+MAX_BACKOFF = 600
+
+
+def load_apps():
+    with open(SYSTEM_CONFIG) as f:
+        return json.load(f)["apps"]
+
+
+def load_user():
+    try:
+        with open(USER_CONFIG) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def save_user(data):
+    os.makedirs(os.path.dirname(USER_CONFIG), exist_ok=True)
+    with open(USER_CONFIG, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+def flatpak_installed(app_id):
+    return subprocess.run(["flatpak", "info", app_id], capture_output=True).returncode == 0
+
+
+def flatpak_running():
+    out = subprocess.run(["flatpak", "ps", "--columns=application"], capture_output=True, text=True)
+    return set(out.stdout.split()) if out.returncode == 0 else set()
+
+
+def installed(app):
+    if "flatpak" in app:
+        return shutil.which("flatpak") is not None and flatpak_installed(app["flatpak"])
+    return shutil.which(app["command"][0]) is not None
+
+
+def running(app):
+    if "flatpak" in app:
+        return app["flatpak"] in flatpak_running()
+    return subprocess.run(["pgrep", "-x", app.get("match", app["command"][0])],
+                          capture_output=True).returncode == 0
+
+
+def command(app):
+    if "flatpak" in app:
+        return ["flatpak", "run", app["flatpak"]] + app.get("args", [])
+    return app["command"]
+
+
+class Supervisor:
+    def __init__(self):
+        self.procs = {}      # id -> Popen
+        self.retry_at = {}   # id -> time
+        self.backoff = {}    # id -> seconds
+        self.quit_by_user = set()
+        self.stop = False
+
+    def enabled(self, app):
+        return app["id"] not in load_user().get("disabled", [])
+
+    def tick(self):
+        for app in load_apps():
+            aid = app["id"]
+            proc = self.procs.get(aid)
+            if proc is not None and proc.poll() is not None:
+                code = proc.returncode
+                del self.procs[aid]
+                if code == 0:
+                    self.quit_by_user.add(aid)
+                else:
+                    delay = min(self.backoff.get(aid, 30) * 2, MAX_BACKOFF)
+                    self.backoff[aid] = delay
+                    self.retry_at[aid] = time.time() + delay
+            if aid in self.procs or aid in self.quit_by_user:
+                continue
+            if not self.enabled(app) or time.time() < self.retry_at.get(aid, 0):
+                continue
+            if not installed(app) or running(app):
+                continue
+            self.procs[aid] = subprocess.Popen(
+                command(app), stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                start_new_session=True)
+            print(f"started {aid}", flush=True)
+
+    def run(self):
+        signal.signal(signal.SIGTERM, lambda *_: setattr(self, "stop", True))
+        signal.signal(signal.SIGINT, lambda *_: setattr(self, "stop", True))
+        # Let the session settle before starting apps.
+        for _ in range(10):
+            if self.stop:
+                return
+            time.sleep(1)
+        while not self.stop:
+            self.tick()
+            for _ in range(POLL_SECONDS):
+                if self.stop:
+                    break
+                time.sleep(1)
+        # Apps keep running when the agent stops; they belong to the session.
+
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
+    if cmd == "run":
+        Supervisor().run()
+    elif cmd == "list":
+        off = load_user().get("disabled", [])
+        for app in load_apps():
+            state = "off" if app["id"] in off else "on"
+            have = "installed" if installed(app) else "not installed"
+            print(f'{app["id"]:28} {app["name"]:10} {state:4} {have}')
+    elif cmd in ("enable", "disable") and len(sys.argv) == 3:
+        data = load_user()
+        off = set(data.get("disabled", []))
+        (off.discard if cmd == "enable" else off.add)(sys.argv[2])
+        data["disabled"] = sorted(off)
+        save_user(data)
+    else:
+        print(__doc__)
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()

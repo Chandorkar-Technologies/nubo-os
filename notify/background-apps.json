@@ -1,0 +1,10 @@
+{
+  "_comment": "Apps kept running in the background so they can deliver notifications while their window is closed. flatpak: Flathub application id. command: program for packages installed from the Ubuntu archive. match: process name used to detect an already running copy.",
+  "apps": [
+    {"id": "geary",    "name": "Mail",     "command": ["geary", "--gapplication-service"], "match": "geary"},
+    {"id": "org.telegram.desktop", "name": "Telegram", "flatpak": "org.telegram.desktop", "args": ["-startintray"]},
+    {"id": "com.slack.Slack",      "name": "Slack",    "flatpak": "com.slack.Slack",      "args": ["--startup"]},
+    {"id": "com.discordapp.Discord", "name": "Discord", "flatpak": "com.discordapp.Discord", "args": ["--start-minimized"]},
+    {"id": "org.signal.Signal",    "name": "Signal",   "flatpak": "org.signal.Signal",    "args": ["--start-in-tray"]}
+  ]
+}

@@ -1,0 +1,4 @@
+notify/nubo-notify-agent usr/libexec/nubo/
+notify/nubo-notify-agent.service usr/lib/systemd/user/
+notify/background-apps.json usr/share/nubo/notify/
+notify/extension/* usr/share/gnome-shell/extensions/nubo-notify-center@nubosuite.tech/

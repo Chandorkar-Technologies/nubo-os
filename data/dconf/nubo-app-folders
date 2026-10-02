@@ -1,0 +1,18 @@
+# App grid folders. Everyday apps stay on the front pages; tools go in folders.
+[org/gnome/desktop/app-folders]
+folder-children=['NuboUtilities', 'NuboAccessories', 'NuboMore']
+
+[org/gnome/desktop/app-folders/folders/NuboUtilities]
+name='Utilities'
+translate=false
+apps=['gnome-language-selector.desktop', 'net.nokyan.Resources.desktop', 'org.gnome.Characters.desktop', 'org.gnome.baobab.desktop', 'org.gnome.DiskUtility.desktop', 'org.gnome.Logs.desktop', 'org.gnome.font-viewer.desktop', 'org.gnome.FileRoller.desktop', 'org.gnome.DejaDup.desktop', 'org.gnome.seahorse.Application.desktop', 'org.gnome.Ptyxis.desktop', 'org.localsend.localsend_app.desktop']
+
+[org/gnome/desktop/app-folders/folders/NuboAccessories]
+name='Accessories'
+translate=false
+apps=['simple-scan.desktop', 'org.gnome.Calculator.desktop', 'org.gnome.SoundRecorder.desktop', 'org.gnome.clocks.desktop', 'org.gnome.TextEditor.desktop']
+
+[org/gnome/desktop/app-folders/folders/NuboMore]
+name='More apps'
+translate=false
+categories=['X-Nubo-Placeholder']

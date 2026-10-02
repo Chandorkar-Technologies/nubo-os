@@ -7,7 +7,7 @@
 #     but leaves the older theme setting alone.
 #
 # Users who chose a theme of their own are left alone: the follower only
-# acts while a Nubo theme is selected.
+# acts while a Nubo (or MacTahoe) theme is selected.
 
 set -u
 
@@ -37,17 +37,57 @@ if [ "$(gsettings get $KB custom-keybindings)" = "@as []" ]; then
   gsettings set $KB.custom-keybinding:$KP binding '<Super>space'
 fi
 
+# Nubo's own shell extensions. The system default list is ignored as soon as a
+# person has a list of their own (turning any extension on or off creates one),
+# so add ours to that list. Each is added once, so a person who later turns one
+# off keeps it off.
+SEEDED="${XDG_STATE_HOME:-$HOME/.local/state}/nubo/seeded-extensions"
+NUBO_EXTENSIONS="blur-my-shell@aunetx user-theme@gnome-shell-extensions.gcampax.github.com app-grid-tuner@m-lab glass-widgets@peter-njoro.github.io gsconnect@andyholmes.github.io nubo-notify-center@nubosuite.tech nubo-menu@nubosuite.tech"
+seed_extensions() {
+  mkdir -p "$(dirname "$SEEDED")"
+  touch "$SEEDED"
+  current="$(gsettings get org.gnome.shell enabled-extensions)"
+  for uuid in $NUBO_EXTENSIONS; do
+    grep -qx "$uuid" "$SEEDED" && continue
+    [ -d "/usr/share/gnome-shell/extensions/$uuid" ] || continue
+    case "$current" in
+      *"'$uuid'"*) ;;
+      "@as []") current="['$uuid']" ;;
+      *) current="${current%]}, '$uuid']" ;;
+    esac
+    echo "$uuid" >>"$SEEDED"
+  done
+  [ "$current" = "$(gsettings get org.gnome.shell enabled-extensions)" ] \
+    || gsettings set org.gnome.shell enabled-extensions "$current"
+}
+seed_extensions
+
+SHELL_THEME=org.gnome.shell.extensions.user-theme
+
 follow() {
+  case "$(gsettings get $IFACE color-scheme)" in
+    "'prefer-dark'") dark=1 ;;
+    *)               dark=0 ;;
+  esac
   case "$(gsettings get $IFACE gtk-theme)" in
-    "'Nubo-"*) ;;
+    "'Nubo-"*)
+      if [ "$dark" = 1 ]; then gtk=Nubo-Grey-Dark; icons=Nubo-Dark; else gtk=Nubo-Grey-Light; icons=Nubo; fi
+      shell=$gtk ;;
+    "'MacTahoe-"*)
+      if [ "$dark" = 1 ]; then gtk=MacTahoe-Dark-grey; else gtk=MacTahoe-Light-grey; fi
+      icons=""; shell=$gtk ;;
     *) return ;;
   esac
-  case "$(gsettings get $IFACE color-scheme)" in
-    "'prefer-dark'") gtk=Nubo-Grey-Dark; icons=Nubo-Dark ;;
-    *)               gtk=Nubo-Grey-Light; icons=Nubo ;;
-  esac
   [ "$(gsettings get $IFACE gtk-theme)" = "'$gtk'" ] || gsettings set $IFACE gtk-theme "$gtk"
-  [ "$(gsettings get $IFACE icon-theme)" = "'$icons'" ] || gsettings set $IFACE icon-theme "$icons"
+  if [ -n "$icons" ] && [ "$(gsettings get $IFACE icon-theme)" != "'$icons'" ]; then
+    gsettings set $IFACE icon-theme "$icons"
+  fi
+  # The shell (top bar, menus, popups) has its own theme setting that GNOME
+  # does not switch by itself; keep it in step too.
+  if gsettings list-keys $SHELL_THEME >/dev/null 2>&1 \
+     && [ "$(gsettings get $SHELL_THEME name)" != "'$shell'" ]; then
+    gsettings set $SHELL_THEME name "$shell"
+  fi
 }
 
 follow

@@ -1,0 +1,7 @@
+{
+  "uuid": "nubo-menu@nubosuite.tech",
+  "name": "Nubo Menu",
+  "description": "The Nubo menu in the top bar: About, Settings, Store, Help and the power actions.",
+  "shell-version": ["46", "47", "48", "49", "50"],
+  "url": "https://nubosuite.tech"
+}

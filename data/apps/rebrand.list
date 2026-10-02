@@ -2,7 +2,7 @@
 # Apps listed here keep their program; only the entry shown in the launcher changes.
 org.gnome.Nautilus|Files|Browse and manage your files
 org.gnome.TextEditor|Text Editor|Write and edit text
-org.gnome.Papers|Documents|Read PDFs and documents
+org.gnome.Papers|PDF Viewer|Read PDFs and documents
 org.gnome.Loupe|Image Viewer|View images
 org.gnome.Ptyxis|Terminal|Use the command line
 org.gnome.Settings|Settings|Change system settings
@@ -14,7 +14,6 @@ org.gnome.Logs|Logs|Read system logs
 org.gnome.Calendar|Calendar|See your events
 org.gnome.Contacts|Contacts|Your address book
 org.gnome.Weather|Weather|Forecasts
-org.gnome.Maps|Maps|Find places
 org.gnome.Showtime|Videos|Play videos
 simple-scan|Document Scanner|Scan documents
 org.gnome.FileRoller|Archive Manager|Open and create archives
@@ -23,3 +22,6 @@ com.github.johnfactotum.Foliate|Books|Read books
 org.gnome.SoundRecorder|Voice Memos|Record audio
 org.gnome.DejaDup|Backup|Back up your files
 io.github.mrvladus.List|Reminders|Tasks and reminders
+org.gnome.Geary|Mail|Read and send email
+gnome-language-selector|Languages|Language and region support|nubo-languages
+net.nokyan.Resources|Resources|Processes and system usage

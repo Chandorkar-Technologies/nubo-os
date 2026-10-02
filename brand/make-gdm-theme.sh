@@ -6,12 +6,15 @@
 # and Ubuntu versions ask that bundle for different stylesheet names, so the
 # same stylesheet is provided under each of them.
 #
-# Usage: make-gdm-theme.sh SHELL_THEME_DIR OUTPUT.gresource
+# Usage: make-gdm-theme.sh SHELL_THEME_DIR OUTPUT.gresource [BACKGROUND_IMAGE]
+# The optional image becomes the login screen background (softly blurred and
+# slightly dimmed so the login box stays readable, without losing the colours).
 
 set -euo pipefail
 
 SRC="${1:?shell theme directory required}"
 OUT="${2:?output file required}"
+BG="${3:-}"
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
@@ -34,6 +37,12 @@ for name in "${CSS_NAMES[@]}"; do
 done
 # Stylesheets in the subfolder refer to assets relative to themselves.
 cp -r "${SRC}/assets" "${WORK}/Yaru/assets"
+
+if [[ -n "${BG}" ]]; then
+  magick=$(command -v magick || command -v convert)
+  "${magick}" "${BG}" -resize 2560x -blur 0x6 -brightness-contrast -8x0 -quality 88 "${WORK}/nubo-login.jpg"
+  find "${WORK}" -name '*.css' -exec sed -i '/^#lockDialogGroup {/,/^}/ s|background-color: #000000;|background-color: #0a0a0c;\n  background-image: url("resource:///org/gnome/shell/theme/nubo-login.jpg");\n  background-size: cover;\n  background-position: center;|' {} +
+fi
 
 {
   echo '<?xml version="1.0" encoding="UTF-8"?>'

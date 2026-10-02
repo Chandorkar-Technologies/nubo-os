@@ -1,0 +1,13 @@
+[Unit]
+Description=Nubo popular app launchers
+# Same rules as the other Nubo session helpers: no ordering against
+# graphical-session.target, and never on the installation media.
+ConditionPathIsMountPoint=!/cdrom
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/nubo/nubo-app-stubs
+Slice=background.slice
+
+[Install]
+WantedBy=gnome-session.target

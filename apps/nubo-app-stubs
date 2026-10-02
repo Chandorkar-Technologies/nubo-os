@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""Nubo app launchers for the curated list of popular apps.
+
+Reads /usr/share/nubo/apps/popular.list and keeps launchers in the person's
+own applications folder:
+
+  flatpak apps that are not installed yet -> a grey launcher; clicking it
+      downloads the app (nubo-get) and then opens it.
+  web apps -> a launcher that opens the site.
+
+Once a flatpak app is installed its grey launcher is removed and the real app
+takes its place. Runs at login and again after each download.
+
+List format:  kind | id-or-url | name | category | preinstall(yes/no)
+"""
+
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+LIST = os.environ.get("NUBO_POPULAR_LIST", "/usr/share/nubo/apps/popular.list")
+HOME = os.path.expanduser("~")
+APPS = os.path.join(os.environ.get("XDG_DATA_HOME", f"{HOME}/.local/share"), "applications")
+ICONS = os.path.join(os.environ.get("XDG_DATA_HOME", f"{HOME}/.local/share"), "icons/hicolor/128x128/apps")
+APPSTREAM_DIRS = ["/var/lib/flatpak/appstream", f"{HOME}/.local/share/flatpak/appstream"]
+PREFIX_GET, PREFIX_WEB = "nubo-get-", "nubo-web-"
+MAGICK = shutil.which("magick") or shutil.which("convert")
+
+
+def read_list():
+    rows = []
+    with open(LIST) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) >= 5:
+                rows.append(parts[:5])
+    return rows
+
+
+def installed_flatpaks():
+    out = subprocess.run(["flatpak", "list", "--app", "--columns=application"],
+                         capture_output=True, text=True)
+    return set(out.stdout.split()) if out.returncode == 0 else set()
+
+
+def slug(text):
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def appstream_icon(app_id):
+    for base in APPSTREAM_DIRS:
+        for root, _dirs, files in os.walk(base):
+            if f"{app_id}.png" in files and "128x128" in root:
+                return os.path.join(root, f"{app_id}.png")
+    return None
+
+
+def make_icon(name_key, label, source=None, grey=False):
+    """Write the icon file; returns the icon name. Never fails the run."""
+    os.makedirs(ICONS, exist_ok=True)
+    dest = os.path.join(ICONS, f"{name_key}.png")
+    if os.path.exists(dest):
+        return name_key
+    if not MAGICK:
+        return "application-x-executable" if grey else "web-browser"
+    try:
+        if source:
+            cmd = [MAGICK, source, "-resize", "128x128"]
+            if grey:
+                cmd += ["-colorspace", "Gray", "-channel", "A", "-evaluate", "multiply", "0.55", "+channel"]
+            subprocess.run(cmd + [dest], check=True, capture_output=True)
+        else:
+            # Monogram tile: first letter on a rounded dark square.
+            tile = "#6b6f76" if grey else "#3a3d44"
+            subprocess.run([MAGICK, "-size", "128x128", "xc:none", "-fill", tile,
+                            "-draw", "roundrectangle 8,8 120,120 26,26", "-fill", "white",
+                            "-gravity", "center", "-pointsize", "64", "-annotate", "+0+0",
+                            label[:1].upper(), dest], check=True, capture_output=True)
+    except (subprocess.CalledProcessError, OSError):
+        return "application-x-executable" if grey else "web-browser"
+    return name_key
+
+
+def write_desktop(filename, name, comment, exec_line, icon, categories):
+    os.makedirs(APPS, exist_ok=True)
+    path = os.path.join(APPS, filename)
+    text = (
+        "[Desktop Entry]\nType=Application\n"
+        f"Name={name}\nComment={comment}\nExec={exec_line}\nIcon={icon}\n"
+        f"Categories={categories}\nTerminal=false\nStartupNotify=true\n"
+    )
+    if not os.path.exists(path) or open(path).read() != text:
+        with open(path, "w") as f:
+            f.write(text)
+
+
+def main():
+    have = installed_flatpaks()
+    wanted = set()
+    for kind, ident, name, _cat, pre in read_list():
+        if kind == "flatpak":
+            fname = f"{PREFIX_GET}{ident}.desktop"
+            if ident in have:
+                continue
+            icon = make_icon(f"{PREFIX_GET}{ident}", name, appstream_icon(ident), grey=True)
+            # Preinstalled-by-default apps sit at the top level of the app grid;
+            # the rest are tucked into the "More apps" folder (category below).
+            cats = "Utility;" if pre == "yes" else "Utility;X-Nubo-Placeholder;"
+            write_desktop(fname, name, "Click to download", f'nubo-get {ident} "{name}"', icon, cats)
+            wanted.add(fname)
+        elif kind == "web" and pre == "yes":
+            fname = f"{PREFIX_WEB}{slug(name)}.desktop"
+            icon = make_icon(f"{PREFIX_WEB}{slug(name)}", name)
+            write_desktop(fname, name, "Opens in your browser", f"xdg-open {ident}", icon, "Network;")
+            wanted.add(fname)
+    # Remove launchers that are no longer needed (app installed or list changed).
+    if os.path.isdir(APPS):
+        for fname in os.listdir(APPS):
+            if fname.startswith((PREFIX_GET, PREFIX_WEB)) and fname.endswith(".desktop") and fname not in wanted:
+                os.remove(os.path.join(APPS, fname))
+    if shutil.which("update-desktop-database"):
+        subprocess.run(["update-desktop-database", APPS], capture_output=True)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:  # a launcher refresh must never break the session
+        print(f"nubo-app-stubs: {exc}", file=sys.stderr)
+        sys.exit(0)

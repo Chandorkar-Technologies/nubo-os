@@ -1,2 +1,4 @@
 build/extensions/blur-my-shell@aunetx usr/share/gnome-shell/extensions/
+build/extensions/app-grid-tuner@m-lab usr/share/gnome-shell/extensions/
+build/extensions/glass-widgets@peter-njoro.github.io usr/share/gnome-shell/extensions/
 build/extension-schemas/*.xml usr/share/glib-2.0/schemas/

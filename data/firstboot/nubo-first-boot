@@ -30,8 +30,14 @@ if command -v flatpak >/dev/null; then
     && log "Flathub added" || log "Flathub not added yet (offline?)"
 fi
 
+# Notebook app (Folio) is not part of Nubo OS: Reminders and Text Editor cover it.
+flatpak uninstall --system --noninteractive com.toolstack.Folio >/dev/null 2>&1 || true
+
+# LibreOffice is replaced by Collabora Office (below).
+apt-get purge -y -qq 'libreoffice*' >/dev/null 2>&1 && apt-get autoremove -y -qq >/dev/null 2>&1 || true
+
 # Apps that come from Flathub. Needs the network; retried next boot until done.
-FLATPAKS="org.mozilla.firefox com.toolstack.Folio org.localsend.localsend_app io.github.qwersyk.Newelle"
+FLATPAKS="org.mozilla.firefox org.localsend.localsend_app io.github.qwersyk.Newelle com.collaboraoffice.Office de.haeckerfelix.Shortwave com.spotify.Client org.videolan.VLC"
 missing=""
 for app in ${FLATPAKS}; do
   flatpak info --system "${app}" >/dev/null 2>&1 || missing="${missing} ${app}"

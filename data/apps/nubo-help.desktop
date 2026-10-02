@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Help
+Comment=Get help from the Nubo team
+Exec=xdg-open https://support.nubo.email
+Icon=help-browser
+Categories=Utility;
+Terminal=false

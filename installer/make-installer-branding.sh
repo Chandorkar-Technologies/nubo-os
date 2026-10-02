@@ -77,9 +77,22 @@ ${inner}
 EOF
 }
 
+# The mark is drawn edge to edge in a slightly non-square box, so used as it
+# is, it renders larger than the icon pages and sits off-centre. Wrap it in the
+# same square 380x380 canvas the icons use, centred and at half the width.
 mark_svg() {
-  local out="$1"
-  sed -e "s/fill=\"#ffffff\"/fill=\"${INK}\"/" "${LOGOS}/nubo-mark-white.svg" >"${out}"
+  local out="$1" inner
+  inner="$(sed -e '1,/<\/metadata>/d' -e '/<\/svg>/,$d' "${LOGOS}/nubo-mark-white.svg" \
+    | sed "s/fill=\"#ffffff\"/fill=\"${INK}\"/")"
+  {
+    echo '<?xml version="1.0" encoding="UTF-8"?>'
+    echo '<svg xmlns="http://www.w3.org/2000/svg" width="380" height="380" viewBox="0 0 380 380">'
+    # 190 / 2749.53 = 0.0691029; the mark is 180.8 high, so +4.6 centres it vertically.
+    echo '  <g transform="translate(95 99.6) scale(0.0691029)">'
+    echo "${inner}"
+    echo '  </g>'
+    echo '</svg>'
+  } >"${out}"
 }
 
 {
@@ -133,6 +146,12 @@ slide() {
   else
     icon_svg "${icon}" "${dir}/picture.svg"
   fi
+  # PNG, like the page pictures: the installer's SVG renderer drops or shrinks
+  # these drawings. Dark-mode copy has lighter ink.
+  rsvg-convert -w 760 -h 760 -a "${dir}/picture.svg" -o "${dir}/picture.png"
+  sed "s/${INK}/#d9d9d9/g" "${dir}/picture.svg" >"${dir}/picture-dark.svg"
+  rsvg-convert -w 760 -h 760 -a "${dir}/picture-dark.svg" -o "${dir}/picture-dark.png"
+  rm -f "${dir}/picture.svg" "${dir}/picture-dark.svg"
   sed -e "s|@TITLE@|${title}|" -e "s|@BODY@|${body}|" "${HERE}/slide-template.html" \
     >"${dir}/slide_en_US.html"
 }

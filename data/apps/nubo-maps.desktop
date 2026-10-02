@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Maps
+Comment=Find places and get directions
+Exec=xdg-open https://maps.google.com
+Icon=map-symbolic
+Categories=Utility;
+Terminal=false

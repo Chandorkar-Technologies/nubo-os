@@ -35,23 +35,23 @@ theme-name='Nubo'
 theme-name='Nubo'
 
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-light.png'
-picture-uri-dark='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+picture-uri='file:///usr/share/backgrounds/nubo/05-pastel-dunes.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/nubo/02-misty-bay-layers.jpg'
 picture-options='zoom'
 primary-color='#060606'
 
 [org.gnome.desktop.background:ubuntu]
-picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-light.png'
-picture-uri-dark='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+picture-uri='file:///usr/share/backgrounds/nubo/05-pastel-dunes.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/nubo/02-misty-bay-layers.jpg'
 picture-options='zoom'
 primary-color='#060606'
 
 [org.gnome.desktop.screensaver]
-picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+picture-uri='file:///usr/share/backgrounds/nubo/06-golden-dunes.jpg'
 primary-color='#060606'
 
 [org.gnome.desktop.screensaver:ubuntu]
-picture-uri='file:///usr/share/backgrounds/nubo/nubo-flow-dark.png'
+picture-uri='file:///usr/share/backgrounds/nubo/06-golden-dunes.jpg'
 primary-color='#060606'
 
 [org.gnome.login-screen]
@@ -62,12 +62,12 @@ name='Nubo-Grey-Dark'
 
 # Added on top of the extensions the Ubuntu session already turns on.
 [org.gnome.shell]
-enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx']
-favorite-apps=['org.mozilla.firefox.desktop', 'nubo-mail.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Calendar.desktop', 'org.gnome.Software.desktop', 'org.gnome.Settings.desktop', 'org.gnome.Ptyxis.desktop']
+enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx', 'app-grid-tuner@m-lab', 'glass-widgets@peter-njoro.github.io', 'gsconnect@andyholmes.github.io', 'nubo-notify-center@nubosuite.tech', 'nubo-menu@nubosuite.tech']
+favorite-apps=['org.mozilla.firefox.desktop', 'org.gnome.Geary.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Calendar.desktop', 'io.github.mrvladus.List.desktop', 'org.gnome.Software.desktop', 'org.gnome.Settings.desktop']
 
 [org.gnome.shell:ubuntu]
-enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx']
-favorite-apps=['firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Calendar.desktop', 'org.gnome.Software.desktop', 'org.gnome.Settings.desktop', 'org.gnome.Ptyxis.desktop']
+enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'blur-my-shell@aunetx', 'app-grid-tuner@m-lab', 'glass-widgets@peter-njoro.github.io', 'gsconnect@andyholmes.github.io', 'nubo-notify-center@nubosuite.tech', 'nubo-menu@nubosuite.tech']
+favorite-apps=['firefox.desktop', 'org.gnome.Geary.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Calendar.desktop', 'io.github.mrvladus.List.desktop', 'org.gnome.Software.desktop', 'org.gnome.Settings.desktop']
 
 # Dock: floating, centred at the bottom, sized to its contents.
 [org.gnome.shell.extensions.dash-to-dock]
@@ -134,3 +134,27 @@ dialog-corner-radius=24
 # Terminal: neutral palette instead of Ubuntu's purple.
 [org.gnome.Ptyxis.Profile]
 palette='gnome'
+
+# App grid: four rows of larger icons per page.
+[org.gnome.shell.extensions.app-grid-tuner]
+appgrid-max-rows=4
+appgrid-max-columns=7
+
+# Desktop widget: clock with weather, top right.
+[org.gnome.shell.extensions.glass-widgets]
+show-clock=true
+show-weather=true
+show-stats=true
+show-calendar=true
+weather-auto-location=true
+weather-temperature-unit=0
+blur-enabled=true
+
+# Files: icon view like Finder, folders first.
+[org.gnome.nautilus.preferences]
+default-folder-viewer='icon-view'
+default-sort-order='name'
+default-sort-in-reverse-order=false
+
+[org.gnome.nautilus.preferences:ubuntu]
+default-folder-viewer='icon-view'

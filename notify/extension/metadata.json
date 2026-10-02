@@ -1,0 +1,7 @@
+{
+  "uuid": "nubo-notify-center@nubosuite.tech",
+  "name": "Nubo Notification Center",
+  "description": "Notification history for every app, grouped by app, with unread count and Do Not Disturb.",
+  "shell-version": ["46", "47", "48", "49", "50"],
+  "url": "https://nubosuite.tech"
+}

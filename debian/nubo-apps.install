@@ -1,0 +1,4 @@
+apps/nubo-get usr/bin/
+apps/nubo-app-stubs usr/libexec/nubo/
+apps/nubo-app-stubs.service usr/lib/systemd/user/
+data/apps/popular.list usr/share/nubo/apps/

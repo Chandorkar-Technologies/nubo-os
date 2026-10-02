@@ -1,5 +1,4 @@
 brand/logo/*.svg usr/share/nubo/logo/
-build/backgrounds/*.png usr/share/backgrounds/nubo/
 brand/wallpapers/photos/*.jpg usr/share/backgrounds/nubo/
 data/backgrounds/nubo.xml usr/share/gnome-background-properties/
 data/gschema/90_nubo.gschema.override usr/share/glib-2.0/schemas/
@@ -24,3 +23,11 @@ data/firstboot/nubo-first-boot.service usr/lib/systemd/system/
 build/os/ubuntu.desktop usr/share/wayland-sessions/
 build/os/org.gnome.Software.desktop usr/share/applications/
 build/apps/*.desktop usr/share/nubo/applications/
+data/dconf/nubo-app-folders etc/dconf/db/nubo.d/
+data/dconf/profile/user etc/dconf/profile/
+data/apps/nubo-help.desktop usr/share/applications/
+data/icons/nubo-languages.svg usr/share/icons/hicolor/scalable/apps/
+data/apps/nubo-maps.desktop usr/share/applications/
+data/icons/nubo-logo-symbolic.svg usr/share/icons/hicolor/scalable/apps/
+menu/extension/* usr/share/gnome-shell/extensions/nubo-menu@nubosuite.tech/
+build/os/pixmaps/* usr/share/pixmaps/

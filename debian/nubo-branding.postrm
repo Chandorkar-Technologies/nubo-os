@@ -7,7 +7,12 @@ DIVERTED="/usr/lib/os-release
 /etc/issue.net
 /usr/share/applications/gnome-ubuntu-panel.desktop
 /usr/share/applications/org.gnome.Software.desktop
-/etc/legal"
+/etc/legal
+/usr/share/pixmaps/ubuntu-logo.svg
+/usr/share/pixmaps/ubuntu-logo-text.svg
+/usr/share/pixmaps/ubuntu-logo-text.png
+/usr/share/pixmaps/ubuntu-logo-text-dark.svg
+/usr/share/pixmaps/ubuntu-logo-text-dark.png"
 
 if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     rm -f /etc/issue /etc/issue.net /etc/lsb-release

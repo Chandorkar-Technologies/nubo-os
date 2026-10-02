@@ -1,0 +1,15 @@
+# Desktop ids removed from the launcher. The program stays installed; only its
+# menu entry is hidden (an override with NoDisplay=true).
+# Maps: Google Maps is offered as a web app instead.
+org.gnome.Maps
+display-im7.q16
+display-im6.q16
+com.mattjakeman.ExtensionManager
+org.gnome.Shell.Extensions
+org.gnome.Yelp
+vim
+info
+org.freedesktop.IBus.Setup
+im-config
+org.gnome.Sysprof
+nm-connection-editor

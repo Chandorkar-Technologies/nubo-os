@@ -2,84 +2,72 @@
 <!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
 <wallpapers>
   <wallpaper deleted="false">
-    <name>Nubo Flow</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-flow-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/nubo/nubo-flow-dark.png</filename-dark>
+    <name>Blue Ridge Dusk</name>
+    <filename>/usr/share/backgrounds/nubo/01-blue-ridge-dusk.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/01-blue-ridge-dusk.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Contours</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-contours-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/nubo/nubo-contours-dark.png</filename-dark>
+    <name>Misty Bay</name>
+    <filename>/usr/share/backgrounds/nubo/02-misty-bay-layers.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/02-misty-bay-layers.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Beam</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-beam-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/nubo/nubo-beam-dark.png</filename-dark>
+    <name>Himalaya Sunrise</name>
+    <filename>/usr/share/backgrounds/nubo/04-himalaya-sunrise-haze.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/04-himalaya-sunrise-haze.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Shards</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-shards-light.png</filename>
-    <filename-dark>/usr/share/backgrounds/nubo/nubo-shards-dark.png</filename-dark>
+    <name>Pastel Dunes</name>
+    <filename>/usr/share/backgrounds/nubo/05-pastel-dunes.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/05-pastel-dunes.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Silk</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-silk-dark.jpg</filename>
+    <name>Golden Dunes</name>
+    <filename>/usr/share/backgrounds/nubo/06-golden-dunes.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/06-golden-dunes.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Glass</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-glass-dark.jpg</filename>
+    <name>Twilight Sea</name>
+    <filename>/usr/share/backgrounds/nubo/07-twilight-sea.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/07-twilight-sea.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Dunes</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-dunes-dark.jpg</filename>
+    <name>Sunrise Surf</name>
+    <filename>/usr/share/backgrounds/nubo/10-sunrise-surf.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/10-sunrise-surf.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>
     <scolor>#060606</scolor>
   </wallpaper>
   <wallpaper deleted="false">
-    <name>Nubo Water</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-water-dark.jpg</filename>
-    <options>zoom</options>
-    <shade_type>solid</shade_type>
-    <pcolor>#060606</pcolor>
-    <scolor>#060606</scolor>
-  </wallpaper>
-  <wallpaper deleted="false">
-    <name>Nubo Paper</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-paper-light.jpg</filename>
-    <options>zoom</options>
-    <shade_type>solid</shade_type>
-    <pcolor>#060606</pcolor>
-    <scolor>#060606</scolor>
-  </wallpaper>
-  <wallpaper deleted="false">
-    <name>Nubo Cloud</name>
-    <filename>/usr/share/backgrounds/nubo/nubo-cloud-light.jpg</filename>
+    <name>Milky Way</name>
+    <filename>/usr/share/backgrounds/nubo/12-milky-way-pacific.jpg</filename>
+    <filename-dark>/usr/share/backgrounds/nubo/12-milky-way-pacific.jpg</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#060606</pcolor>

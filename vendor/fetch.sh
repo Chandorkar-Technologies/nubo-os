@@ -45,6 +45,16 @@ fetch_file blur-my-shell.zip \
   "https://github.com/aunetx/blur-my-shell/releases/download/v73/blur-my-shell%40aunetx.shell-extension.zip" \
   237a59e04b3cffd3fb86aa3cd18b32f929c61e2af8dcc781379364a59d53b129
 
+# App grid layout (rows, columns, icon size), release 9. MIT.
+fetch_file app-grid-tuner.zip \
+  "https://extensions.gnome.org/download-extension/app-grid-tuner%40m-lab.shell-extension.zip?version_tag=74585" \
+  1f22a99698cb626c975d11c5941a413d069ec0614ecaf993042aa1804faa3f67
+
+# Desktop clock and weather widget, release 8 (supports GNOME 46 to 50). GPL-3.0+.
+fetch_file glass-widgets.zip \
+  "https://extensions.gnome.org/download-extension/glass-widgets%40peter-njoro.github.io.shell-extension.zip?version_tag=74968" \
+  ba0ceef0b730fc1e9b439d591d2a9a10170a578a4cc5dc6066cb69d59bde853e
+
 # Launcher behind Nubo Search, release 0.29.1 as an AppImage (it carries its own
 # Qt and C++ runtime; the plain tarball needs a newer C++ library than Ubuntu
 # 26.04 ships). GPL-3.0.

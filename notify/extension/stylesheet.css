@@ -1,0 +1,9 @@
+/* Colours come from the shell theme (popup-menu-item); only layout here. */
+.nubo-nc-scroll { min-width: 22em; max-width: 26em; max-height: 28em; padding: 0 4px; }
+.nubo-nc-app { font-weight: bold; font-size: 0.9em; padding: 10px 8px 2px 8px; }
+.nubo-nc-item { padding: 6px 8px; border-radius: 12px; }
+.nubo-nc-title { font-weight: bold; }
+.nubo-nc-body { font-size: 0.95em; }
+.nubo-nc-time { font-size: 0.8em; }
+.nubo-nc-empty { padding: 24px; text-align: center; }
+.nubo-nc-badge { font-size: 0.75em; font-weight: bold; padding: 0 5px; margin-left: 2px; border-radius: 9px; background-color: #e5484d; color: white; }

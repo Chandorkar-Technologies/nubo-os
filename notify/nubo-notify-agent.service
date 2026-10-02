@@ -1,0 +1,15 @@
+[Unit]
+Description=Nubo notification agent (keeps messaging apps running in the background)
+# Same rules as nubo-session-helper: started with the session, no ordering
+# against graphical-session.target, and never on the installation media.
+ConditionPathIsMountPoint=!/cdrom
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/nubo/nubo-notify-agent run
+Restart=on-failure
+RestartSec=10
+Slice=background.slice
+
+[Install]
+WantedBy=gnome-session.target

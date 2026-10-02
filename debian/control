@@ -88,11 +88,38 @@ Description: Nubo Search, the launcher opened with Super+Space
  from Vicinae. Starts with the session and opens on Super+Space. Carries its
  own libraries.
 
+Package: nubo-notify
+Architecture: all
+Depends: gnome-shell (>= 46),
+         procps,
+         python3,
+         ${misc:Depends}
+Recommends: flatpak
+Description: Nubo OS notification centre and background agent
+ A notification history for every app, grouped by app with an unread count and
+ Do Not Disturb, plus an agent that keeps messaging apps running in the
+ background so they can notify while their windows are closed.
+
+Package: nubo-apps
+Architecture: all
+Depends: imagemagick,
+         python3,
+         zenity,
+         ${misc:Depends}
+Recommends: flatpak
+Description: Nubo OS curated popular apps
+ Grey "tap to download" launchers for popular apps on Flathub, which download
+ and open the app when clicked, and web launchers for popular sites.
+
 Package: nubo-branding
 Architecture: all
-Depends: plymouth,
+Depends: dconf-cli,
+         plymouth,
          plymouth-theme-ubuntu-text,
          ${misc:Depends}
+Provides: ubuntu-wallpapers
+Conflicts: ubuntu-wallpapers, ubuntu-wallpapers-resolute
+Replaces: ubuntu-wallpapers, ubuntu-wallpapers-resolute
 Description: Nubo OS logos, wallpapers, boot screen and desktop defaults
  Logo files, default wallpapers, the boot screen, the system identity,
  first-run defaults and the one-time cleanup after installation.
@@ -105,7 +132,10 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          foomatic-db-compressed-ppds, gdm3, ghostscript, gnome-control-center,
          gnome-menus, gnome-session-canberra, gnome-settings-daemon, gnome-shell,
          gnome-shell-extensions, gnome-shell-ubuntu-extensions, gnome-software,
-         gnome-software-plugin-flatpak, flatpak, gstreamer1.0-alsa,
+         gnome-software-plugin-flatpak, flatpak, geary,
+         gnome-shell-extension-gsconnect, scrcpy,
+         nubo-notify (= ${source:Version}),
+         nubo-apps (= ${source:Version}), gstreamer1.0-alsa,
          gstreamer1.0-packagekit, gstreamer1.0-plugins-base-apps, inputattach, iw,
          language-selector-common, language-selector-gnome, libatk-adaptor,
          libnotify-bin, libsasl2-modules, nautilus, openprinting-ppds, pipewire-pulse,
@@ -116,13 +146,12 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          nubo-account (= ${source:Version}),
          nubo-branding (= ${source:Version}),
          nubo-glass (= ${source:Version}),
-         nubo-search (= ${source:Version}),
+         ${nubo:search}
          nubo-icons (= ${source:Version}),
          nubo-sounds (= ${source:Version}),
          nubo-theme (= ${source:Version}),
          ${misc:Depends}
-Recommends: libreoffice-writer, libreoffice-calc, libreoffice-impress, libreoffice-gtk3,
-            libreoffice-gnome, deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-contacts,
+Recommends: deja-dup, errands, file-roller, foliate, gnome-calendar, gnome-contacts,
             gnome-maps, gnome-podcasts, gnome-sound-recorder, gnome-weather, papers,
             showtime, simple-scan, libsecret-tools, python3-gi, gir1.2-adw-1, gir1.2-gtk-4.0,
             appstream, apt-config-icons-hidpi, avahi-daemon, baobab, bibata-cursor-theme,

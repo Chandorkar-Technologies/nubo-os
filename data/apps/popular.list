@@ -1,0 +1,50 @@
+# Popular apps people already know. Shown in the launcher and dock.
+# kind | id-or-url | Nubo name | category | preinstall(yes/no)
+#
+# flatpak: Flathub application id. Shown grey until installed; clicking it
+#          downloads the app, then opens it. Not bundled in the image
+#          (proprietary apps are fetched by the person, from Flathub).
+# web:     opens the site as an app window. Nothing to install.
+# Verify every id against flathub.org before shipping.
+
+# Music, video, chat
+flatpak|com.spotify.Client|Spotify|media|yes
+flatpak|org.telegram.desktop|Telegram|chat|yes
+flatpak|org.signal.Signal|Signal|chat|no
+flatpak|com.discordapp.Discord|Discord|chat|no
+flatpak|com.slack.Slack|Slack|chat|no
+flatpak|us.zoom.Zoom|Zoom|chat|no
+flatpak|org.videolan.VLC|VLC|media|yes
+web|https://web.whatsapp.com|WhatsApp|chat|yes
+web|https://www.youtube.com|YouTube|media|yes
+web|https://music.youtube.com|YouTube Music|media|no
+web|https://www.netflix.com|Netflix|media|no
+web|https://www.instagram.com|Instagram|social|no
+web|https://web.telegram.org|Telegram Web|chat|no
+
+# Work
+flatpak|com.collaboraoffice.Office|Collabora Office|work|yes
+flatpak|md.obsidian.Obsidian|Obsidian|work|no
+flatpak|com.visualstudio.code|VS Code|dev|no
+flatpak|com.dropbox.Client|Dropbox|work|no
+# Geary is the default mail client (Ubuntu package "geary"), preinstalled by nubo-desktop.
+flatpak|org.mozilla.Thunderbird|Thunderbird|work|no
+web|https://mail.google.com|Gmail|work|no
+web|https://docs.google.com|Google Docs|work|no
+web|https://meet.google.com|Google Meet|work|no
+web|https://www.notion.so|Notion|work|no
+web|https://www.figma.com|Figma|design|no
+web|https://www.canva.com|Canva|design|no
+
+# Create
+flatpak|com.obsproject.Studio|OBS Studio|create|no
+flatpak|org.gimp.GIMP|GIMP|create|no
+flatpak|org.inkscape.Inkscape|Inkscape|create|no
+flatpak|org.kde.krita|Krita|create|no
+flatpak|org.blender.Blender|Blender|create|no
+flatpak|org.audacityteam.Audacity|Audacity|create|no
+
+# Browsers, games
+flatpak|com.google.Chrome|Google Chrome|browser|no
+flatpak|com.brave.Browser|Brave|browser|no
+flatpak|com.valvesoftware.Steam|Steam|games|no

@@ -191,8 +191,12 @@ du -sx --block-size=1 "${WORK}/live" | cut -f1 >"${WORK}/stage/casper/${LIVE_LAY
 echo "==> Branding the media"
 mkdir -p "${WORK}/stage/boot/grub" "${WORK}/stage/.disk"
 for cfg in grub.cfg loopback.cfg; do
+  # Besides the new names: keep the console free of the boot log. "quiet splash"
+  # alone still lets systemd print its status lines whenever the splash screen
+  # does not take over (for example in some virtual machines).
   sed -e 's/Try or Install Ubuntu/Try or Install Nubo OS/' \
       -e 's/"Ubuntu (safe graphics)"/"Nubo OS (safe graphics)"/' \
+      -e 's/ quiet splash/ quiet splash loglevel=3 systemd.show_status=false rd.systemd.show_status=false vt.global_cursor_default=0/' \
       "${WORK}/mnt/iso/boot/grub/${cfg}" >"${WORK}/stage/boot/grub/${cfg}"
 done
 # Shown by the installer as the product name. The quoted codename is
