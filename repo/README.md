@@ -7,7 +7,7 @@ No server runs: apt only needs `dists/` and `pool/` files.
 ## One-time setup
 1. `repo/gen-key.sh` creates the signing key; keep the private half out of git.
 2. Create the R2 bucket `nubo-archive`, attach the custom domain `archive.nubosuite.tech`.
-3. `rclone config`: remote `nubo-r2`, type s3, provider Cloudflare.
+3. `rclone config`: remote `r2`, type s3, provider Cloudflare.
 4. CI secrets: `NUBO_GPG_PRIVATE_KEY`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT`.
 
 ## Publishing

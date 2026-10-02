@@ -3,7 +3,7 @@
 # Usage: publish.sh DEBS_DIR [stable|beta]
 #   beta   -> suite resolute-beta (testers)
 #   stable -> suite resolute      (everyone); publish the same debs after beta is happy
-# Needs: reprepro, gpg (key imported), rclone with remote "nubo-r2".
+# Needs: reprepro, gpg (key imported), rclone with remote "r2".
 # Env:   R2_BUCKET (default nubo-archive), SKIP_UPLOAD=1 to only build locally.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -20,8 +20,8 @@ cp -r "${HERE}/conf" "${OUT}/conf"
 # suites are re-indexed from what each one has published.
 PREV="$(mktemp -d)"
 if [[ -z "${SKIP_UPLOAD:-}" ]]; then
-  rclone copy "nubo-r2:${BUCKET}/pool" "${PREV}/pool" --fast-list 2>/dev/null || true
-  rclone copy "nubo-r2:${BUCKET}/suites" "${PREV}/suites" 2>/dev/null || true
+  rclone copy "r2:${BUCKET}/pool" "${PREV}/pool" --fast-list 2>/dev/null || true
+  rclone copy "r2:${BUCKET}/suites" "${PREV}/suites" 2>/dev/null || true
 fi
 # suites/<suite>.list holds the file names each suite carried last time.
 for s in resolute resolute-beta; do
@@ -41,5 +41,5 @@ done
 rm -rf "${OUT}/db" "${OUT}/conf"
 cp "${HERE}/nubo-archive-keyring.asc" "${OUT}/" 2>/dev/null || true
 [[ -n "${SKIP_UPLOAD:-}" ]] && { echo "Archive built in ${OUT}"; exit 0; }
-rclone copy "${OUT}" "nubo-r2:${BUCKET}" --fast-list --checksum
+rclone copy "${OUT}" "r2:${BUCKET}" --fast-list --checksum
 echo "Published ${CHANNEL} to archive.nubosuite.tech"
