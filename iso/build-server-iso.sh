@@ -38,6 +38,26 @@ for cfg in grub.cfg loopback.cfg; do
     printf '%s\n' "${line}"
   done <"${WORK}/${cfg}" >"${STAGE}/boot/grub/${cfg}"
 done
+# Names shown on the "type of installation" screen.
+xorriso -osirrox on -indev "${SRC_ISO}" -extract /casper/install-sources.yaml "${WORK}/install-sources.yaml" 2>/dev/null
+chmod u+w "${WORK}/install-sources.yaml"
+mkdir -p "${STAGE}/casper"
+sed -e 's/Ubuntu Server (minimized)/Nubo OS Server (minimal)/' -e 's/Ubuntu Server/Nubo OS Server/' \
+  "${WORK}/install-sources.yaml" >"${STAGE}/casper/install-sources.yaml"
+
+# The installer's own system (what you see while booting and in the installer's
+# console) is Ubuntu's. A small extra layer on top of it carries the Nubo
+# identity. Casper stacks every .squashfs in /casper and the last name sorts on top.
+if command -v mksquashfs >/dev/null; then
+  LAYER="${WORK}/layer"; rm -rf "${LAYER}"; mkdir -p "${LAYER}/usr/lib" "${LAYER}/etc"
+  cp "${HERE}/../server/os-release" "${LAYER}/usr/lib/os-release"
+  cp "${HERE}/../server/issue" "${LAYER}/etc/issue"
+  cp "${HERE}/../server/issue.net" "${LAYER}/etc/issue.net"
+  cp "${HERE}/../server/lsb-release" "${LAYER}/etc/lsb-release"
+  mksquashfs "${LAYER}" "${STAGE}/casper/zz-nubo-identity.squashfs" -noappend -quiet -no-progress -all-root
+else
+  echo "mksquashfs not found: boot text will still say Ubuntu" >&2
+fi
 echo "Nubo OS Server 1 \"Flow\" - Release ${ARCH} ($(date -u +%Y%m%d))" >"${STAGE}/.disk/info"
 cp "${HERE}/server-user-data" "${STAGE}/server/user-data"
 cp "${HERE}/server-meta-data" "${STAGE}/server/meta-data"

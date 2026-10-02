@@ -27,6 +27,8 @@ fi
 for s in resolute resolute-beta; do
   [[ -f "${PREV}/suites/${s}.list" ]] || continue
   while read -r name; do
+    # A rebuilt package with the same file name replaces the old one.
+    [[ -e "${DEBS}/${name}" ]] && continue
     f="$(find "${PREV}/pool" -name "${name}" -print -quit)"
     [[ -n "${f}" ]] && reprepro -b "${OUT}" includedeb "${s}" "${f}"
   done <"${PREV}/suites/${s}.list"

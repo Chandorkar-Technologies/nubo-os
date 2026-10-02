@@ -5,8 +5,18 @@
 # media are installed as the last step.
 autoinstall:
   version: 1
+  # Screens that stay: language, keyboard, network, disk, user, SSH. The Ubuntu
+  # Pro, featured-snaps, mirror and installer-update screens are skipped.
   interactive-sections:
-    - "*"
+    - locale
+    - keyboard
+    - network
+    - storage
+    - identity
+    - ssh
+  refresh-installer:
+    update: false
+  snaps: []
   source:
     id: ubuntu-server-minimal
     search_drivers: false
