@@ -28,7 +28,7 @@ export default {
     const rest = m[2] || '/';
     if (APT.has(m[1]) && rest === '/mirrors.txt') {
       // apt picks randomly among equal mirrors, so rank them: Cumulus first, Ubuntu only as fallback.
-      return new Response(SELF + '/' + m[1] + ' priority:1\n' + UP[m[1]] + ' priority:2\n', { headers: { 'content-type': 'text/plain', 'cache-control': 'public, max-age=300' } });
+      return new Response(SELF + '/' + m[1] + '\tpriority:1\n' + UP[m[1]] + '\tpriority:2\n', { headers: { 'content-type': 'text/plain', 'cache-control': 'public, max-age=300' } });
     }
     if (rest === '/') return new Response('Nubo Cumulus: a fast, cached route to Ubuntu packages and images. Files are unchanged and signed by Ubuntu.\n', { headers: { 'content-type': 'text/plain' } });
     // Published packages never change; indexes and "current" image links do.
