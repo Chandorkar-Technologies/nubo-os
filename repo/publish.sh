@@ -35,7 +35,7 @@ for deb in "${DEBS}"/*.deb; do reprepro -b "${OUT}" includedeb "${SUITE}" "${deb
 mkdir -p "${OUT}/suites"
 for s in resolute resolute-beta; do
   # file names this suite carries, read from its package indices
-  { for idx in "${OUT}/dists/${s}"/main/binary-*/Packages.gz; do [[ -f "${idx}" ]] && zcat "${idx}"; done; } \
+  { for idx in "${OUT}/dists/${s}"/main/binary-*/Packages.gz; do [[ -f "${idx}" ]] && gzip -dc "${idx}"; done; } \
     | awk '/^Filename:/{n=split($2,p,"/"); print p[n]}' | sort -u >"${OUT}/suites/${s}.list" || true
 done
 rm -rf "${OUT}/db" "${OUT}/conf"
