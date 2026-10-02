@@ -13,7 +13,10 @@ class NuboMenu extends PanelMenu.Button {
     _init() {
         // No drop-down: the logo opens the app overview, like a start button.
         super._init(0.0, 'Nubo', true);
-        this.add_child(new St.Icon({icon_name: 'nubo-logo-symbolic', style_class: 'nubo-logo-icon'}));
+        const box = new St.BoxLayout({style_class: 'nubo-brand'});
+        box.add_child(new St.Icon({icon_name: 'nubo-logo-symbolic', style_class: 'nubo-logo-icon'}));
+        box.add_child(new St.Label({text: 'Nubo OS 1', style_class: 'nubo-brand-label', y_align: Clutter.ActorAlign.CENTER}));
+        this.add_child(box);
         this.connect('button-press-event', () => {
             Main.overview.toggle();
             return Clutter.EVENT_STOP;

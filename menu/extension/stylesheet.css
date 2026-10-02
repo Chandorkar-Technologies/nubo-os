@@ -4,3 +4,5 @@
 #panel .panel-button .system-status-icon { icon-size: 18px; }
 #panel .nubo-logo-icon { icon-size: 26px; }
 #panel .clock-display { font-size: 15px; font-weight: 600; }
+.nubo-brand { spacing: 8px; }
+#panel .nubo-brand-label { font-weight: 700; font-size: 15px; }
