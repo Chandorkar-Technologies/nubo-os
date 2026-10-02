@@ -34,7 +34,9 @@ done
 for deb in "${DEBS}"/*.deb; do reprepro -b "${OUT}" includedeb "${SUITE}" "${deb}"; done
 mkdir -p "${OUT}/suites"
 for s in resolute resolute-beta; do
-  reprepro -b "${OUT}" --list-format '${filekey}\n' list "${s}" | xargs -n1 basename | sort -u >"${OUT}/suites/${s}.list"
+  # file names this suite carries, read from its package indices
+  { for idx in "${OUT}/dists/${s}"/main/binary-*/Packages.gz; do [[ -f "${idx}" ]] && zcat "${idx}"; done; } \
+    | awk '/^Filename:/{n=split($2,p,"/"); print p[n]}' | sort -u >"${OUT}/suites/${s}.list" || true
 done
 rm -rf "${OUT}/db" "${OUT}/conf"
 cp "${HERE}/nubo-archive-keyring.asc" "${OUT}/" 2>/dev/null || true
