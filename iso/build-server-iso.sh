@@ -29,10 +29,14 @@ for cfg in grub.cfg loopback.cfg; do
   xorriso -osirrox on -indev "${SRC_ISO}" -extract "/boot/grub/${cfg}" "${WORK}/${cfg}" 2>/dev/null || continue
   chmod u+w "${WORK}/${cfg}"
   # New names, the answer file, and a quiet console.
-  sed -e 's/Try or Install Ubuntu Server/Install Nubo OS Server/' \
-      -e 's/Ubuntu Server/Nubo OS Server/g' \
-      -e 's# ---# autoinstall ds=nocloud\;s=/cdrom/server/ loglevel=3 systemd.show_status=false ---#' \
-      "${WORK}/${cfg}" >"${STAGE}/boot/grub/${cfg}"
+  # In GRUB a bare ";" ends the command, so it is escaped for the kernel line.
+  args='autoinstall ds=nocloud\;s=/cdrom/server/ loglevel=3 systemd.show_status=false'
+  while IFS= read -r line; do
+    line="${line//Try or Install Ubuntu Server/Install Nubo OS Server}"
+    line="${line//Ubuntu Server/Nubo OS Server}"
+    [[ "${line}" == *' ---'* ]] && line="${line/ ---/ ${args} ---}"
+    printf '%s\n' "${line}"
+  done <"${WORK}/${cfg}" >"${STAGE}/boot/grub/${cfg}"
 done
 echo "Nubo OS Server 1 \"Flow\" - Release ${ARCH} ($(date -u +%Y%m%d))" >"${STAGE}/.disk/info"
 cp "${HERE}/server-user-data" "${STAGE}/server/user-data"
