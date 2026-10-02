@@ -1,0 +1,25 @@
+# Not active. Merge into .drone.yml and add debs-arm64 to the publish pipeline depends_on once an arm64 Drone runner exists.
+kind: pipeline
+type: docker
+name: debs-arm64
+
+platform: {os: linux, arch: arm64}
+trigger: {event: [tag]}
+
+steps:
+  - name: build
+    image: ubuntu:26.04
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      NUBO_RELEASE: "1"
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - apt-get update -qq
+      - apt-get install -y -qq git curl ca-certificates build-essential devscripts equivs rclone
+      - vendor/fetch.sh
+      - mk-build-deps -i -r -t 'apt-get -y' debian/control
+      - dpkg-buildpackage -us -uc -b
+      - mkdir -p out && mv ../*.deb out/
+      - ci/stage-upload.sh arm64 out

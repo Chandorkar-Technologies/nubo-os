@@ -1,7 +1,8 @@
 # Drone pipelines for ci.hostingduty.com. Runs on tags only.
 # Tag v0.8.0-beta1 (contains a dash) -> beta channel; v0.8.0 -> stable.
 # Needs Drone secrets: nubo_gpg_private_key, r2_access_key_id, r2_secret_access_key, r2_endpoint.
-# The arm64 pipeline needs a Drone runner on an arm64 machine.
+# arm64 packages: see ci/debs-arm64.drone.yml (needs a Drone runner on an arm64
+# machine; until one exists, upload arm64 builds by hand, they stay in the archive).
 kind: pipeline
 type: docker
 name: debs-amd64
@@ -28,31 +29,6 @@ steps:
       - ci/stage-upload.sh amd64 out
 
 ---
-kind: pipeline
-type: docker
-name: debs-arm64
-
-platform: {os: linux, arch: arm64}
-trigger: {event: [tag]}
-
-steps:
-  - name: build
-    image: ubuntu:26.04
-    environment:
-      DEBIAN_FRONTEND: noninteractive
-      NUBO_RELEASE: "1"
-      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
-      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
-      R2_ENDPOINT: {from_secret: r2_endpoint}
-    commands:
-      - apt-get update -qq
-      - apt-get install -y -qq git curl ca-certificates build-essential devscripts equivs rclone
-      - vendor/fetch.sh
-      - mk-build-deps -i -r -t 'apt-get -y' debian/control
-      - dpkg-buildpackage -us -uc -b
-      - mkdir -p out && mv ../*.deb out/
-      - ci/stage-upload.sh arm64 out
-
 ---
 kind: pipeline
 type: docker
@@ -60,7 +36,7 @@ name: publish
 
 platform: {os: linux, arch: amd64}
 trigger: {event: [tag]}
-depends_on: [debs-amd64, debs-arm64]
+depends_on: [debs-amd64]
 
 steps:
   - name: archive
