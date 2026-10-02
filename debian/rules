@@ -20,7 +20,7 @@ override_dh_installsystemduser:
 
 override_dh_auto_build:
 	@test -d vendor/colloid-gtk/src || { echo "vendor/colloid-gtk missing: run vendor/fetch.sh" >&2; exit 1; }
-	@test -f vendor/vicinae.AppImage || { echo "vendor/vicinae.AppImage missing: run vendor/fetch.sh" >&2; exit 1; }
+	@test -f vendor/vicinae.AppImage -a -f vendor/vicinae-arm64.AppImage || { echo "vendor/vicinae.AppImage missing: run vendor/fetch.sh" >&2; exit 1; }
 	@test -f vendor/app-grid-tuner.zip -a -f vendor/glass-widgets.zip || { echo "extension zips missing: run vendor/fetch.sh" >&2; exit 1; }
 	@test -f vendor/blur-my-shell.zip || { echo "vendor/blur-my-shell.zip missing: run vendor/fetch.sh" >&2; exit 1; }
 	rm -rf $(BUILD)
@@ -104,15 +104,12 @@ override_dh_auto_build:
 	brand/make-app-entries.sh data/apps/rebrand.list $(BUILD)/apps
 	brand/make-hidden-entries.sh data/apps/hide.list $(BUILD)/apps
 
-	# Launcher: unpack the pinned AppImage (it carries its own libraries).
-	# The AppImage is x86-64 only, so other architectures (e.g. an arm64
-	# development VM) build without nubo-search.
+	# Launcher: unpack the pinned AppImage for this CPU (it carries its own libraries).
 	mkdir -p $(BUILD)/search/lib/nubo
-	if [ "$$(dpkg --print-architecture)" = amd64 ]; then \
-		cp vendor/vicinae.AppImage $(BUILD)/vicinae.AppImage && chmod +x $(BUILD)/vicinae.AppImage && \
-		cd $(BUILD) && ./vicinae.AppImage --appimage-extract >/dev/null && mv squashfs-root search/lib/nubo/search && \
-		rm -rf search/lib/nubo/search/apprun-hooks; \
-	else echo "nubo-search skipped on $$(dpkg --print-architecture)"; fi
+	if [ "$$(dpkg --print-architecture)" = arm64 ]; then img=vicinae-arm64.AppImage; else img=vicinae.AppImage; fi; \
+	cp vendor/$$img $(BUILD)/vicinae.AppImage && chmod +x $(BUILD)/vicinae.AppImage && \
+	cd $(BUILD) && ./vicinae.AppImage --appimage-extract >/dev/null && mv squashfs-root search/lib/nubo/search && \
+	rm -rf search/lib/nubo/search/apprun-hooks
 
 	# Sign-in method icon shown on the login screen.
 	mkdir -p $(BUILD)/account
@@ -123,12 +120,8 @@ override_dh_auto_build:
 	installer/make-installer-branding.sh $(BUILD)/installer brand/logo
 	rsvg-convert -w 512 -h 512 -a brand/logo/nubo-mark-white.svg -o $(BUILD)/plymouth/logo.png
 
-# nubo-search only exists for amd64; other architectures (e.g. an arm64
-# development VM) get a desktop without it.
 override_dh_gencontrol:
-	if [ "$$(dpkg --print-architecture)" = amd64 ]; then \
-		dh_gencontrol -- "-Vnubo:search=nubo-search (= $$(dpkg-parsechangelog -SVersion))," ; \
-	else dh_gencontrol -- "-Vnubo:search="; fi
+	dh_gencontrol -- "-Vnubo:search=nubo-search (= $$(dpkg-parsechangelog -SVersion)),"
 
 override_dh_auto_clean:
 	rm -rf $(BUILD)

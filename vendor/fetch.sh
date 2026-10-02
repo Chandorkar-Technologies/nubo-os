@@ -61,3 +61,6 @@ fetch_file glass-widgets.zip \
 fetch_file vicinae.AppImage \
   "https://github.com/vicinaehq/vicinae/releases/download/v0.29.1/Vicinae-x86_64.AppImage" \
   44906f2290f0934572f1977de8aa529c3b67d104025a489b32f226fe3b0f3dd9
+fetch_file vicinae-arm64.AppImage \
+  "https://github.com/vicinaehq/vicinae/releases/download/v0.29.1/Vicinae-aarch64.AppImage" \
+  369feb20fe987d04ffb1a0b354f28773bd1a1a550a31cdcb22d968e39b141ec0

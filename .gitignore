@@ -16,3 +16,4 @@
 *.snap
 goa/out/
 goa/src/
+/vendor/vicinae-arm64.AppImage
