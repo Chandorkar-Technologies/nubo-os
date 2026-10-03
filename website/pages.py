@@ -194,7 +194,7 @@ def build_all(ctx):
 <p class="eyebrow">Download</p><h1>Get Nubo OS.</h1>
 <p class="lead">The server images are ready to download. The desktop is in early access.</p>
 <h2 id="desktop">Desktop: early access</h2>
-<p>The Nubo OS desktop is built and in daily use by us, and we are preparing a public image that includes the package archive and automatic updates. Leave your email and we will send you the download link as soon as it is ready. We use your address only for that.</p>
+<p>The Nubo OS desktop is built and working in our tests, and we are preparing a public image that includes the package archive and automatic updates. Leave your email and we will send you the download link as soon as it is ready. We use your address only for that.</p>
 <form class="wl" id="wl" novalidate>
 <input type="email" id="wlemail" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">
 <select id="wlarch" name="arch" aria-label="Your computer"><option value="amd64">Intel or AMD PC</option><option value="arm64">Arm (for example a Mac with Apple silicon in a VM)</option><option value="unsure">Not sure</option></select>
