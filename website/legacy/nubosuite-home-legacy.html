@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nubo Suite — private, serverless apps</title>
+<meta name="description" content="A suite of private, peer-to-peer apps. Your data never touches a server. One Nubo ID, end-to-end encrypted, no cloud lock-in." />
+<link rel="icon" href="/icons/nubo-nubo.png" />
+<style>
+  :root{
+    --bg:#0B0F1A; --bg2:#0F1420; --card:#161C28; --line:#252D3C;
+    --ink:#F8FAFC; --muted:#94A3B8; --blue:#5B7CFA; --blue2:#2563EB;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:Roboto,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:18px}
+  .brand img{width:34px;height:34px;border-radius:9px}
+  nav a{color:var(--muted);font-size:14px;margin-left:20px}
+  nav a:hover{color:var(--ink)}
+  .hero{text-align:center;padding:70px 0 50px;background:radial-gradient(700px 320px at 50% -10%, rgba(91,124,250,.18), transparent)}
+  .hero h1{font-size:clamp(30px,5vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .hero h1 .g{background:linear-gradient(120deg,#5B7CFA,#2563EB);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);font-size:clamp(15px,2vw,19px);max-width:640px;margin:18px auto 0}
+  .pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .pill{border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;color:var(--muted)}
+  .pill b{color:var(--ink)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px;padding:30px 0 60px}
+  .app{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:.16s;position:relative}
+  .app:hover{transform:translateY(-2px);border-color:var(--blue)}
+  .app .top{display:flex;align-items:center;gap:12px}
+  .app img{width:42px;height:42px;border-radius:11px}
+  .app h3{font-size:16px;font-weight:700}
+  .app .vs{font-size:12px;color:var(--muted)}
+  .app p{font-size:13.5px;color:var(--muted);flex:1}
+  .status{position:absolute;top:16px;right:16px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:999px}
+  .live{background:rgba(52,211,153,.15);color:#34D399}
+  .beta{background:rgba(91,124,250,.15);color:#7C9CFF}
+  .soon{background:rgba(148,163,184,.13);color:var(--muted)}
+  .go{font-size:13px;font-weight:600;color:var(--blue)}
+  .app.soon-c .go{color:var(--muted)}
+  .why{padding:20px 0 70px}
+  .why h2{font-size:24px;font-weight:800;text-align:center;margin-bottom:8px}
+  .why .sub{color:var(--muted);text-align:center;margin-bottom:30px}
+  .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .f{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .f h4{font-size:15px;margin-bottom:6px}
+  .f p{font-size:13.5px;color:var(--muted)}
+  footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/"><img src="/icons/nubo-nubo.png" alt="Nubo"/> Nubo<span style="color:var(--blue)">Suite</span></a>
+    <nav><a href="#apps">Apps</a><a href="#why">Why Nubo</a><a href="https://docs.pears.com" target="_blank" rel="noopener">P2P</a></nav>
+  </header>
+</div>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Private apps.<br/><span class="g">No server. No cloud.</span></h1>
+    <p>A suite of peer-to-peer apps that work like the ones you know — minus the company in the middle. End-to-end encrypted, one Nubo ID, your data stays on your devices.</p>
+    <div class="pills">
+      <span class="pill"><b>End-to-end</b> encrypted</span>
+      <span class="pill"><b>Serverless</b> P2P</span>
+      <span class="pill"><b>One</b> Nubo ID</span>
+      <span class="pill"><b>No</b> cloud lock-in</span>
+    </div>
+  </div>
+</section>
+
+<section id="apps" class="wrap">
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="why" class="why wrap">
+  <h2>Why Nubo</h2>
+  <div class="sub">Each app clones a category leader — and deletes the server.</div>
+  <div class="feat">
+    <div class="f"><h4>Your data never leaves</h4><p>Files, messages, secrets and clips move directly between your devices over an encrypted peer-to-peer link. No upload, no copy on someone's cloud.</p></div>
+    <div class="f"><h4>One identity, every app</h4><p>A single Nubo ID keypair unlocks the whole suite. Per-app keys, biometric unlock, no passwords on a server to breach.</p></div>
+    <div class="f"><h4>Friendly by design</h4><p>Pair devices and share with a simple 6-digit code instead of a 64-character key. Powerful underneath, simple on top.</p></div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <span>© Nubo Suite · built on the Holepunch/Pear P2P stack</span>
+  <span>nubosuite.tech</span>
+</footer>
+
+<script>
+const APPS = [
+  {k:'pass',  n:'Nubo Pass',  vs:'vs 1Password',  d:'Passwords & passkeys, synced peer-to-peer.', s:'live', url:'https://pass.nubosuite.tech'},
+  {k:'send',  n:'Nubo Send',  vs:'vs WeTransfer',  d:'Send any file directly, end-to-end. No upload.', s:'live', url:'https://send.nubosuite.tech'},
+  {k:'vault', n:'Nubo Vault', vs:'vs Doppler',     d:'Team secrets & API keys, usable as a .env.', s:'beta', url:'https://vault.nubosuite.tech'},
+  {k:'tunnel',n:'Nubo Tunnel',vs:'vs Termius',     d:'Remote shell to any device. No open ports.', s:'beta', url:'https://tunnel.nubosuite.tech'},
+  {k:'clip',  n:'Nubo Clip',  vs:'vs Paste',       d:'Clipboard synced across your devices.', s:'beta', url:'https://clip.nubosuite.tech'},
+  {k:'chat',  n:'Nubo Chat',  vs:'vs Signal',      d:'Private messaging, no phone number, no server.', s:'soon'},
+  {k:'drive', n:'Nubo Screen',vs:'vs TeamViewer',  d:'Remote desktop & support by 6-digit code.', s:'soon'},
+  {k:'mail',  n:'Nubo AI',    vs:'on-device',      d:'A private assistant that runs on your machine.', s:'soon'},
+  {k:'drive', n:'Nubo Workspace',vs:'vs Notion',   d:'Docs, notes, tasks & drive — local-first.', s:'soon'},
+  {k:'tunnel',n:'Nubo Mesh',  vs:'vs Tailscale',   d:'A private mesh network for all your devices.', s:'soon'},
+];
+const ICON = {pass:'nubo-pass',send:'nubo-send',vault:'nubo-vault',tunnel:'nubo-tunnel',clip:'nubo-clip',chat:'nubo-chat',drive:'nubo-drive',mail:'nubo-mail'};
+const LABEL={live:'Live',beta:'Beta',soon:'Soon'};
+const g = document.getElementById('grid');
+for(const a of APPS){
+  const live = a.s!=='soon';
+  const el = document.createElement(live?'a':'div');
+  el.className = 'app'+(live?'':' soon-c');
+  if(live){ el.href=a.url; }
+  el.innerHTML = `
+    <span class="status ${a.s}">${LABEL[a.s]}</span>
+    <div class="top">
+      <img src="/icons/${ICON[a.k]||'nubo-nubo'}.png" alt=""/>
+      <div><h3>${a.n}</h3><div class="vs">${a.vs}</div></div>
+    </div>
+    <p>${a.d}</p>
+    <div class="go">${live?'Open '+a.n.split(' ')[1]+' →':'Coming soon'}</div>`;
+  g.appendChild(el);
+}
+</script>
+</body>
+</html>

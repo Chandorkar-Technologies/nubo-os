@@ -149,3 +149,27 @@ steps:
     commands:
       - apt-get update -qq && apt-get install -y -qq rclone ca-certificates
       - ci/deploy-docs.sh
+
+---
+kind: pipeline
+type: docker
+name: web
+
+platform: {os: linux, arch: amd64}
+trigger:
+  event: [push]
+  branch: [master]
+
+steps:
+  - name: web
+    image: node:24-bookworm
+    environment:
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    when:
+      paths:
+        include: ['website/**', 'ci/deploy-web.sh']
+    commands:
+      - apt-get update -qq && apt-get install -y -qq rclone ca-certificates python3
+      - ci/deploy-web.sh

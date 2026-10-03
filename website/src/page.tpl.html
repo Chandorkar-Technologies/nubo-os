@@ -1,0 +1,1079 @@
+<title>Nubo Site Motion</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;700&family=Noto+Sans+Arabic:wght@500;700&display=swap">
+<style>
+/* Design plan. Layout: dark full-bleed chapters, one pinned scene per idea, scrubbed by scroll.
+   Color: ink #050608, panel #0E1014, text #F5F5F7, muted #86868B, one warm accent #F2A65A taken from the wallpapers.
+   Type: Inter only. Headlines 700 with tight tracking, body 400. Real icons and photographs, no placeholders. */
+:root{--bg:#050608;--bg2:#0B0C10;--card:#101216;--line:rgba(255,255,255,.1);--tx:#F5F5F7;--mu:#86868B;--mu2:#A1A1A6;--amber:#F2A65A;--ok:#7FE0A8;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx)}
+body{font:400 17px/1.47 Inter,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,p{margin:0}
+img{display:block}
+main[hidden]{display:none!important}
+.mk{width:1em;height:.95em;display:inline-block;vertical-align:middle;color:currentColor}
+.eyebrow{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+.h1{font-size:clamp(48px,9.5vw,136px);line-height:.96;letter-spacing:-.05em;font-weight:700}
+.h2{font-size:clamp(38px,6.4vw,92px);line-height:.98;letter-spacing:-.045em;font-weight:700}
+.h3{font-size:clamp(24px,2.6vw,36px);line-height:1.1;letter-spacing:-.03em;font-weight:700}
+.lead{font-size:clamp(19px,2vw,26px);line-height:1.4;color:var(--mu2);max-width:660px}
+.grad{background:linear-gradient(180deg,#fff 30%,#8f94a0 120%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;background:#F5F5F7;color:#0A0B0E;font-weight:600;font-size:16px}
+.btn:hover{background:#fff}
+.btn2{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;border:1px solid rgba(255,255,255,.3);color:var(--tx);font-weight:500;font-size:16px}
+.btn2:hover{background:rgba(255,255,255,.08)}
+.chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600}
+.glass{background:rgba(20,22,29,.58);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3)}
+.glassL{background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);color:#15171C}
+.sym{display:block;width:26px;height:26px}
+
+.nav{position:fixed;z-index:50;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;gap:30px;padding:0 24px;background:rgba(5,6,8,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--line);font-size:14px;color:var(--mu2)}
+.nav a:hover{color:#fff}
+.nav .brand{display:flex;align-items:center;gap:9px;color:#fff;font-weight:700;font-size:16px}
+.nav .brand .mk{font-size:20px}
+.nav .dl{padding:6px 14px;border-radius:999px;background:#F5F5F7;color:#0A0B0E;font-weight:600}
+.switch{position:fixed;z-index:60;right:18px;bottom:18px;display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(20,22,29,.85);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-size:13px;font-weight:600}
+.switch a{padding:8px 16px;border-radius:999px;color:var(--mu2)}
+.switch a.on{background:#F5F5F7;color:#0A0B0E}
+.progress{position:fixed;z-index:70;top:0;left:0;height:2px;width:100%;background:var(--amber);transform-origin:0 50%;transform:scaleX(0)}
+
+.scene{position:relative;width:100%;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.sec{position:relative;padding:160px 24px}
+.wrap{max-width:1180px;margin:0 auto}
+.center{text-align:center}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
+
+/* desktop mock */
+.desk{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background-size:cover;background-position:center}
+.bar{position:absolute;top:0;left:0;right:0;height:3.4%;min-height:22px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:12px;color:#EDEBE6;border:0;border-radius:0}
+.win{position:absolute;border-radius:14px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+.dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;display:block}
+.dock{position:absolute;left:50%;transform:translateX(-50%);bottom:3%;height:10%;padding:0 12px;border-radius:20px;display:flex;align-items:center;gap:9px}
+.tile{width:min(40px,6.2%);aspect-ratio:1;flex:none}
+.tile img{width:100%;height:100%}
+.dock .tile{width:auto;height:76%}
+.row{display:flex;gap:10px;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px}
+.av{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#0A0B0E}
+
+/* hero: the headline and both buttons must fit on the first screen of a laptop */
+#hero .h1,#osHero .h1{font-size:clamp(36px,5.8vw,86px)}
+#hero .lead,#osHero .lead{font-size:clamp(16px,1.6vw,21px)}
+
+/* HOME hero */
+#hero .txt{position:absolute;top:10vh;left:0;right:0;text-align:center;padding:0 24px;z-index:3}
+#hero .scr{z-index:4;position:absolute;left:50%;bottom:0;width:min(78vw,1100px);aspect-ratio:16/10;margin-left:calc(min(78vw,1100px)/-2);border-radius:22px 22px 0 0;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 -40px 140px rgba(242,166,90,.25)}
+
+/* exploded desktop */
+.ex{display:grid;grid-template-columns:minmax(300px,520px) minmax(380px,860px);gap:28px;align-items:center;width:min(1440px,96vw);height:100%;padding-top:52px}
+.extext{position:relative;min-height:300px}
+.extext>div{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);opacity:0}
+.exstage{display:flex;flex-direction:column;align-items:center;gap:2vh}
+.xscene{position:relative;perspective:1700px;width:100%;max-width:700px;aspect-ratio:16/10}
+.xstack{position:absolute;inset:0;transform-style:preserve-3d}
+.xl{position:absolute;inset:0;border-radius:16px;transform-style:preserve-3d;background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.22)}
+.xl.wall{background:none;box-shadow:0 40px 120px rgba(0,0,0,.6)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.lg{display:flex;align-items:center;gap:9px;padding:8px 14px 8px 8px;border-radius:999px;background:#0E1014;border:1px solid var(--line);font-size:15px;font-weight:600;opacity:.45}
+.lg img{width:30px;height:30px;border-radius:9px;object-fit:cover}
+.lg .thumb{display:block;width:30px;height:30px;border-radius:9px;background-size:cover;background-position:center}
+.lg .sym{width:30px;height:30px;padding:6px;border-radius:9px;background:#1A1D25}
+
+/* scene headings: big, but sized so they always fit */
+.extext .h2,.phtext .h2{font-size:clamp(32px,4.6vw,66px)}
+.enghead .h2{font-size:clamp(28px,4vw,58px)}
+.filmtext .h2{font-size:clamp(36px,5.6vw,80px)}
+
+#cross .enghead .h2{font-size:clamp(26px,3.4vw,46px)}
+#cross .bars{gap:6px}
+#cross .eng{gap:10px}
+
+/* first-run film */
+.film{position:absolute;inset:0;background-size:cover;background-position:center}
+.filmshade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,6,8,.9),rgba(5,6,8,.55) 40%,rgba(5,6,8,.75))}
+.filmtext{position:absolute;top:11vh;left:0;right:0;text-align:center;padding:0 24px;height:20vh}
+.filmtext>div{position:absolute;left:0;right:0;top:0;opacity:0}
+.setup{position:relative;width:min(560px,90vw);padding:30px;border-radius:26px;background:linear-gradient(160deg,#171A21,#0D0F14);border:1px solid rgba(255,255,255,.16);box-shadow:0 50px 120px rgba(0,0,0,.65),0 0 100px rgba(242,166,90,.18);margin-top:26vh;min-height:340px}
+.field{padding:15px 16px;border-radius:13px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);font-size:19px;min-height:54px;display:flex;align-items:center}
+.caret{display:inline-block;width:2px;height:22px;background:var(--amber);margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chk{display:flex;align-items:center;gap:14px;padding:11px 0;font-size:18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.chk img{width:34px;height:34px}
+.chk .st{margin-left:auto;width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:14px;color:#0A0B0E}
+.pbar{height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:14px}
+.pbar i{display:block;height:100%;width:100%;background:var(--amber);transform-origin:0 50%;transform:scaleX(0)}
+.rdock{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);display:flex;gap:16px;padding:14px 18px;border-radius:30px;opacity:0}
+.rdock img{width:min(74px,9vw);height:min(74px,9vw)}
+
+/* horizontal apps */
+.hs{position:relative;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding-top:52px}
+.hs .head{padding:0 6vw 18px}
+.hs .head .h2{font-size:clamp(28px,4vw,58px)}
+.hs .track{display:flex;gap:30px;padding:0 6vw;width:max-content}
+.pane{flex:none;width:min(720px,84vw)}
+.ptop{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.ptop img,.ptop .appmk{width:62px;height:62px;border-radius:16px;flex:none}
+.appmk{display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#2A2F3A,#12151B);border:1px solid rgba(255,255,255,.14);font-size:30px;color:#fff}
+.ptop b{display:block;font-size:clamp(26px,3vw,40px);letter-spacing:-.03em;line-height:1;font-weight:700}
+.ptop span{display:block;margin-top:6px;color:var(--mu2);font-size:17px}
+.mock{height:min(360px,40vh);border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#0E1014;position:relative}
+
+/* engineering bars */
+.eng{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(1180px,94vw);padding-top:56px}
+.enghead{text-align:center}
+.bars{width:100%;display:flex;flex-direction:column;gap:8px}
+.bar5{display:flex;align-items:center;gap:18px;padding:8px 22px 8px 10px;border-radius:20px;background:linear-gradient(100deg,#171B23,#0D1015);border:1px solid rgba(255,255,255,.14)}
+.bar5.hot{background:linear-gradient(100deg,#3A2A18,#14100C);border-color:rgba(242,166,90,.6)}
+.bar5 .bi{flex:none;width:50px;height:50px;border-radius:15px;background:#1D2129;display:flex;align-items:center;justify-content:center;gap:0;overflow:hidden}
+.bar5 .bi img{width:38px;height:38px}
+.bar5 .bi .sym{width:30px;height:30px}
+.bar5 .bt{flex:1;min-width:0}
+.bar5 .bt b{display:block;font-size:clamp(18px,2.2vw,28px);letter-spacing:-.03em;font-weight:700;line-height:1.05}
+.bar5 .bt span{display:block;margin-top:2px;color:var(--mu2);font-size:clamp(13px,1.3vw,17px)}
+.bar5 .bc{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:360px}
+.bar5 .bc i{font-style:normal;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.08);font-size:13px;font-weight:600;color:#D5D8DF;white-space:nowrap}
+.bar5 .bv{flex:none;font-size:clamp(14px,1.5vw,20px);font-weight:700;color:var(--amber);min-width:88px;text-align:right}
+.bar5.small{padding:5px 18px 5px 8px;gap:14px}
+.bar5.small .bi{width:38px;height:38px}.bar5.small .bi img{width:28px;height:28px}.bar5.small .bi .sym{width:20px;height:20px}
+
+/* pipeline + support */
+.pl{display:flex;flex-direction:column;align-items:center;gap:5vh;width:min(1180px,94vw);padding-top:52px}
+.steps5{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;width:100%}
+.steps5 .line{position:absolute;left:10%;right:10%;top:44px;height:3px;background:rgba(255,255,255,.12)}
+.steps5 .line i{display:block;height:100%;background:var(--amber);transform-origin:0 50%;transform:scaleX(0)}
+.pst{position:relative;text-align:center}
+.pst .pi{margin:0 auto;width:88px;height:88px;border-radius:26px;background:#14171E;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.pst .pi .sym{width:40px;height:40px}
+.pst b{display:block;margin-top:14px;font-size:24px;letter-spacing:-.02em;font-weight:700}
+.pst span{display:block;margin-top:4px;color:var(--mu2);font-size:15px;line-height:1.35}
+.support{width:100%;padding:26px 30px;border-radius:24px;background:#0E1014;border:1px solid var(--line)}
+.support .yrs{position:relative;display:flex;justify-content:space-between;font-size:15px;font-weight:600;color:var(--mu2);margin-top:12px}
+.support .trk{height:14px;border-radius:7px;background:rgba(255,255,255,.1);overflow:hidden}
+.support .trk i{display:block;height:100%;background:linear-gradient(90deg,#F2A65A,#FFD2A0);transform-origin:0 50%;transform:scaleX(0)}
+
+/* phone story */
+.ph{position:relative;display:grid;grid-template-columns:minmax(280px,380px) minmax(420px,1fr) minmax(300px,420px);gap:26px;align-items:center;width:min(1400px,96vw);padding-top:40px}
+.phtext{position:relative;min-height:240px}
+.phtext>div{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);opacity:0}
+.phone{position:relative;width:min(200px,22vw);aspect-ratio:9/19;border-radius:36px;background:#0A0B0F;border:3px solid #2C2F39;box-shadow:0 40px 90px rgba(0,0,0,.7);padding:10px;margin:0 auto}
+.phscr{position:relative;height:100%;border-radius:26px;overflow:hidden;background:linear-gradient(180deg,#1B2030,#0B0D12)}
+.phscr .isl{position:absolute;top:8px;left:50%;width:34%;height:14px;margin-left:-17%;border-radius:8px;background:#000}
+.phscr .stt{display:flex;justify-content:space-between;padding:10px 16px 0;font-size:11px;color:#C9CDD6}
+.pn{display:flex;gap:9px;align-items:center;padding:9px 11px;border-radius:14px;background:rgba(255,255,255,.1);font-size:11px;line-height:1.3;border:1px solid rgba(255,255,255,.14)}
+.pn img{width:28px;height:28px}
+.mid{position:relative;display:flex;align-items:center;justify-content:center;height:52vh;min-height:300px}
+.beam{position:absolute;left:calc(50% + min(100px,11vw));right:0;top:50%;height:2px;background:repeating-linear-gradient(90deg,rgba(242,166,90,.8) 0 8px,transparent 8px 16px);transform-origin:0 50%;transform:scaleX(0)}
+.packet{position:absolute;left:calc(50% + min(100px,11vw));top:50%;margin-top:-26px;width:52px;height:52px;border-radius:15px;background:#1A1D25;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;opacity:0}
+.packet .sym{width:28px;height:28px}
+.packet img{width:34px;height:34px;border-radius:8px;object-fit:cover}
+.phdesk{position:relative;width:100%;aspect-ratio:16/10;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.16),0 30px 80px rgba(0,0,0,.6)}
+.tabs4{position:absolute;left:0;right:0;bottom:3vh;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tabs4 .tb{display:flex;align-items:center;gap:9px;padding:10px 18px 10px 12px;border-radius:999px;background:#0E1014;border:1px solid var(--line);font-size:16px;font-weight:600;opacity:.4}
+
+/* feature grid */
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.fcard{padding:26px 22px;border-radius:24px;background:var(--card);border:1px solid var(--line);min-height:210px;display:flex;flex-direction:column;justify-content:space-between}
+.fcard img{width:52px;height:52px}
+.fcard b{display:block;font-size:21px;letter-spacing:-.02em;font-weight:700}
+.fcard span{display:block;margin-top:6px;font-size:15px;line-height:1.4;color:var(--mu2)}
+
+.eds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.ed{padding:24px 20px;border-radius:24px;background:var(--card);border:1px solid var(--line);min-height:250px;display:flex;flex-direction:column;justify-content:space-between}
+.ed .sym{width:36px;height:36px}
+.ed b{display:block;font-size:23px;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+.ed span.t{display:block;margin-top:8px;color:var(--mu2);font-size:15px;line-height:1.4}
+
+.cta{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.cta .bg{position:absolute;inset:-5%;background-size:cover;background-position:center}
+.cta .shade{position:absolute;inset:0;background:linear-gradient(180deg,#050608 0%,rgba(5,6,8,.35) 35%,rgba(5,6,8,.55) 70%,#050608 100%)}
+.foot{border-top:1px solid var(--line);padding:56px 24px 90px;font-size:13px;color:#6E7380}
+.foot .wrap{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.notes{max-width:900px;margin:0 auto;font-size:12px;line-height:1.6;color:#6E7380}
+
+/* OS page */
+#osHero{background:radial-gradient(900px 560px at 50% 62%,rgba(242,166,90,.28),transparent 70%),#050608}
+#osHero .logo{z-index:3;position:absolute;top:9vh;left:0;right:0;text-align:center}
+.wipe{position:relative;width:min(1000px,90vw,calc(54vh*1.6));aspect-ratio:16/10;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 40px 120px rgba(0,0,0,.6)}
+.wipe .a,.wipe .b{position:absolute;inset:0}
+.apps8{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(640px,88vw)}
+.app{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 8px;border-radius:22px;background:#0E1014;border:1px solid var(--line);font-size:15px;font-weight:500}
+.app img{width:64px;height:64px;filter:grayscale(1);opacity:.5}
+.langs{position:relative;width:100%;white-space:nowrap;height:1.3em;font-size:clamp(60px,12vw,170px);font-weight:700;letter-spacing:-.045em;line-height:1.2;text-align:center}
+.langs span{position:absolute;left:0;right:0;opacity:0}
+.rings{position:relative;width:min(560px,80vw);aspect-ratio:1}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(242,166,90,.4);inset:0}
+.rlabel{position:absolute;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:8px 14px 8px 8px;border-radius:999px;background:#10131A;border:1px solid rgba(255,255,255,.18)}
+.rlabel .sym{width:26px;height:26px;padding:4px;border-radius:50%;background:#1D2129}
+.steps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1000px;margin:0 auto}
+.step{padding:28px;border-radius:24px;background:var(--card);border:1px solid var(--line)}
+.step .sym{width:38px;height:38px}
+.step em{display:block;margin-top:16px;font-style:normal;font-size:13px;font-weight:700;color:var(--amber);letter-spacing:.08em}
+.step b{display:block;margin-top:8px;font-size:28px;letter-spacing:-.025em;font-weight:700}
+.step span{display:block;margin-top:8px;color:var(--mu2);font-size:16px}
+.table{max-width:1000px;margin:0 auto;border-radius:22px;overflow:hidden;border:1px solid var(--line)}
+.table .r{display:flex;gap:20px;align-items:center;padding:20px 26px;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.07);flex-wrap:wrap}
+.table .r b{flex:0 0 220px;font-size:22px;letter-spacing:-.02em;font-weight:700}
+.table .r span.t{flex:1 1 260px;color:var(--mu2)}
+
+
+/* conversion bar and shared real-screenshot frames */
+.dlbar{transition:transform .5s cubic-bezier(.2,.8,.2,1);position:fixed;z-index:65;left:18px;bottom:18px;transform:translateY(160%);display:flex;align-items:center;gap:16px;padding:8px 8px 8px 22px;border-radius:999px;background:rgba(18,20,26,.92);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 20px 60px rgba(0,0,0,.5);font-size:15px;white-space:nowrap}
+.dlbar.show{transform:translateY(0)}
+.dlbar span{color:var(--mu2)}.dlbar b{color:#fff}
+.dlbar .btn{min-height:40px;padding:0 20px;font-size:15px}
+.shot{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background-size:cover;background-position:center;box-shadow:0 0 0 1px rgba(255,255,255,.16),0 40px 100px rgba(0,0,0,.55)}
+.trust{display:flex;gap:10px 22px;flex-wrap:wrap;justify-content:center;margin-top:20px;font-size:14px;color:var(--mu2)}
+.trust i{font-style:normal;display:inline-flex;align-items:center;gap:7px}
+.trust i:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.note{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;z-index:3}
+.note .dot{position:relative;width:14px;height:14px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(242,166,90,.3)}
+.note .dot:after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(242,166,90,.7);animation:ping 2s ease-out infinite}
+@keyframes ping{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.6);opacity:0}}
+.note .lbl{padding:7px 12px;border-radius:999px;background:rgba(5,6,8,.86);border:1px solid rgba(255,255,255,.22);font-size:14px;font-weight:600;white-space:nowrap}
+.note.l{flex-direction:row-reverse}
+
+/* tour (horizontal, real screens) */
+.tourpane{flex:none;width:min(1000px,88vw,max(520px,calc((100vh - 290px) * 1.7778)))}
+.tourpane h3{font-size:clamp(24px,2.6vw,38px);letter-spacing:-.03em;font-weight:700;margin:0 0 6px}
+.tourpane p{color:var(--mu2);font-size:clamp(15px,1.4vw,19px);margin:0 0 16px}
+
+/* pieces for the real exploded desktop */
+.pc{position:absolute;background-size:100% 100%;background-repeat:no-repeat;filter:drop-shadow(0 20px 40px rgba(0,0,0,.45))}
+
+/* why now timeline */
+.tl{position:relative;width:min(1100px,92vw);margin-top:3vh}
+.lane{position:relative;height:54px;margin:16px 0;display:flex;align-items:center}
+.lane .nm{flex:0 0 150px;font-size:18px;font-weight:700;letter-spacing:-.02em}
+.lane .trk2{position:relative;flex:1;height:16px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}
+.lane .trk2 i{position:absolute;left:0;top:0;bottom:0;transform-origin:0 50%;transform:scaleX(0);border-radius:8px}
+.axis{display:flex;justify-content:space-between;margin-left:150px;font-size:14px;color:var(--mu2);font-weight:600}
+.fact{position:absolute;left:0;right:0;text-align:center;opacity:0}
+.fact .h3{display:block}
+
+/* trial path */
+.path{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(1180px,94vw);position:relative}
+.path .pl2{position:absolute;left:12%;right:12%;top:49px;height:3px;background:rgba(255,255,255,.12)}
+.path .pl2 i{display:block;height:100%;background:var(--amber);transform-origin:0 50%;transform:scaleX(0)}
+.pth{position:relative;text-align:center}
+.pth .pi{margin:0 auto;width:98px;height:98px;border-radius:30px;background:#14171E;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.pth .pi .sym{width:44px;height:44px}
+.pth b{display:block;margin-top:16px;font-size:26px;letter-spacing:-.025em;font-weight:700}
+.pth span{display:block;margin-top:6px;color:var(--mu2);font-size:16px;line-height:1.4}
+
+/* speed + power */
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(1180px,94vw)}
+.tcard{padding:28px 26px;border-radius:26px;background:#0E1014;border:1px solid var(--line)}
+.tcard .sym{width:44px;height:44px;padding:9px;border-radius:14px;background:rgba(242,166,90,.14)}
+.tcard b{display:block;margin-top:18px;font-size:26px;letter-spacing:-.025em;line-height:1.1;font-weight:700}
+.tcard span{display:block;margin-top:8px;color:var(--mu2);font-size:16px;line-height:1.45}
+.bench{width:min(1180px,94vw);margin-top:16px;padding:22px 26px;border-radius:22px;border:1px dashed rgba(242,166,90,.5);background:rgba(242,166,90,.05);display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.bench b{font-size:20px}.bench span{color:var(--mu2);font-size:16px;flex:1 1 380px}
+.pwr{display:grid;grid-template-columns:minmax(300px,520px) minmax(380px,640px);gap:40px;align-items:center;width:min(1280px,94vw)}
+.pwr ul{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
+.pwr li{display:flex;gap:14px;align-items:flex-start;font-size:19px;line-height:1.35}
+.pwr li .sym{flex:none;width:36px;height:36px;padding:7px;border-radius:11px;background:#171A21}
+.pwr li span{color:var(--mu2);display:block;font-size:16px;margin-top:2px}
+
+/* compare */
+.cmp{width:min(1180px,94vw);border-radius:24px;overflow:hidden;border:1px solid var(--line)}
+.cmp .r{display:grid;grid-template-columns:1.25fr repeat(4,1fr);align-items:stretch;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.07);font-size:15px}
+.cmp .r>div{padding:15px 16px;display:flex;align-items:center}
+.cmp .r>div:first-child{font-weight:700;font-size:16px}
+.cmp .hd>div{font-weight:700;color:#fff;font-size:17px;background:#0A0B0F}
+.cmp .nb{background:rgba(242,166,90,.09)!important;color:#fff}
+.cmp .hd .nb{background:rgba(242,166,90,.22)!important}
+.cmp .mut{color:var(--mu2)}
+.who{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(1180px,94vw)}
+.wc{padding:26px 22px;border-radius:24px;background:var(--card);border:1px solid var(--line);min-height:240px}
+.wc .sym{width:42px;height:42px;padding:9px;border-radius:13px;background:rgba(242,166,90,.14)}
+.wc b{display:block;margin-top:18px;font-size:23px;letter-spacing:-.02em;font-weight:700;line-height:1.1}
+.wc span{display:block;margin-top:8px;color:var(--mu2);font-size:15px;line-height:1.45}
+
+/* faq */
+.faq{width:min(900px,92vw);margin:0 auto}
+.q{border-bottom:1px solid var(--line)}
+.q button{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 4px;cursor:pointer;font-size:clamp(18px,2vw,24px);font-weight:600;letter-spacing:-.02em}
+.q button:focus-visible{outline:2px solid var(--amber);border-radius:8px}
+.q button i{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.3);position:relative;transition:transform .3s}
+.q button i:before,.q button i:after{content:"";position:absolute;left:8px;right:8px;top:14px;height:2px;background:#fff}
+.q button i:after{transform:rotate(90deg);transition:transform .3s}
+.q.open button i{transform:rotate(180deg)}.q.open button i:after{transform:rotate(0)}
+.q .a{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.q .a p{padding:0 4px 24px;color:var(--mu2);font-size:18px;line-height:1.55;max-width:780px}
+
+/* download */
+.dlbox{width:min(1100px,94vw);margin:0 auto;border-radius:32px;border:1px solid rgba(242,166,90,.4);background:linear-gradient(160deg,#17130E,#0B0C10);padding:44px;box-shadow:0 0 120px rgba(242,166,90,.12)}
+.dlmeta{display:flex;gap:10px 26px;flex-wrap:wrap;margin-top:18px;font-size:15px;color:var(--mu2)}
+.dlmeta b{color:#fff}
+.sum{margin-top:22px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sum code{font-family:ui-monospace,Menlo,monospace;font-size:13px;padding:10px 14px;border-radius:12px;background:#0A0B0F;border:1px solid var(--line);color:#C9CDD6;word-break:break-all;max-width:100%}
+.tabs{display:flex;gap:8px;margin-top:34px}
+.tabs button{all:unset;cursor:pointer;padding:9px 18px;border-radius:999px;border:1px solid var(--line);font-size:15px;font-weight:600;color:var(--mu2)}
+.tabs button.on{background:#F5F5F7;color:#0A0B0E;border-color:#F5F5F7}
+.tabs button:focus-visible{outline:2px solid var(--amber)}
+.tabc{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tabc>div{padding:18px;border-radius:18px;background:#0E1014;border:1px solid var(--line);font-size:16px;color:var(--mu2)}
+.tabc>div b{display:block;color:#fff;margin-bottom:4px;font-size:17px}
+
+@media (max-width:1000px){
+  .ex{grid-template-columns:1fr;gap:6px}.extext{min-height:150px}
+  .ph{grid-template-columns:1fr;gap:6px}.phtext{min-height:150px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .eds{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps3{grid-template-columns:1fr}
+  .bar5 .bc{display:none}
+  .steps5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nav{gap:14px;font-size:13px}.nav .hide{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">%%MARK%%</svg>
+<div class="progress" id="progress"></div>
+
+<div class="nav">
+<a class="brand" href="#home"><svg class="mk"><use href="#mark"/></svg><span id="navname">Nubo Suite</span></a>
+<a class="hide" href="#os">OS</a><a class="hide" href="#home">Mail</a><a class="hide" href="#home">Chat</a><a class="hide" href="#home">Office</a><a class="hide" href="#home">Drive</a><a class="hide" href="#home">Server</a>
+<a class="dl" href="#os" data-go="download">Download</a>
+</div>
+<div class="dlbar" id="dlbar"><span><b>Nubo OS 1</b> &nbsp;·&nbsp; free &nbsp;·&nbsp; 6.8 GB</span><a class="btn" href="#os" data-go="download">Download</a></div>
+<div class="switch"><a href="#home" data-nav="home">nubosuite.tech</a><a href="#os" data-nav="os">os.nubosuite.tech</a></div>
+
+<!-- ================= HOME ================= -->
+<main id="home">
+
+<section class="scene" id="hero" style="background:#050608">
+<div class="txt">
+<div class="eyebrow">Nubo OS 1 &nbsp;·&nbsp; free &nbsp;·&nbsp; early access</div>
+<h1 class="h1 grad" style="margin-top:14px">Everything you work in.<br>Built to work as one.</h1>
+<p class="lead" style="margin:20px auto 0;text-align:center">A calm desktop with mail, calendar, chat, documents and files already set up. Try it from a USB stick without changing your PC.</p>
+<div class="cta-row"><a class="btn" href="#os" data-go="download" style="min-height:54px;padding:0 32px;font-size:18px">Download Nubo OS</a><a class="btn2" href="#os" data-go="trial" style="min-height:54px">Try it without installing</a></div>
+<div class="trust"><i>Free to download</i><i>Open source</i><i>5 years of security updates</i><i>Your files stay untouched until you install</i></div>
+</div>
+<div class="scr" id="heroScr" style="aspect-ratio:16/9"><div class="shot" style="border-radius:22px 22px 0 0;box-shadow:none;height:100%;background-image:var(--r-desktop)"></div></div>
+</section>
+
+<section class="hs" id="tourH" style="background:linear-gradient(180deg,#050608,#0B0C10)">
+<div class="head"><div class="eyebrow">See it for yourself</div><h2 class="h2" style="margin-top:12px;max-width:1000px">Real screens. No mock-ups.</h2></div>
+<div class="track" id="tourTrackH"></div>
+</section>
+
+<section class="scene" id="explode" style="background:radial-gradient(800px 460px at 72% 50%,rgba(242,166,90,.14),transparent 70%),#050608">
+<div class="ex">
+<div class="extext" id="exText">
+<div><div class="eyebrow">The desktop</div><h2 class="h2" style="margin-top:14px">Every layer, designed.</h2><p class="lead" style="margin-top:18px">Scroll to take it apart, one layer at a time.</p></div>
+<div><div class="eyebrow">Layer 1 &nbsp;·&nbsp; Windows</div><h2 class="h2" style="margin-top:14px">Frosted like glass.</h2><p class="lead" style="margin-top:18px">Apps sit on a soft blur, so the picture behind shows through.</p></div>
+<div><div class="eyebrow">Layer 1 &nbsp;·&nbsp; Widgets</div><h2 class="h2" style="margin-top:14px">What matters, up front.</h2><p class="lead" style="margin-top:18px">Clock, weather and every notification in one history.</p></div>
+<div><div class="eyebrow">Layer 1 &nbsp;·&nbsp; Top bar</div><h2 class="h2" style="margin-top:14px">Quiet by default.</h2><p class="lead" style="margin-top:18px">The Nubo menu, your status, and nothing else.</p></div>
+<div><div class="eyebrow">Layer 1 &nbsp;·&nbsp; Dock</div><h2 class="h2" style="margin-top:14px">Your apps, one click.</h2><p class="lead" style="margin-top:18px">Pinned favourites, plus popular apps ready to download.</p></div>
+</div>
+<div class="exstage">
+<div class="xscene" id="xs" style="aspect-ratio:16/9"><div class="xstack" id="xstack">
+<div class="xl wall"><div class="shot" style="border-radius:16px;box-shadow:none;height:100%;background-image:var(--i-mist)"></div></div>
+<div class="xl"><div class="pc" style="left:3%;top:15%;width:45%;aspect-ratio:807/387;background-image:var(--r-win)"></div></div>
+<div class="xl"><div class="pc" style="left:50%;top:14%;width:25%;aspect-ratio:1083/975;background-image:var(--r-notifp)"></div><div class="pc" style="left:79%;top:58%;width:12%;aspect-ratio:238/187;background-image:var(--r-clock)"></div></div>
+<div class="xl"><div class="pc" style="left:0;top:0;width:100%;aspect-ratio:1440/31;background-image:var(--r-bar);filter:none"></div><div class="pc" style="left:77%;top:6%;width:21%;aspect-ratio:429/406;background-image:var(--r-quickp)"></div></div>
+<div class="xl"><div class="pc" style="left:31%;bottom:3%;width:38%;aspect-ratio:679/85;background-image:var(--r-dock)"></div></div>
+</div></div>
+<div class="legend" id="legend">
+<div class="lg"><img src="%%ic:org.gnome.Nautilus%%" alt="">Windows</div>
+<div class="lg"><img src="%%ic:org.gnome.Weather%%" alt="">Widgets and alerts</div>
+<div class="lg"><svg class="sym" style="color:#fff;padding:5px;border-radius:9px;background:#1A1D25"><use href="#mark"/></svg>Top bar and quick settings</div>
+<div class="lg"><img src="%%ic:org.gnome.Software%%" alt="">Dock</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="scene" id="account" style="background:#050608">
+<div class="film" style="background-image:url(%%dunes%%)"></div><div class="filmshade"></div>
+<div class="filmtext" id="filmText">
+<div><div class="eyebrow">First start</div><h2 class="h2">Type your address.</h2></div>
+<div><div class="eyebrow">Setting up</div><h2 class="h2">Everything sets itself up.</h2></div>
+<div><div class="eyebrow">Done</div><h2 class="h2">Ready to work.</h2></div>
+</div>
+<div class="setup" id="setup">
+<div style="display:flex;align-items:center;gap:12px"><svg class="mk" style="font-size:34px"><use href="#mark"/></svg><div><div style="font-size:21px;font-weight:700;letter-spacing:-.02em">Welcome to Nubo OS</div><div style="font-size:14px;color:var(--mu2)">Sign in with your Nubo account</div></div></div>
+<div id="setupForm" style="margin-top:22px">
+<div class="field"><span id="typed"></span><i class="caret"></i></div>
+<div class="field" style="margin-top:10px;letter-spacing:.3em;color:#C9CDD6" id="pw">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</div>
+<div class="btn" id="goBtn" style="margin-top:16px;width:100%">Continue</div>
+</div>
+<div id="setupList" style="margin-top:22px;display:none">
+<div class="chk"><img src="%%ic:org.gnome.Geary%%" alt="">Mail<span class="st"></span></div>
+<div class="chk"><img src="%%ic:org.gnome.Calendar%%" alt="">Calendar<span class="st"></span></div>
+<div class="chk"><img src="%%ic:org.gnome.Contacts%%" alt="">Contacts<span class="st"></span></div>
+<div class="chk"><img src="%%ic:org.gnome.Nautilus%%" alt="">Files<span class="st"></span></div>
+<div class="chk" style="border:0"><img src="%%ic:org.gnome.Software%%" alt="">Apps<span class="st"></span></div>
+<div class="pbar"><i id="pfill"></i></div>
+</div>
+</div>
+<div class="rdock glass" id="rdock"><img src="%%ic:org.gnome.Geary%%" alt=""><img src="%%ic:org.gnome.Calendar%%" alt=""><img src="%%ic:org.gnome.Contacts%%" alt=""><img src="%%ic:org.gnome.Nautilus%%" alt=""><img src="%%ic:firefox%%" alt=""><img src="%%ic:libreoffice-writer%%" alt=""><img src="%%ic:org.gnome.Software%%" alt=""></div>
+</section>
+
+<section class="hs" id="apps" style="background:linear-gradient(180deg,#050608,#0B0C10)">
+<div class="head"><div class="eyebrow">The suite</div><h2 class="h2" style="margin-top:12px;max-width:1000px">Apps that were made to meet.</h2></div>
+<div class="track" id="appTrack">
+
+<div class="pane"><div class="ptop"><img src="%%ic:org.gnome.Geary%%" alt=""><div><b>Mail and calendar</b><span>Your own address. Works in any mail app.</span></div></div>
+<div class="mock"><div class="row" style="padding:15px;font-size:15px"><div class="av" style="background:#F2A65A;width:38px;height:38px;font-size:13px">PN</div><div><b>Priya Nair</b><br>Quarterly plan: final numbers are in</div></div><div class="row" style="padding:15px;font-size:15px"><div class="av" style="background:#9DB7FF;width:38px;height:38px;font-size:13px">LB</div><div><b>Lars Becker</b><br>Invoice 2026-114, due in 14 days</div></div><div class="row" style="padding:15px;font-size:15px"><div class="av" style="background:#7FE0A8;width:38px;height:38px;font-size:13px">AM</div><div><b>Aisha Al-Mansoori</b><br>Sunday schedule moves to 10:00</div></div><div class="row" style="padding:15px;font-size:15px;align-items:center"><img src="%%ic:org.gnome.Calendar%%" style="width:38px;height:38px" alt=""><div><b>Team standup</b><br>Calendar: tomorrow 09:30</div></div></div></div>
+
+<div class="pane"><div class="ptop"><div class="appmk"><svg class="mk"><use href="#mark"/></svg></div><div><b>Chat</b><span>Conversations next to your mail.</span></div></div>
+<div class="mock" style="padding:20px;display:flex;flex-direction:column;gap:12px;font-size:16px"><div style="align-self:flex-start;padding:12px 16px;border-radius:18px 18px 18px 4px;background:#1B1F28;max-width:70%">Landing at 18:40</div><div style="align-self:flex-end;padding:12px 16px;border-radius:18px 18px 4px 18px;background:#F2A65A;color:#0A0B0E;max-width:70%">See you at the office</div><div style="align-self:flex-start;padding:12px 16px;border-radius:18px 18px 18px 4px;background:#1B1F28;max-width:70%">Sent the deck to your inbox</div><div style="align-self:flex-end;padding:12px 16px;border-radius:18px 18px 4px 18px;background:#F2A65A;color:#0A0B0E;max-width:70%">Got it, thank you</div></div></div>
+
+<div class="pane"><div class="ptop"><div class="appmk"><svg class="mk"><use href="#mark"/></svg></div><div><b>Meet</b><span>Video meetings without another login.</span></div></div>
+<div class="mock" style="padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;position:relative"><div style="border-radius:16px;background:url(%%pplp%%) center 38%/cover;display:flex;align-items:flex-end;padding:10px;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.7)">Amara</div><div style="border-radius:16px;background:url(%%pplb%%) center 38%/cover;display:flex;align-items:flex-end;padding:10px;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.7)">Joseph</div><div style="border-radius:16px;background:url(%%pplt%%) center 38%/cover;display:flex;align-items:flex-end;padding:10px;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.7)">Elena</div><div style="border-radius:16px;background:linear-gradient(160deg,#2A3350,#151A29);display:flex;align-items:center;justify-content:center;position:relative"><span style="width:56px;height:56px;border-radius:50%;background:#F2A65A;color:#0A0B0E;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:20px">You</span><span style="position:absolute;left:10px;bottom:8px;font-weight:600">You</span></div></div></div>
+
+<div class="pane"><div class="ptop"><img src="%%ic:libreoffice-writer%%" alt=""><div><b>Office</b><span>Documents, sheets and slides. Opens Microsoft Office files.</span></div></div>
+<div class="mock" style="background:#171A21;padding:16px"><div style="display:flex;gap:10px;align-items:center;height:36px;border-radius:8px;background:#232833;margin-bottom:14px;padding:0 10px"><img src="%%ic:libreoffice-writer%%" style="width:24px" alt=""><img src="%%ic:libreoffice-calc%%" style="width:24px" alt=""><img src="%%ic:libreoffice-impress%%" style="width:24px" alt=""></div><div style="background:#F5F5F7;border-radius:6px;height:calc(100% - 52px);padding:24px;color:#222"><div style="height:16px;width:50%;background:#14161B;border-radius:3px"></div><div style="height:9px;width:90%;background:#C9CDD6;border-radius:3px;margin-top:20px"></div><div style="height:9px;width:85%;background:#C9CDD6;border-radius:3px;margin-top:10px"></div><div style="height:9px;width:92%;background:#C9CDD6;border-radius:3px;margin-top:10px"></div><div style="height:9px;width:60%;background:#C9CDD6;border-radius:3px;margin-top:10px"></div></div></div></div>
+
+<div class="pane"><div class="ptop"><div class="appmk"><svg class="mk"><use href="#mark"/></svg></div><div><b>Drive</b><span>Files and backups that follow you. Coming soon.</span></div></div>
+<div class="mock" style="padding:14px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:10px"><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:org.gnome.Nautilus%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Projects</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:libreoffice-writer%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Report.docx</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:libreoffice-calc%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Budget.xlsx</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:libreoffice-impress%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Pitch.pptx</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:org.gnome.Papers%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Invoice.pdf</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:org.gnome.Loupe%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Holiday.jpg</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:org.gnome.Showtime%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Clip.mp4</span></div><div style="border-radius:14px;background:#171A21;border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px"><img src="%%ic:org.gnome.TextEditor%%" style="width:52%;max-width:64px" alt=""><span style="font-size:12px;color:#C9CDD6">Notes.txt</span></div></div></div>
+
+<div class="pane"><div class="ptop"><img src="%%ic:org.gnome.Software%%" alt=""><div><b>Store</b><span>Popular apps, one click away.</span></div></div>
+<div class="mock" style="padding:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-content:start"><img src="%%ic:firefox%%" style="width:100%" alt=""><img src="%%ic:spotify%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""><img src="%%ic:telegram%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""><img src="%%ic:vlc%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""><img src="%%ic:us.zoom.Zoom%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""><img src="%%ic:google-chrome%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""><img src="%%ic:discord%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""><img src="%%ic:steam%%" style="width:100%;filter:grayscale(1);opacity:.5" alt=""></div></div>
+
+</div>
+</section>
+
+<section class="scene" id="engineering" style="background:radial-gradient(700px 420px at 50% 55%,rgba(242,166,90,.12),transparent 70%),#050608">
+<div class="eng">
+<div class="enghead"><div class="eyebrow">Engineering</div><h2 class="h2" style="margin-top:10px">Built carefully, from the kernel up.</h2></div>
+<div class="bars" id="bars5"></div>
+</div>
+</section>
+
+<section class="scene" id="pipeline" style="background:#050608">
+<div class="pl">
+<div class="enghead"><div class="eyebrow">Always up to date</div><h2 class="h2" style="margin-top:10px;font-size:clamp(28px,4vw,58px)">Every update is built, signed and delivered.</h2></div>
+<div class="steps5" id="steps5"><div class="line"><i id="plFill"></i></div>
+<div class="pst"><div class="pi"><img class="sym" src="%%sym:utilities-terminal%%" alt=""></div><b>Source</b><span>Open code anyone can read</span></div>
+<div class="pst"><div class="pi"><img class="sym" src="%%sym:emblem-system%%" alt=""></div><b>Build</b><span>Packaged the same way every time</span></div>
+<div class="pst"><div class="pi"><img class="sym" src="%%sym:dialog-password%%" alt=""></div><b>Sign</b><span>Every package carries our signature</span></div>
+<div class="pst"><div class="pi"><img class="sym" src="%%sym:package-x-generic%%" alt=""></div><b>Publish</b><span>Delivered from our own archive</span></div>
+<div class="pst"><div class="pi"><img class="sym" src="%%sym:view-refresh%%" alt=""></div><b>Update</b><span>Installed quietly in the background</span></div>
+</div>
+<div class="support"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><b style="font-size:24px;letter-spacing:-.02em">Security updates</b><span style="color:var(--mu2)">Nubo OS 1 sits on a long-term support base</span></div><div class="trk" style="margin-top:16px"><i id="supFill"></i></div><div class="yrs"><span>2026</span><span>2027</span><span>2028</span><span>2029</span><span>2030</span><span>2031</span></div></div>
+</div>
+</section>
+
+<section class="scene" id="phone" style="background:radial-gradient(800px 460px at 50% 50%,rgba(242,166,90,.1),transparent 70%),#050608">
+<div class="ph">
+<div class="phtext" id="phText">
+<div><div class="eyebrow">Your phone</div><h2 class="h2" style="margin-top:14px">Your desktop knows your phone.</h2></div>
+<div><div class="eyebrow">Notifications</div><h2 class="h2" style="margin-top:14px">Read it on the big screen.</h2><p class="lead" style="margin-top:16px">Alerts from your Android phone appear on the desktop.</p></div>
+<div><div class="eyebrow">Files</div><h2 class="h2" style="margin-top:14px">Send a photo in a flick.</h2><p class="lead" style="margin-top:16px">Share files both ways, no cable.</p></div>
+<div><div class="eyebrow">Clipboard</div><h2 class="h2" style="margin-top:14px">Copy here. Paste there.</h2><p class="lead" style="margin-top:16px">Text follows you from one device to the other.</p></div>
+<div><div class="eyebrow">Mirror</div><h2 class="h2" style="margin-top:14px">Use the phone on your desktop.</h2><p class="lead" style="margin-top:16px">Mirror the screen and click through it.</p></div>
+</div>
+<div class="mid">
+<div class="phone" id="ph"><div class="phscr"><div class="isl"></div><div class="stt"><span>20:30</span><span>&#9679;&#9679;&#9679;</span></div>
+<div style="padding:16px 12px"><div class="pn" id="phNote" style="opacity:0"><img src="%%ic:telegram%%" alt=""><div><b>Aisha</b><br>Landing at 18:40</div></div>
+<div id="phPhoto" style="margin-top:14px;height:96px;border-radius:14px;background:url(%%ridge%%) center/cover;opacity:0"></div>
+<div id="phClip" class="pn" style="margin-top:14px;opacity:0"><img class="sym" src="%%sym:edit-copy%%" style="padding:4px;background:#2A2F3A;border-radius:8px" alt=""><div>meet.nubo.email/sync-0930</div></div>
+<div id="phMirror" style="position:absolute;inset:0;opacity:0;background:linear-gradient(180deg,#1B2030,#0B0D12)"><div class="isl" style="top:8px"></div><div style="padding:46px 14px 0"><div class="pn"><img src="%%ic:org.gnome.Geary%%" alt=""><div><b>Priya Nair</b><br>Quarterly plan</div></div><div class="pn" style="margin-top:10px"><img src="%%ic:org.gnome.Calendar%%" alt=""><div><b>Team standup</b><br>Tomorrow 09:30</div></div></div></div>
+</div></div></div>
+<div class="beam" id="beam"></div>
+<div class="packet" id="packet"><img id="packImg" src="%%ic:telegram%%" alt=""></div>
+</div>
+<div class="phdesk" id="phdesk"><div class="desk" style="background-image:url(%%dusk%%)">
+<div class="bar glass"><div style="display:flex;gap:12px;align-items:center"><svg class="mk" style="font-size:13px"><use href="#mark"/></svg><b>Nubo</b></div><span>20:30</span><span>&#9679; &#9679;</span></div>
+<div id="dNote" class="win glass" style="right:5%;top:12%;width:52%;padding:12px 14px;font-size:13px;border-radius:16px;display:flex;gap:10px;align-items:center;opacity:0"><img src="%%ic:telegram%%" style="width:32px;height:32px" alt=""><div><b>Aisha</b><br>Landing at 18:40</div></div>
+<div id="dFiles" class="win glass" style="left:6%;top:26%;width:46%;height:46%;opacity:0;display:flex;flex-direction:column"><div style="padding:9px 12px;font-size:12px;display:flex;gap:8px;align-items:center"><img src="%%ic:org.gnome.Nautilus%%" style="width:18px" alt="">Downloads</div><div style="flex:1;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-content:start"><div id="dPhoto" style="aspect-ratio:1;border-radius:8px;background:url(%%ridge%%) center/cover;opacity:0"></div></div></div>
+<div id="dClip" class="win glass" style="left:6%;bottom:16%;width:60%;padding:10px 12px;font-size:13px;display:flex;gap:10px;align-items:center;opacity:0"><img class="sym" src="%%sym:edit-copy%%" style="width:22px;height:22px" alt="">meet.nubo.email/sync-0930</div>
+<div id="dMirror" class="win glass" style="right:6%;top:14%;width:22%;aspect-ratio:9/19;opacity:0;border-radius:16px;padding:7px"><div style="height:100%;border-radius:11px;background:linear-gradient(180deg,#1B2030,#0B0D12);padding:12px 7px;font-size:9px"><div class="pn" style="padding:6px;font-size:9px"><img src="%%ic:org.gnome.Geary%%" style="width:18px;height:18px" alt=""><div><b>Priya Nair</b><br>Quarterly plan</div></div></div></div>
+</div></div>
+</div>
+<div class="tabs4" id="tabs4">
+<div class="tb"><img class="sym" style="width:24px;height:24px" src="%%sym:mail-send%%" alt="">Notifications</div>
+<div class="tb"><img class="sym" style="width:24px;height:24px" src="%%sym:camera-photo%%" alt="">Files</div>
+<div class="tb"><img class="sym" style="width:24px;height:24px" src="%%sym:edit-copy%%" alt="">Clipboard</div>
+<div class="tb"><img class="sym" style="width:24px;height:24px" src="%%sym:phone%%" alt="">Mirror</div>
+</div>
+</section>
+
+<section class="sec" id="midcta" style="padding:60px 24px 40px">
+<div class="dlbox" style="text-align:center">
+<div class="eyebrow">Ready when you are</div>
+<h2 class="h2" style="margin-top:12px;font-size:clamp(34px,5vw,72px)">Try Nubo OS on your own PC.</h2>
+<p class="lead" style="margin:16px auto 0;text-align:center">Download it, start from a USB stick, and look around. Nothing changes on your computer until you choose to install.</p>
+<div class="cta-row"><a class="btn" href="#os" data-go="download" style="min-height:54px;padding:0 32px;font-size:18px">Download Nubo OS</a><a class="btn2" href="#os" data-go="trial" style="min-height:54px">How the free trial works</a></div>
+<div class="trust"><i>Free</i><i>Early access</i><i>Open source</i><i>Built on Ubuntu 26.04 LTS</i></div>
+</div>
+</section>
+
+<section class="sec" id="features">
+<div class="wrap">
+<div class="center"><div class="eyebrow">And more</div><h2 class="h2" style="margin-top:12px">Small things, thought through.</h2></div>
+<div class="grid" style="margin-top:56px">
+<div class="fcard"><img src="%%ic:org.gnome.Settings%%" alt=""><div><b>Notification centre</b><span>Every alert in one history, grouped by app.</span></div></div>
+<div class="fcard"><img src="%%ic:org.gnome.Weather%%" alt=""><div><b>Widgets</b><span>Clock and weather on your desktop.</span></div></div>
+<div class="fcard"><img src="%%ic:org.gnome.Loupe%%" alt=""><div><b>Light and dark</b><span>One setting changes the whole system.</span></div></div>
+<div class="fcard"><img src="%%ic:org.gnome.Maps%%" alt=""><div><b>Nubo Search</b><span>Find apps and files from the keyboard.</span></div></div>
+<div class="fcard"><img src="%%ic:kdeconnect%%" alt=""><div><b>Phone link</b><span>Notifications and files from Android.</span></div></div>
+<div class="fcard"><img src="%%ic:org.gnome.Contacts%%" alt=""><div><b>Online accounts</b><span>Mail, calendar, contacts and files in one step.</span></div></div>
+<div class="fcard"><img src="%%ic:org.gnome.Software%%" alt=""><div><b>Migration assistant</b><span>Bring your data from other services. Coming soon.</span></div></div>
+<div class="fcard"><img src="%%ic:org.gnome.Nautilus%%" alt=""><div><b>Backup</b><span>Back up to Nubo Drive. Coming soon.</span></div></div>
+</div>
+</div>
+</section>
+
+<section class="sec" id="editions" style="padding-top:60px">
+<div class="wrap">
+<div class="eyebrow">One family</div><h2 class="h2" style="margin-top:12px;max-width:960px">Made for every machine you run.</h2>
+<div class="eds" style="margin-top:50px">
+<div class="ed" style="border-color:rgba(242,166,90,.55)"><div style="display:flex;justify-content:space-between;align-items:flex-start"><img class="sym" src="%%sym:computer%%" alt=""><span class="chip" style="background:rgba(242,166,90,.16);color:#FFC58A">Early access</span></div><div><b>Nubo OS</b><span class="t">The desktop for everyday work.</span></div></div>
+<div class="ed"><div style="display:flex;justify-content:space-between;align-items:flex-start"><img class="sym" src="%%sym:drive-harddisk%%" alt=""><span class="chip" style="background:rgba(255,255,255,.08);color:#C9CDD6">Coming soon</span></div><div><b>Nubo Lite</b><span class="t">A lighter desktop for older PCs.</span></div></div>
+<div class="ed"><div style="display:flex;justify-content:space-between;align-items:flex-start"><img class="sym" src="%%sym:network-server%%" alt=""><span class="chip" style="background:rgba(255,255,255,.08);color:#C9CDD6">Coming soon</span></div><div><b>Nubo Server</b><span class="t">A hardened base for servers and cloud.</span></div></div>
+<div class="ed"><div style="display:flex;justify-content:space-between;align-items:flex-start"><img class="sym" src="%%sym:package-x-generic%%" alt=""><span class="chip" style="background:rgba(255,255,255,.08);color:#C9CDD6">Planned</span></div><div><b>Nubo Virtualization</b><span class="t">Virtual machines and containers.</span></div></div>
+<div class="ed"><div style="display:flex;justify-content:space-between;align-items:flex-start"><img class="sym" src="%%sym:system-users%%" alt=""><span class="chip" style="background:rgba(255,255,255,.08);color:#C9CDD6">Planned</span></div><div><b>Nubo Edu and Enterprise</b><span class="t">Classrooms and managed fleets.</span></div></div>
+</div>
+</div>
+</section>
+
+<section class="cta" id="ctaHome">
+<div class="bg" id="ctaBg" style="background-image:url(%%night%%)"></div><div class="shade"></div>
+<div style="position:relative;padding:0 24px"><svg class="mk" style="font-size:64px"><use href="#mark"/></svg><h2 class="h1 grad" style="margin-top:24px;font-size:clamp(44px,8vw,116px)">Try it on the computer you have.</h2><p class="lead" style="margin:22px auto 0;text-align:center">Start from a USB stick. Look around. Install when you are ready.</p><div class="cta-row"><a class="btn" href="#os" data-go="download" style="min-height:54px;padding:0 32px;font-size:18px">Download Nubo OS</a><a class="btn2" href="#os" data-go="faq" style="min-height:54px">Read the install guide</a></div><p style="margin-top:20px;font-size:13px;color:var(--mu)">Early access &nbsp;·&nbsp; 64-bit PCs &nbsp;·&nbsp; 6.8 GB</p></div>
+</section>
+<div class="foot"><div class="wrap"><span>&copy; 2026 Chandorkar Technologies. Nubo and the Nubo mark are trademarks of Chandorkar Technologies.</span><span>[LEGAL: base-system attribution and licence notices]</span></div><p class="notes" style="margin-top:24px">Early access builds may change. Features marked Coming soon or Planned are not available yet. Phone link works with Android phones; iPhone support is limited. App names and icons belong to their owners. Portraits in the call mock-up are CC0 images from Wikimedia Commons. [FOOTNOTES to be completed before launch]</p></div>
+</main>
+
+<!-- ================= OS ================= -->
+<main id="os" hidden>
+
+<section class="scene" id="osHero">
+<div class="logo"><svg class="mk" style="font-size:52px;color:#F5F5F7"><use href="#mark"/></svg><div class="eyebrow" style="margin-top:12px">Nubo OS 1 &nbsp;·&nbsp; free &nbsp;·&nbsp; early access</div><h1 class="h1 grad" style="margin-top:12px">A desktop that<br>sets itself up.</h1>
+<p class="lead" style="margin:18px auto 0;text-align:center">Sign in once and your mail, calendar, contacts and files are there. Run it from a USB stick first. Keep your PC exactly as it is.</p>
+<div class="cta-row"><a class="btn" href="#os" data-go="download" style="min-height:54px;padding:0 32px;font-size:18px">Download Nubo OS</a><a class="btn2" href="#os" data-go="trial" style="min-height:54px">Will it run on my PC?</a></div>
+<div class="trust"><i>Free</i><i>Early access</i><i>Open source</i><i>Five years of updates</i></div></div>
+<div class="scr" id="osScr" style="z-index:4;position:absolute;left:50%;bottom:0;width:min(82vw,1180px);aspect-ratio:16/9;margin-left:calc(min(82vw,1180px)/-2);border-radius:24px 24px 0 0;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 -50px 150px rgba(242,166,90,.3)"><div class="shot" style="border-radius:24px 24px 0 0;box-shadow:none;height:100%;background-image:var(--r-desktop)"></div></div>
+</section>
+
+<section class="scene" id="whynow" style="background:radial-gradient(800px 460px at 50% 60%,rgba(242,166,90,.12),transparent 70%),#050608">
+<div style="width:min(1180px,94vw);display:flex;flex-direction:column;align-items:center;gap:2vh;padding-top:56px">
+<div class="center"><div class="eyebrow">Why now</div><h2 class="h2 grad" style="margin-top:12px;font-size:clamp(34px,5.4vw,78px)">Windows 10 stopped.<br>Your PC didn't.</h2></div>
+<div class="tl">
+<div class="lane"><div class="nm">Windows 10</div><div class="trk2"><i id="lnW1" style="width:11%;background:#6B6F76"></i><i id="lnW2" style="left:11%;width:28.7%;background:repeating-linear-gradient(135deg,#8B6A3E 0 8px,#5A4527 8px 16px)"></i></div></div>
+<div class="lane"><div class="nm">Windows 11</div><div class="trk2"><i id="lnW11" style="width:40%;background:linear-gradient(90deg,#3B5A8C,#2A3F63)"></i></div></div>
+<div class="lane"><div class="nm" style="color:var(--amber)">Nubo OS 1</div><div class="trk2"><i id="lnN" style="width:89%;background:linear-gradient(90deg,#F2A65A,#FFD2A0)"></i></div></div>
+<div class="axis"><span>2025</span><span>2026</span><span>2027</span><span>2028</span><span>2029</span><span>2030</span><span>2031</span><span>2032</span></div>
+</div>
+<div style="position:relative;height:150px;width:100%">
+<div class="fact"><span class="h3">Free security updates for Windows 10 ended on 14 October 2025.</span><p class="lead" style="margin:10px auto 0;text-align:center">Paid extended updates for home users run to 12 October 2027.</p></div>
+<div class="fact"><span class="h3">Windows 11 needs a TPM 2.0 chip and a supported processor.</span><p class="lead" style="margin:10px auto 0;text-align:center">Some perfectly good PCs fail that check. Each Windows 11 version gets two years of updates on Home and Pro.</p></div>
+<div class="fact"><span class="h3">Nubo OS 1 gets five years of security updates, to April 2031.</span><p class="lead" style="margin:10px auto 0;text-align:center">Try it from a USB stick first. Nothing is installed.</p></div>
+</div>
+</div>
+</section>
+
+<section class="scene" id="trial" style="background:#050608">
+<div style="display:flex;flex-direction:column;align-items:center;gap:6vh;width:min(1180px,94vw);padding-top:52px">
+<div class="center"><div class="eyebrow">Try it first</div><h2 class="h2 grad" style="margin-top:12px;font-size:clamp(34px,5.4vw,78px)">Run it before you commit.</h2><p class="lead" style="margin:16px auto 0;text-align:center">Nubo OS starts from a USB stick and runs without installing. Look around. Open your apps. Restart and you are back where you were.</p></div>
+<div class="path" id="trialPath"><div class="pl2"><i id="trFill"></i></div>
+<div class="pth"><div class="pi"><img class="sym" src="%%sym:folder-download%%" alt=""></div><b>Download</b><span>One image, 6.8 GB, free</span></div>
+<div class="pth"><div class="pi"><img class="sym" src="%%sym:drive-harddisk%%" alt=""></div><b>Make a USB stick</b><span>A free tool writes it in minutes</span></div>
+<div class="pth"><div class="pi"><img class="sym" src="%%sym:computer%%" alt=""></div><b>Start from it</b><span>Restart and pick the USB drive</span></div>
+<div class="pth"><div class="pi"><img class="sym" src="%%sym:media-playback-start%%" alt=""></div><b>Look around</b><span>Install only if you like it</span></div>
+</div>
+<div class="cta-row" style="margin-top:0"><a class="btn" href="#os" data-go="download">Download Nubo OS</a><a class="btn2" href="#os" data-go="faq">Common questions</a></div>
+</div>
+</section>
+
+<section class="sec" id="speed" style="padding:140px 24px 60px">
+<div class="wrap" style="display:flex;flex-direction:column;align-items:center">
+<div class="center"><div class="eyebrow">Speed</div><h2 class="h2" style="margin-top:12px">Built on a modern graphics stack.</h2><p class="lead" style="margin:16px auto 0;text-align:center">Smooth motion and sharp text come from the foundation, not from tweaks.</p></div>
+<div class="trio" style="margin-top:56px">
+<div class="tcard"><img class="sym" src="%%sym:computer%%" alt=""><b>Wayland, only</b><span>A current display system with fractional scaling, HDR and variable refresh rate for supported screens.</span></div>
+<div class="tcard"><img class="sym" src="%%sym:media-playback-start%%" alt=""><b>Video that stays cool</b><span>Hardware video decoding is on by default, so playback uses less power than software decoding.</span></div>
+<div class="tcard"><img class="sym" src="%%sym:view-refresh%%" alt=""><b>Updates in the background</b><span>Apps update separately from the system, so there is less to download at once.</span></div>
+</div>
+<div class="bench"><b>Real numbers, shown properly.</b><span>We are measuring boot time, app launch and battery life on real laptops, next to Windows 11 and Ubuntu. Every result will be published with the method, the machine and the date.</span><span class="chip" style="background:rgba(242,166,90,.16);color:#FFC58A;flex:none">With the first public build</span></div>
+</div>
+</section>
+
+<section class="scene" id="power" style="background:radial-gradient(700px 420px at 72% 50%,rgba(242,166,90,.13),transparent 70%),#050608">
+<div class="pwr">
+<div><div class="eyebrow">Battery and power</div><h2 class="h2" style="margin-top:12px;font-size:clamp(32px,4.8vw,70px)">Make the battery last on your terms.</h2>
+<ul>
+<li><img class="sym" src="%%sym:emblem-system%%" alt=""><div>Power Mode in one click<span>Balanced and Power Saver, plus Performance on laptops that support it.</span></div></li>
+<li><img class="sym" src="%%sym:view-refresh%%" alt=""><div>You choose what runs in the background<span>Messaging apps stay running only if you allow it.</span></div></li>
+<li><img class="sym" src="%%sym:weather-clear%%" alt=""><div>Dark style, instantly<span>Switch the whole system with one tap.</span></div></li>
+</ul></div>
+<div style="position:relative;display:flex;justify-content:center"><div id="pwrPiece" style="position:relative;width:min(520px,86vw);aspect-ratio:429/406"><div class="pc" style="inset:0;background-image:var(--r-quickp)"></div>
+</div></div>
+</div>
+</section>
+
+<section class="hs" id="tourO" style="background:linear-gradient(180deg,#050608,#0B0C10)">
+<div class="head"><div class="eyebrow">See it for yourself</div><h2 class="h2" style="margin-top:12px;max-width:1000px">Real screens. No mock-ups.</h2></div>
+<div class="track" id="tourTrackO"></div>
+</section>
+
+<section class="scene" id="osapps" style="background:radial-gradient(600px 400px at 50% 55%,rgba(242,166,90,.12),transparent 70%),#050608;flex-direction:column;gap:26px;padding-top:52px">
+<div class="center" style="padding:0 24px"><div class="eyebrow">Apps</div><h2 class="h2 grad" style="margin-top:12px">The apps you know. One click.</h2><p class="lead" style="margin:14px auto 0;text-align:center">Grey icons are ready to download. Click, and they fill with colour.</p></div>
+<div class="apps8" id="apps8">
+<div class="app"><img src="%%ic:firefox%%" alt="">Firefox</div><div class="app"><img src="%%ic:org.gnome.Geary%%" alt="">Mail</div><div class="app"><img src="%%ic:libreoffice-writer%%" alt="">Office</div><div class="app"><img src="%%ic:spotify%%" alt="">Spotify</div>
+<div class="app"><img src="%%ic:telegram%%" alt="">Telegram</div><div class="app"><img src="%%ic:vlc%%" alt="">VLC</div><div class="app"><img src="%%ic:us.zoom.Zoom%%" alt="">Zoom</div><div class="app"><img src="%%ic:google-chrome%%" alt="">Chrome</div>
+</div>
+<p style="color:var(--mu);font-size:14px;text-align:center;padding:0 24px">Not supported: Adobe Creative Cloud, Microsoft Office desktop apps (Office files open fine), and games with kernel-level anti-cheat.</p>
+</section>
+
+<section class="scene" id="cross" style="background:radial-gradient(700px 420px at 50% 55%,rgba(242,166,90,.12),transparent 70%),#050608">
+<div class="eng">
+<div class="enghead"><div class="eyebrow">Cross-section</div><h2 class="h2" style="margin-top:10px">Look inside. Eight layers.</h2></div>
+<div class="bars" id="bars8"></div>
+</div>
+</section>
+
+<section class="scene" id="secure" style="background:#050608">
+<div style="display:flex;align-items:center;justify-content:center;gap:6vw;flex-wrap:wrap;width:min(1200px,94vw)">
+<div style="flex:1 1 320px;max-width:460px"><div class="eyebrow">Security</div><h2 class="h2" style="margin-top:12px">Protected in layers.</h2><p class="lead" style="margin-top:16px">Encrypted disk at install, signed updates, apps kept apart, and code anyone can read.</p></div>
+<div class="rings" id="rings"><div class="ring" style="inset:0"></div><div class="ring" style="inset:14%"></div><div class="ring" style="inset:28%"></div><div class="ring" style="inset:42%;background:rgba(242,166,90,.1)"></div>
+<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:46px"><svg class="mk"><use href="#mark"/></svg></div>
+<div class="rlabel" style="left:34%;top:3%"><img class="sym" src="%%sym:applications-engineering%%" alt="">Open code</div><div class="rlabel" style="right:-6%;top:24%"><img class="sym" src="%%sym:changes-prevent%%" alt="">Sandboxed apps</div><div class="rlabel" style="right:-2%;bottom:20%"><img class="sym" src="%%sym:dialog-password%%" alt="">Signed updates</div><div class="rlabel" style="left:22%;bottom:3%"><img class="sym" src="%%sym:channel-secure%%" alt="">Encrypted disk</div>
+</div>
+</div>
+</section>
+
+<section class="scene" id="langs" style="background:#050608;flex-direction:column">
+<div class="eyebrow">Languages</div>
+<div class="langs" id="langBox"><span>Welcome</span><span>स्वागत है</span><span>مرحبًا</span><span>Willkommen</span><span>Bienvenue</span><span>Bienvenido</span></div>
+<p class="lead" style="text-align:center;margin-top:10px">Input methods and fonts for Arabic and Indian languages are built in.</p>
+</section>
+
+<section class="sec" id="compare" style="padding:140px 24px 60px">
+<div class="wrap" style="display:flex;flex-direction:column;align-items:center">
+<div class="center"><div class="eyebrow">How it compares</div><h2 class="h2" style="margin-top:12px">An honest side-by-side.</h2></div>
+<div class="cmp" style="margin-top:50px">
+<div class="r hd"><div></div><div class="nb">Nubo OS</div><div>Windows 11</div><div>macOS</div><div>Ubuntu</div></div>
+<div class="r"><div>Price</div><div class="nb">Free</div><div class="mut">Free upgrade if your PC qualifies, otherwise paid</div><div class="mut">Included with a Mac</div><div class="mut">Free</div></div>
+<div class="r"><div>Runs on the PC you have</div><div class="nb">Try it first from USB</div><div class="mut">Needs TPM 2.0 and a supported processor</div><div class="mut">Only on Apple Macs</div><div class="mut">Most PCs</div></div>
+<div class="r"><div>Mail, calendar, contacts, files</div><div class="nb">Included and set up</div><div class="mut">Microsoft account, 5 GB free storage</div><div class="mut">iCloud, 5 GB free storage</div><div class="mut">Not included</div></div>
+<div class="r"><div>Security updates</div><div class="nb">Five years, to 2031</div><div class="mut">Ongoing</div><div class="mut">Ongoing for supported Macs</div><div class="mut">Five years</div></div>
+<div class="r"><div>Code you can read</div><div class="nb">Yes</div><div class="mut">No</div><div class="mut">Partly</div><div class="mut">Yes</div></div>
+<div class="r"><div>Phone link</div><div class="nb">Android</div><div class="mut">Android and iPhone</div><div class="mut">iPhone</div><div class="mut">Needs setup</div></div>
+<div class="r"><div>Office and Adobe desktop apps</div><div class="nb">Files open, apps don't run</div><div class="mut">Yes</div><div class="mut">Yes</div><div class="mut">Files open, apps don't run</div></div>
+</div>
+</div>
+</section>
+
+<section class="sec" id="who" style="padding:60px 24px 120px">
+<div class="wrap" style="display:flex;flex-direction:column;align-items:center">
+<div class="center"><div class="eyebrow">Who it is for</div><h2 class="h2" style="margin-top:12px">Made for how you actually use a computer.</h2></div>
+<div class="who" style="margin-top:50px">
+<div class="wc"><img class="sym" src="%%sym:system-users%%" alt=""><b>Families and everyday users</b><span>Browse, write, watch and keep in touch. Easy to set up, and an old PC gets a new life.</span></div>
+<div class="wc"><img class="sym" src="%%sym:input-keyboard%%" alt=""><b>Students and schools</b><span>Free for every desk, with office tools that open the files your teachers send.</span></div>
+<div class="wc"><img class="sym" src="%%sym:mail-send%%" alt=""><b>Small teams</b><span>Shared mail, calendar and files from one account. No per-seat desktop licence.</span></div>
+<div class="wc"><img class="sym" src="%%sym:utilities-terminal%%" alt=""><b>Developers</b><span>A real Linux desktop with a terminal, current tools and room to work.</span></div>
+</div>
+</div>
+</section>
+
+<section class="sec" id="faq" style="padding:60px 24px 120px">
+<div class="center"><div class="eyebrow">Questions</div><h2 class="h2" style="margin:12px 0 50px">Before you download.</h2></div>
+<div class="faq" id="faqList"></div>
+</section>
+
+<section class="sec" id="download" style="padding:40px 24px 160px">
+<div class="dlbox">
+<div class="eyebrow">Download</div>
+<h2 class="h2" style="margin-top:10px;font-size:clamp(40px,6vw,88px)">Nubo OS 1</h2>
+<p class="lead" style="margin-top:14px">Free. Run it from a USB stick, and install when you are ready.</p>
+<div class="cta-row" style="justify-content:flex-start"><a class="btn" href="#os" style="min-height:56px;padding:0 34px;font-size:18px">Download for 64-bit PCs &nbsp;·&nbsp; 6.8 GB</a><a class="btn2" href="#os" data-go="faq" style="min-height:56px">Read the install guide</a></div>
+<div class="dlmeta"><span><b>Version</b> 1, early access</span><span><b>Size</b> 6.8 GB</span><span><b>For</b> 64-bit Intel and AMD PCs</span><span><b>ARM</b> coming later</span></div>
+<div class="sum"><b style="font-size:14px;color:var(--mu2)">SHA-256</b><code id="shaVal">9516cefefdf81406210f7e30fe9fa24ae1396709c6872a0eec0bd157851343e2</code><button class="btn2" id="copySha" style="min-height:38px;padding:0 16px;font-size:14px">Copy</button></div>
+<div class="tabs" id="osTabs"><button class="on" data-t="win">Windows</button><button data-t="mac">macOS</button><button data-t="lin">Linux</button></div>
+<div class="tabc" id="tabc"></div>
+</div>
+</section>
+
+<div class="foot"><div class="wrap"><span>&copy; 2026 Chandorkar Technologies. Nubo and the Nubo mark are trademarks of Chandorkar Technologies.</span><span>[LEGAL: base-system attribution and licence notices]</span></div><p class="notes" style="margin-top:24px">Early access builds may change. Windows dates are from Microsoft's published support schedule. App names and icons belong to their owners. Portraits in the call mock-up are CC0 images from Wikimedia Commons. Phone link works with Android phones; iPhone support is limited. The checksum above is for the current early-access build.</p></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.gsap) { return; }
+  gsap.registerPlugin(ScrollTrigger);
+  var ctx = null;
+  function q(s, r){ return (r||document).querySelector(s); }
+  function qa(s, r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
+
+  /* ---- shared icons: each one is stored once and set on every image that uses it ---- */
+  var ICON = %%ICONJSON%%;
+  qa('[data-ic]').forEach(function(el){ el.src = ICON[el.getAttribute('data-ic')]; });
+  qa('[data-sym]').forEach(function(el){ el.src = ICON['sym:' + el.getAttribute('data-sym')]; });
+  var BARS5 = [
+    { t: 'Your apps', s: 'Mail, chat, office, and every app you download', v: 'Flatpak', c: ['Sandboxed', 'One-click store', 'Update on their own'], icons: ['org.gnome.Geary','libreoffice-writer','firefox'] },
+    { t: 'The Nubo layer', s: 'Account sign-in, notification centre, theme, search', v: 'Nubo', c: ['One account', 'Notification history', 'Glass theme'], mark: true, hot: true },
+    { t: 'GNOME 50 on Wayland', s: 'The desktop and the window system', v: 'GNOME 50', c: ['Smooth motion', 'Sharp scaling', 'Apps kept apart'], icons: ['org.gnome.Settings'] },
+    { t: 'Linux kernel', s: 'Drivers, graphics, Wi-Fi and power', v: 'Linux 7.0', c: ['Current hardware', 'Power saving', 'Secure Boot'], sym: 'applications-engineering' },
+    { t: 'Long-term support base', s: 'Security fixes keep arriving for five years', v: 'to 2031', c: ['Signed packages', 'Automatic updates'], sym: 'security-high' }
+  ];
+  var BARS8 = [
+    { t: 'Apps', s: 'Sandboxed, one click', v: 'Flatpak', icons: ['firefox'] },
+    { t: 'Nubo layer', s: 'Account, notifications, theme, store', v: 'Nubo', mark: true, hot: true },
+    { t: 'GNOME 50', s: 'The desktop', v: 'GNOME 50', icons: ['org.gnome.Settings'] },
+    { t: 'Wayland', s: 'The display system', v: 'Wayland', sym: 'computer' },
+    { t: 'System services', s: 'Updates, network, sound', v: 'systemd', sym: 'emblem-system' },
+    { t: 'Drivers', s: 'Graphics, Wi-Fi, power', v: 'Linux', sym: 'drive-harddisk' },
+    { t: 'Linux kernel', s: 'Core of the system', v: 'Linux 7.0', sym: 'applications-engineering' },
+    { t: 'Secure Boot', s: 'Firmware and trusted start', v: 'Signed', sym: 'channel-secure' }
+  ];
+  function bar(b, small){
+    var el = document.createElement('div');
+    el.className = 'bar5' + (b.hot ? ' hot' : '') + (small ? ' small' : '');
+    var bi = '<div class="bi">';
+    if (b.mark) bi += '<svg class="mk" style="font-size:30px;color:#F2A65A"><use href="#mark"/></svg>';
+    else if (b.icons) bi += '<img src="' + ICON[b.icons[0]] + '" alt="">';
+    else if (b.sym) bi += '<img class="sym" src="' + ICON['sym:' + b.sym] + '" alt="">';
+    bi += '</div>';
+    var chips = '';
+    if (b.c) { chips = '<div class="bc">' + b.c.map(function(x){ return '<i>' + x + '</i>'; }).join('') + '</div>'; }
+    el.innerHTML = bi + '<div class="bt"><b>' + b.t + '</b><span>' + b.s + '</span></div>' + chips + '<div class="bv">' + b.v + '</div>';
+    return el;
+  }
+  (function(){
+    var a = q('#bars5'), b8 = q('#bars8');
+    if (a) BARS5.forEach(function(b){ a.appendChild(bar(b, false)); });
+    if (b8) BARS8.forEach(function(b){ b8.appendChild(bar(b, true)); });
+  })();
+
+  /* ---- exploded desktop with step texts and a legend ---- */
+  function explode(trigger, stack, layers, texts, legend){
+    var n = layers.length, gap = 66;
+    gsap.set(stack, { transformPerspective: 1700, transformOrigin: '50% 55%' });
+    gsap.set(texts, { opacity: 0, y: 'calc(-50% + 24px)' });
+    gsap.set(texts[0], { opacity: 1, y: '-50%' });
+    gsap.set(legend, { opacity: 0.45, scale: 1 });
+    var tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: trigger, start: 'top top', end: '+=420%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    tl.to(stack, { rotateX: 50, rotateZ: -22, scale: 0.8, y: 34, duration: 1 }, 0);
+    tl.to(layers, { z: function(i){ return i * gap; }, duration: 1 }, 0);
+    for (let i = 0; i < n; i++) {
+      const at = 1.1 + i * 1.1;
+      tl.to(texts[i], { opacity: 0, y: 'calc(-50% - 24px)', duration: 0.3 }, at - 0.35);
+      tl.to(texts[i + 1], { opacity: 1, y: '-50%', duration: 0.3 }, at - 0.05);
+      tl.to(layers, { opacity: function(j){ return j === i ? 1 : 0.5; }, duration: 0.3 }, at - 0.05);
+      tl.to(layers, { borderColor: function(j){ return j === i ? 'rgba(242,166,90,1)' : 'rgba(255,255,255,.22)'; }, duration: 0.3 }, at - 0.05);
+      tl.to(layers[i], { z: i * gap + 50, duration: 0.3 }, at - 0.05);
+      tl.to(layers[i], { z: i * gap, duration: 0.3 }, at + 0.75);
+      tl.to(legend, { opacity: function(j){ return j === i ? 1 : 0.45; }, scale: function(j){ return j === i ? 1.1 : 1; }, duration: 0.3 }, at - 0.05);
+    }
+    tl.to(layers, { opacity: 1, borderColor: 'rgba(255,255,255,.22)', duration: 0.4 }, 1.1 + n * 1.1);
+    tl.to(legend, { opacity: 1, scale: 1, duration: 0.4 }, 1.1 + n * 1.1);
+  }
+
+  /* ---- layer bars: slide in from alternating sides, bottom layer first ---- */
+  function buildBars(trigger, selector, len){
+    var bars = qa(selector + ' .bar5');
+    var tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: trigger, start: 'top top', end: '+=' + len + '%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    var n = bars.length;
+    bars.forEach(function(b, i){ gsap.set(b, { opacity: 0, x: (i % 2 ? 1 : -1) * 140, scale: 0.96 }); });
+    for (var k = 0; k < n; k++) {
+      var idx = n - 1 - k;
+      tl.to(bars[idx], { opacity: 1, x: 0, scale: 1, duration: 0.7, ease: 'power3.out' }, k * 0.9);
+    }
+    tl.to(bars, { boxShadow: '0 0 40px rgba(242,166,90,.25)', duration: 0.4, stagger: 0.08 }, n * 0.9 + 0.1);
+    tl.to({}, { duration: 0.6 });
+  }
+
+  /* grow the screenshot until the whole desktop fits the window, never past it */
+  function heroTarget(sel){ return function(){ var el = q(sel); return Math.min(1.25, (window.innerHeight - 64) / el.offsetHeight, (window.innerWidth * 0.97) / el.offsetWidth); }; }
+
+  function progressBar(){
+    var bar = q('#progress');
+    gsap.set(bar, { scaleX: 0 });
+    gsap.to(bar, { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0 } });
+  }
+
+  /* ---- real-screen tour: injected into both pages ---- */
+  var TOUR = [
+    { v: 'desktop', t: 'A calm desktop', p: 'Clock and weather on the desktop, a floating dock, and a quiet top bar.', n: [[50,50,'Clock and weather'],[50,95.5,'Dock'],[1.6,2,'Nubo menu']] },
+    { v: 'grid1', t: 'Every app, tidy', p: 'Tools live in folders. Languages, Resources and Utilities stay out of the way.', n: [[84.9,36.5,'Tools in folders','l'],[46,35.5,'Languages and input']] },
+    { v: 'grid2', t: 'Popular apps, one click', p: 'Grey icons are apps you have not installed yet. Click one and it downloads and opens.', n: [[15,63,'Grey: downloads on a click'],[69,63,'Installed: full colour'],[84.8,49,'Office suite','l']] },
+    { v: 'notif', t: 'Every notification, one place', p: 'Alerts, calendar and weather in one panel.', n: [[42.6,33,'Alerts, kept in order'],[61.5,21,'Calendar'],[61.5,56.6,'Weather']] },
+    { v: 'quick', t: 'Quick settings', p: 'Power Mode, dark style, Do Not Disturb and your phone, one click away.', n: [[93.7,21.4,'Power Mode','l'],[83.7,28.5,'Dark style','l'],[83.7,35.5,'Phone link','l']] },
+    { v: 'about', t: 'Made to be recognised', p: 'Settings, About and the logo are all Nubo, from the login to the last window.', n: [[58,57.5,'Your system, your name']], ar: '1600/696' },
+    { v: 'login', t: 'A login that feels like yours', p: 'Soft, blurred and easy to read.', n: [], ar: '16/10' }
+  ];
+  function tourPane(d){
+    var el = document.createElement('div');
+    el.className = 'tourpane';
+    var notes = '';
+    el.innerHTML = '<h3>' + d.t + '</h3><p>' + d.p + '</p><div class="shot" style="background-image:var(--r-' + d.v + ');aspect-ratio:16/9">' + notes + '</div>';
+    return el;
+  }
+  ['tourTrackH', 'tourTrackO'].forEach(function(id){ var t = document.getElementById(id); if (t) TOUR.forEach(function(d){ t.appendChild(tourPane(d)); }); });
+
+  /* ---- faq, download tabs, copy ---- */
+  var FAQ = [
+    ['Is Nubo OS really free?', 'Yes. Nubo OS is free to download and use. Some Nubo cloud services, such as extra mail storage, will have paid plans.'],
+    ['Can I try it without installing?', 'Yes. Write the image to a USB stick, start your PC from it, and look around. Nothing is installed until you choose to.'],
+    ['Will it delete my files?', 'Trying it from the USB stick does not touch your disk. The installer asks before it changes anything, but back up your files before installing any operating system.'],
+    ['Can I keep Windows?', 'Yes. The installer can set up Nubo OS next to Windows, and you choose which one to start.'],
+    ['Will my apps work?', 'Most everyday apps have a version for it or a web app: browsers, Spotify, Telegram, Zoom and more. Windows-only programs such as Adobe Creative Cloud do not run, and neither do games with kernel-level anti-cheat.'],
+    ['How long do I get security updates?', 'Nubo OS 1 is built on a long-term support base, with five years of security updates, to April 2031.'],
+    ['Is it secure?', 'You can encrypt the disk while installing, security updates arrive automatically, and apps from the store run in sandboxes. No system is perfectly safe, so keep your backups.'],
+    ['Which PCs does it run on?', 'The desktop is built for 64-bit Intel and AMD PCs, and runs on Arm in virtual machines. The server images cover Intel, AMD and Arm. We have not set final minimum requirements yet; plan for at least 4 GB of memory and 25 GB of storage, as you would for Ubuntu.'],
+    ['What about my mail, calendar and contacts?', 'Sign in with a Nubo account and they are set up for you. A migration assistant for moving data from other services is coming soon.'],
+    ['How do I go back?', 'You can remove Nubo OS and reinstall your previous system with its original media. Back up first.']
+  ];
+  var faqList = q('#faqList');
+  if (faqList) {
+    FAQ.forEach(function(f, i){
+      var d = document.createElement('div');
+      d.className = 'q' + (i === 0 ? ' open' : '');
+      d.innerHTML = '<button type="button" aria-expanded="' + (i === 0) + '"><span>' + f[0] + '</span><i></i></button><div class="a"><p>' + f[1] + '</p></div>';
+      faqList.appendChild(d);
+      var a = d.querySelector('.a'); if (i === 0) a.style.maxHeight = '260px';
+      d.querySelector('button').addEventListener('click', function(){
+        var open = d.classList.toggle('open');
+        a.style.maxHeight = open ? (a.scrollHeight + 'px') : '0px';
+        d.querySelector('button').setAttribute('aria-expanded', open);
+        setTimeout(function(){ ScrollTrigger.refresh(); }, 480);
+      });
+    });
+  }
+  var TABS = {
+    win: [['1. Download','Get the image above and check the checksum.'],['2. Write a USB stick','Use Rufus, a free tool, with an 8 GB or larger USB stick.'],['3. Start from it','Restart and choose the USB drive from the boot menu.']],
+    mac: [['1. Download','Get the image above and check the checksum.'],['2. Write a USB stick','Use balenaEtcher, a free tool. Note: Macs with Apple silicon cannot start this image yet.'],['3. Start from it','Intel Macs: hold Option at startup and pick the USB drive.']],
+    lin: [['1. Download','Get the image above and check the checksum.'],['2. Write a USB stick','Use your disk tool, balenaEtcher or the dd command.'],['3. Start from it','Restart and choose the USB drive from the boot menu.']]
+  };
+  function showTab(k){
+    var box = q('#tabc'); if (!box) return;
+    box.innerHTML = TABS[k].map(function(s){ return '<div><b>' + s[0] + '</b>' + s[1] + '</div>'; }).join('');
+    qa('#osTabs button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-t') === k); });
+  }
+  qa('#osTabs button').forEach(function(b){ b.addEventListener('click', function(){ showTab(b.getAttribute('data-t')); }); });
+  showTab('win');
+  var cp = q('#copySha');
+  if (cp) cp.addEventListener('click', function(){
+    var txt = q('#shaVal').textContent;
+    function done(){ cp.textContent = 'Copied'; setTimeout(function(){ cp.textContent = 'Copy'; }, 1600); }
+    try { navigator.clipboard.writeText(txt).then(done, function(){ var r = document.createRange(); r.selectNode(q('#shaVal')); var s2 = window.getSelection(); s2.removeAllRanges(); s2.addRange(r); done(); }); }
+    catch (e) { var r = document.createRange(); r.selectNode(q('#shaVal')); var s3 = window.getSelection(); s3.removeAllRanges(); s3.addRange(r); done(); }
+  });
+
+  /* ---- sticky download bar and the page-jump buttons ---- */
+  var pendingGo = null;
+  function goTo(id){ var el = document.getElementById(id); if (el) el.scrollIntoView(); }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('[data-go]') : null;
+    if (!a) return;
+    e.preventDefault();
+    var id = a.getAttribute('data-go');
+    if (location.hash === '#os') { goTo(id); } else { pendingGo = id; location.hash = '#os'; }
+  });
+  function dlbarWatch(){
+    var bar = q('#dlbar'); if (!bar) return;
+    bar.classList.remove('show');
+    ScrollTrigger.create({ start: function(){ var p = ScrollTrigger.getAll().filter(function(t){ return t.pin; })[0]; return p ? p.end : 700; }, end: 'max', onToggle: function(self){ bar.classList.toggle('show', self.isActive); } });
+    var dl = q('#download');
+    if (dl && !dl.closest('main').hidden) ScrollTrigger.create({ trigger: dl, start: 'top 85%', onEnter: function(){ bar.classList.remove('show'); }, onLeaveBack: function(){ bar.classList.add('show'); } });
+  }
+
+  function buildHome(){
+    progressBar(); dlbarWatch();
+
+    /* 1. hero */
+    var h = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=170%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    gsap.set('#heroScr', { y: '72vh', scale: 0.6, transformOrigin: '50% 100%' });
+    h.to('#hero .txt', { y: -70, opacity: 0, duration: 0.45 }, 0.05)
+     .to('#heroScr', { y: 0, scale: heroTarget('#heroScr'), duration: 1.2 }, 0.2)
+     .to({}, { duration: 0.6 });
+
+    /* tour: the real screens, side to side */
+    var tkH = q('#tourTrackH');
+    gsap.to(tkH, { x: function(){ return -(tkH.scrollWidth - window.innerWidth + 80); }, ease: 'none',
+      scrollTrigger: { trigger: '#tourH', start: 'top top', end: function(){ return '+=' + tkH.scrollWidth; }, scrub: 0.6, pin: true, anticipatePin: 1, invalidateOnRefresh: true } });
+
+    /* 2. exploded desktop */
+    explode('#explode', '#xstack', qa('#xs .xl:not(.wall)'), qa('#exText > div'), qa('#legend .lg'));
+
+    /* 3. first-run film */
+    var typed = q('#typed'), email = 'priya@nubo.email', counter = { n: 0 };
+    var rows = qa('#setupList .chk'), sts = qa('#setupList .st'), docks = qa('#rdock img');
+    var ft = qa('#filmText > div');
+    gsap.set(ft, { opacity: 0, y: 24 }); gsap.set(ft[0], { opacity: 1, y: 0 });
+    gsap.set('#setupList', { display: 'none' });
+    gsap.set(rows, { opacity: 0, x: -20 }); gsap.set('#pfill', { scaleX: 0 });
+    gsap.set('#rdock', { opacity: 0, y: 40 }); gsap.set(docks, { scale: 0, y: 30 });
+    typed.textContent = '';
+    var f = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#account', start: 'top top', end: '+=420%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    f.to(counter, { n: email.length, duration: 1.4, onUpdate: function(){ typed.textContent = email.slice(0, Math.round(counter.n)); } }, 0);
+    f.to('#goBtn', { scale: 0.94, duration: 0.15 }, 1.6).to('#goBtn', { scale: 1, duration: 0.15 }, 1.75);
+    f.to(ft[0], { opacity: 0, y: -24, duration: 0.3 }, 1.8).to(ft[1], { opacity: 1, y: 0, duration: 0.3 }, 2.0);
+    f.set('#setupForm', { display: 'none' }, 2.0).set('#setupList', { display: 'block' }, 2.0);
+    rows.forEach(function(r, i){
+      var at = 2.1 + i * 0.5;
+      f.to(r, { opacity: 1, x: 0, duration: 0.3 }, at);
+      f.to(sts[i], { backgroundColor: '#7FE0A8', borderColor: '#7FE0A8', duration: 0.2 }, at + 0.25);
+      f.fromTo(sts[i], { textContent: '' }, { textContent: '✓', duration: 0.01 }, at + 0.25);
+      f.to('#pfill', { scaleX: (i + 1) / rows.length, duration: 0.4 }, at);
+    });
+    f.to(ft[1], { opacity: 0, y: -24, duration: 0.3 }, 4.7).to(ft[2], { opacity: 1, y: 0, duration: 0.3 }, 4.9);
+    f.to('#setup', { scale: 0.7, opacity: 0, y: -60, duration: 0.6 }, 4.8);
+    f.to('#rdock', { opacity: 1, y: 0, duration: 0.4 }, 5.0);
+    docks.forEach(function(d, i){ f.to(d, { scale: 1, y: 0, duration: 0.3, ease: 'back.out(2)' }, 5.1 + i * 0.12); });
+    f.to({}, { duration: 0.6 });
+
+    /* 4. horizontal apps */
+    var track = q('#appTrack');
+    gsap.to(track, { x: function(){ return -(track.scrollWidth - window.innerWidth + 80); }, ease: 'none',
+      scrollTrigger: { trigger: '#apps', start: 'top top', end: function(){ return '+=' + (track.scrollWidth); }, scrub: 0.6, pin: true, anticipatePin: 1, invalidateOnRefresh: true } });
+
+    /* 5. engineering layers */
+    buildBars('#engineering', '#bars5', 300);
+
+    /* 6. release pipeline and support timeline */
+    var steps = qa('#steps5 .pst');
+    gsap.set(steps, { opacity: 0.2, y: 20 }); gsap.set('#plFill', { scaleX: 0 }); gsap.set('#supFill', { scaleX: 0 });
+    var pl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#pipeline', start: 'top top', end: '+=260%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    steps.forEach(function(s, i){ pl.to(s, { opacity: 1, y: 0, duration: 0.4 }, i * 0.55); });
+    pl.to('#plFill', { scaleX: 1, duration: steps.length * 0.55 }, 0);
+    pl.to('#supFill', { scaleX: 1, duration: 1.6 }, steps.length * 0.55 + 0.1);
+    pl.to({}, { duration: 0.5 });
+
+    /* 7. phone story: notification, file, clipboard, mirror */
+    var pt = qa('#phText > div'), tbs = qa('#tabs4 .tb');
+    gsap.set(pt, { opacity: 0, y: 'calc(-50% + 24px)' }); gsap.set(pt[0], { opacity: 1, y: '-50%' });
+    gsap.set(tbs, { opacity: 0.4 });
+    gsap.set(['#phNote', '#phPhoto', '#phClip', '#phMirror', '#dNote', '#dFiles', '#dPhoto', '#dClip', '#dMirror', '#packet'], { opacity: 0 });
+    gsap.set('#beam', { scaleX: 0 });
+    var pp = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#phone', start: 'top top', end: '+=520%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    function beat(i, at){
+      pp.to(pt[i], { opacity: 0, y: 'calc(-50% - 24px)', duration: 0.25 }, at - 0.3);
+      pp.to(pt[i + 1], { opacity: 1, y: '-50%', duration: 0.25 }, at - 0.05);
+      pp.to(tbs, { opacity: function(j){ return j === i ? 1 : 0.4; }, duration: 0.25 }, at - 0.05);
+    }
+    /* beat 1: notification */
+    beat(0, 0.6);
+    pp.fromTo('#phNote', { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.4 }, 0.6);
+    pp.to('#beam', { scaleX: 1, duration: 0.6 }, 1.1);
+    pp.fromTo('#packet', { opacity: 1, x: 0 }, { opacity: 1, x: function(){ return Math.max(60, q('.mid').offsetWidth / 2 - 150); }, duration: 0.7 }, 1.1);
+    pp.fromTo('#dNote', { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.4 }, 1.7);
+    pp.to(['#packet', '#phNote'], { opacity: 0, duration: 0.2 }, 1.9);
+    /* beat 2: file */
+    beat(1, 2.4);
+    pp.to('#dNote', { opacity: 0, duration: 0.2 }, 2.4);
+    pp.fromTo('#phPhoto', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.4);
+    pp.to('#dFiles', { opacity: 1, duration: 0.3 }, 2.8);
+    pp.fromTo('#phPhoto', { x: 0 }, { x: 150, opacity: 0, duration: 0.7 }, 3.1);
+    pp.fromTo('#dPhoto', { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 3.6);
+    /* beat 3: clipboard */
+    beat(2, 4.5);
+    pp.to(['#dFiles', '#dPhoto'], { opacity: 0, duration: 0.2 }, 4.5);
+    pp.fromTo('#phClip', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 4.5);
+    pp.fromTo('#dClip', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, 5.1);
+    /* beat 4: mirror */
+    beat(3, 6.2);
+    pp.to(['#phClip', '#phPhoto', '#dClip'], { opacity: 0, duration: 0.2 }, 6.2);
+    pp.to('#phMirror', { opacity: 1, duration: 0.3 }, 6.3);
+    pp.fromTo('#dMirror', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.6)' }, 6.7);
+    pp.to(tbs, { opacity: 1, duration: 0.3 }, 7.6);
+    pp.to({}, { duration: 0.5 });
+
+    /* 8. feature cards and editions */
+    gsap.set('#features .fcard, #editions .ed', { opacity: 0 });
+    ScrollTrigger.batch('#features .fcard, #editions .ed', { start: 'top 88%', onEnter: function(b){ gsap.fromTo(b, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.07, ease: 'power3.out', overwrite: true }); } });
+    qa('#features .center, #editions .eyebrow').forEach(function(el){ gsap.from(el, { opacity: 0, y: 30, scrollTrigger: { trigger: el, start: 'top 90%' } }); });
+
+    /* 9. closing */
+    gsap.fromTo('#ctaBg', { scale: 1.25 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '#ctaHome', start: 'top bottom', end: 'bottom top', scrub: 0.5 } });
+    gsap.from('#ctaHome .h1', { opacity: 0, y: 60, scrollTrigger: { trigger: '#ctaHome', start: 'top 60%', end: 'top 20%', scrub: 0.4 } });
+  }
+
+  function buildOS(){
+    progressBar(); dlbarWatch();
+    gsap.set('#osScr', { y: '72vh', scale: 0.62, transformOrigin: '50% 100%' });
+    gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#osHero', start: 'top top', end: '+=170%', scrub: 0.6, pin: true, anticipatePin: 1 } })
+      .to('#osHero .logo', { y: -90, opacity: 0, duration: 0.45 }, 0.05)
+      .to('#osScr', { y: 0, scale: heroTarget('#osScr'), duration: 1.2 }, 0.2)
+      .to({}, { duration: 0.6 });
+
+    /* why now: three lanes grow, one fact at a time */
+    var facts = qa('#whynow .fact');
+    gsap.set(['#lnW1', '#lnW2', '#lnW11', '#lnN'], { scaleX: 0 }); gsap.set(facts, { opacity: 0, y: 24 });
+    var wn = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#whynow', start: 'top top', end: '+=300%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    wn.to('#lnW1', { scaleX: 1, duration: 0.6 }, 0).to(facts[0], { opacity: 1, y: 0, duration: 0.3 }, 0.3)
+      .to('#lnW2', { scaleX: 1, duration: 0.7 }, 0.8)
+      .to(facts[0], { opacity: 0, y: -24, duration: 0.25 }, 1.9)
+      .to('#lnW11', { scaleX: 1, duration: 0.8 }, 2.0).to(facts[1], { opacity: 1, y: 0, duration: 0.3 }, 2.1)
+      .to(facts[1], { opacity: 0, y: -24, duration: 0.25 }, 3.3)
+      .to('#lnN', { scaleX: 1, duration: 1.0 }, 3.4).to(facts[2], { opacity: 1, y: 0, duration: 0.3 }, 3.6)
+      .to({}, { duration: 0.8 });
+
+    /* try it first: four steps light up along a line */
+    var pth = qa('#trialPath .pth');
+    gsap.set(pth, { opacity: 0.25, y: 24 }); gsap.set('#trFill', { scaleX: 0 });
+    var tr = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#trial', start: 'top top', end: '+=240%', scrub: 0.6, pin: true, anticipatePin: 1 } });
+    pth.forEach(function(p, i){ tr.to(p, { opacity: 1, y: 0, duration: 0.4 }, i * 0.6); });
+    tr.to('#trFill', { scaleX: 1, duration: pth.length * 0.6 }, 0).to({}, { duration: 0.6 });
+
+    /* speed cards and the benchmark promise */
+    gsap.set('#speed .tcard, #speed .bench', { opacity: 0 });
+    ScrollTrigger.batch('#speed .tcard, #speed .bench', { start: 'top 88%', onEnter: function(b){ gsap.fromTo(b, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out', overwrite: true }); } });
+    qa('#speed .center').forEach(function(el){ gsap.from(el, { opacity: 0, y: 30, scrollTrigger: { trigger: el, start: 'top 90%' } }); });
+
+    /* battery: the real quick-settings panel and its notes */
+    gsap.from('#pwrPiece', { opacity: 0, scale: 0.86, y: 40, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: '#power', start: 'top 70%' } });
+    gsap.from('#power li', { opacity: 0, x: -30, stagger: 0.15, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: '#power', start: 'top 70%' } });
+
+    /* real screens, side to side */
+    var tk = q('#tourTrackO');
+    gsap.to(tk, { x: function(){ return -(tk.scrollWidth - window.innerWidth + 80); }, ease: 'none',
+      scrollTrigger: { trigger: '#tourO', start: 'top top', end: function(){ return '+=' + tk.scrollWidth; }, scrub: 0.6, pin: true, anticipatePin: 1, invalidateOnRefresh: true } });
+
+    /* apps go from grey to colour */
+    var icos = qa('#apps8 .app img');
+    var t4 = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#osapps', start: 'top top', end: '+=170%', scrub: 0.5, pin: true, anticipatePin: 1 } });
+    icos.forEach(function(ic, i){
+      t4.to(ic, { filter: 'grayscale(0)', opacity: 1, scale: 1.12, duration: 0.3 }, 0.1 + i * 0.35);
+      t4.to(ic, { scale: 1, duration: 0.15 }, 0.4 + i * 0.35);
+    });
+
+    buildBars('#cross', '#bars8', 420);
+
+    var rings = qa('#rings .ring'), labels = qa('#rings .rlabel');
+    gsap.set(rings, { scale: 0.2, opacity: 0 }); gsap.set(labels, { opacity: 0, scale: 0.8 });
+    var t6 = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#secure', start: 'top top', end: '+=180%', scrub: 0.5, pin: true, anticipatePin: 1 } });
+    rings.slice().reverse().forEach(function(r, i){ t6.to(r, { scale: 1, opacity: 1, duration: 0.5 }, i * 0.4); });
+    labels.forEach(function(l, i){ t6.to(l, { opacity: 1, scale: 1, duration: 0.3 }, 0.6 + i * 0.35); });
+    t6.to({}, { duration: 0.5 });
+
+    var words = qa('#langBox span');
+    gsap.set(words, { opacity: 0, y: 40 }); gsap.set(words[0], { opacity: 1, y: 0 });
+    var t5 = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '#langs', start: 'top top', end: '+=240%', scrub: 0.5, pin: true, anticipatePin: 1 } });
+    words.forEach(function(w, i){
+      if (i === 0) return;
+      t5.to(words[i - 1], { opacity: 0, y: -40, duration: 0.35 }, i * 0.8).to(w, { opacity: 1, y: 0, duration: 0.35 }, i * 0.8 + 0.1);
+    });
+    t5.to({}, { duration: 0.6 });
+
+    /* compare, who, faq, download */
+    gsap.set('#compare .r, #who .wc, #faq .q, #download .dlbox', { opacity: 0 });
+    ScrollTrigger.batch('#compare .r', { start: 'top 90%', onEnter: function(b){ gsap.fromTo(b, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out', overwrite: true }); } });
+    ScrollTrigger.batch('#who .wc', { start: 'top 88%', onEnter: function(b){ gsap.fromTo(b, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out', overwrite: true }); } });
+    ScrollTrigger.batch('#faq .q', { start: 'top 92%', onEnter: function(b){ gsap.fromTo(b, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, overwrite: true }); } });
+    gsap.fromTo('#download .dlbox', { opacity: 0, y: 60, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: '#download', start: 'top 80%' } });
+    qa('#compare .center, #who .center, #faq .center').forEach(function(el){ gsap.from(el, { opacity: 0, y: 30, scrollTrigger: { trigger: el, start: 'top 90%' } }); });
+  }
+
+  function show(page){
+    qa('main').forEach(function(m){ m.hidden = (m.id !== page); });
+    qa('[data-nav]').forEach(function(a){ a.classList.toggle('on', a.getAttribute('data-nav') === page); });
+    q('#navname').textContent = page === 'os' ? 'Nubo OS' : 'Nubo Suite';
+    window.scrollTo(0, 0);
+    if (ctx) { ctx.revert(); ctx = null; }
+    ScrollTrigger.getAll().forEach(function(t){ t.kill(); });
+    if (!reduce) { ctx = gsap.context(function(){ (page === 'os' ? buildOS : buildHome)(); }); }
+    setTimeout(function(){ ScrollTrigger.refresh(); if (pendingGo) { var g = pendingGo; pendingGo = null; setTimeout(function(){ goTo(g); }, 60); } }, 80);
+  }
+  function route(){ show(location.hash === '#os' ? 'os' : 'home'); }
+  window.addEventListener('hashchange', route);
+  window.addEventListener('load', route);
+  if (document.readyState === 'complete') route();
+})();
+</script>
