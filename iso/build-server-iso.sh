@@ -3,7 +3,11 @@
 # The server image needs no unpacking: the boot menu is renamed, the installer
 # is pointed at an answer file, and the Nubo packages ride along on the media.
 #
-# Usage: build-server-iso.sh UBUNTU_SERVER_ISO NUBO_DEBS_DIR OUTPUT_ISO
+# Usage: [FLAVOUR=server|virt|containers|edge] build-server-iso.sh UBUNTU_SERVER_ISO NUBO_DEBS_DIR OUTPUT_ISO
+#   server      Nubo OS Server: the base system (default)
+#   virt        Nubo OS Server, Virtualization: adds Incus and QEMU
+#   containers  Nubo OS Server, Containers: adds Podman
+#   edge        Nubo OS Edge: the smallest, for Raspberry Pi and old hardware
 # Needs xorriso. Runs as a normal user. Works for amd64 and arm64 images.
 set -euo pipefail
 
@@ -13,17 +17,25 @@ OUT="$(readlink -f "${3:?output ISO path required}")"
 WORK="${WORK:-$(mktemp -d)}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ARCH="${ARCH:-$(dpkg --print-architecture)}"
+FLAVOUR="${FLAVOUR:-server}"
+case "${FLAVOUR}" in
+  server)     PKGS="nubo-archive nubo-base nubo-server-core nubo-server-base"; TITLE="Nubo OS Server"; LABEL="Server" ;;
+  virt)       PKGS="nubo-archive nubo-base nubo-server-core nubo-server-base nubo-incus"; TITLE="Nubo OS Server (Virtualization)"; LABEL="Virtualization" ;;
+  containers) PKGS="nubo-archive nubo-base nubo-server-core nubo-server-base nubo-podman"; TITLE="Nubo OS Server (Containers)"; LABEL="Containers" ;;
+  edge)       PKGS="nubo-archive nubo-base nubo-server-core nubo-edge"; TITLE="Nubo OS Edge"; LABEL="Edge" ;;
+  *) echo "FLAVOUR must be server, virt, containers or edge" >&2; exit 1 ;;
+esac
 
 command -v xorriso >/dev/null || { echo "Missing tool: xorriso" >&2; exit 1; }
 STAGE="${WORK}/stage"; rm -rf "${STAGE}"; mkdir -p "${STAGE}/boot/grub" "${STAGE}/.disk" "${STAGE}/nubo/pool" "${STAGE}/server"
 
 # Only what a server needs; the desktop packages conflict with it.
 # Only the base. Incus (containers and VMs) is added later with: apt install nubo-incus
-for p in nubo-archive nubo-base nubo-server-base; do
+for p in ${PKGS}; do
   f="$(ls "${DEBS}/${p}_"*.deb 2>/dev/null | head -n1 || true)"
   [[ -n "${f}" ]] && cp "${f}" "${STAGE}/nubo/pool/"
 done
-ls "${STAGE}/nubo/pool" | grep -q nubo-server-base || { echo "nubo-server-base .deb not found in ${DEBS}" >&2; exit 1; }
+for p in ${PKGS}; do ls "${STAGE}/nubo/pool/${p}_"*.deb >/dev/null 2>&1 || { echo "${p} .deb not found in ${DEBS}" >&2; exit 1; }; done
 
 echo "==> Branding the media"
 for cfg in grub.cfg loopback.cfg; do
@@ -33,8 +45,8 @@ for cfg in grub.cfg loopback.cfg; do
   # In GRUB a bare ";" ends the command, so it is escaped for the kernel line.
   args='autoinstall ds=nocloud\;s=/cdrom/server/ loglevel=3 systemd.show_status=false'
   while IFS= read -r line; do
-    line="${line//Try or Install Ubuntu Server/Install Nubo OS Server}"
-    line="${line//Ubuntu Server/Nubo OS Server}"
+    line="${line//Try or Install Ubuntu Server/Install ${TITLE}}"
+    line="${line//Ubuntu Server/${TITLE}}"
     [[ "${line}" == *' ---'* ]] && line="${line/ ---/ ${args} ---}"
     printf '%s\n' "${line}"
   done <"${WORK}/${cfg}" >"${STAGE}/boot/grub/${cfg}"
@@ -59,8 +71,20 @@ if command -v mksquashfs >/dev/null; then
 else
   echo "mksquashfs not found: boot text will still say Ubuntu" >&2
 fi
-echo "Nubo OS Server 1 \"Flow\" - Release ${ARCH} ($(date -u +%Y%m%d))" >"${STAGE}/.disk/info"
+echo "${TITLE} 1 \"Flow\" - Release ${ARCH} ($(date -u +%Y%m%d))" >"${STAGE}/.disk/info"
 cp "${HERE}/server-user-data" "${STAGE}/server/user-data"
+# Extra steps per flavour, added after the Nubo packages are installed.
+case "${FLAVOUR}" in
+  virt)
+    cat >>"${STAGE}/server/user-data" <<'EXTRA'
+    - >-
+      curtin in-target --target=/target -- sh -c
+      'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends
+      qemu-utils $(case "$(dpkg --print-architecture)" in
+      amd64) echo "qemu-system-x86 ovmf" ;; *) echo "qemu-system-arm qemu-efi-aarch64" ;; esac)'
+EXTRA
+    ;;
+esac
 cp "${HERE}/server-meta-data" "${STAGE}/server/meta-data"
 
 echo "==> Updating checksums"
@@ -75,5 +99,5 @@ maps=()
 while IFS= read -r file; do maps+=(-map "${STAGE}/${file#./}" "/${file#./}"); done < <(cd "${STAGE}" && find . -type f | sort)
 rm -f "${OUT}"
 xorriso -indev "${SRC_ISO}" -outdev "${OUT}" -boot_image any replay \
-  -volid "Nubo OS Server 1 ${ARCH}" "${maps[@]}" -commit
+  -volid "Nubo OS ${LABEL} 1 ${ARCH}" "${maps[@]}" -commit
 echo "Done: ${OUT}"

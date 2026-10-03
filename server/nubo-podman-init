@@ -1,0 +1,10 @@
+#!/bin/sh
+# Start the Podman API socket for your user and keep it running after you log out.
+set -e
+user="${SUDO_USER:-$(id -un)}"
+[ "$user" != root ] || { echo "Run as your own user (or with sudo)." >&2; exit 1; }
+loginctl enable-linger "$user"
+uid="$(id -u "$user")"
+sudo -u "$user" XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user enable --now podman.socket
+echo "Podman socket: /run/user/$uid/podman/podman.sock"
+echo "Try: podman run --rm docker.io/library/hello-world"

@@ -3,7 +3,7 @@ set -e
 if [ "$1" = remove ] || [ "$1" = purge ]; then
     rm -f /etc/issue /etc/issue.net /etc/lsb-release
     for file in /usr/lib/os-release /etc/issue /etc/issue.net /etc/lsb-release; do
-        dpkg-divert --package nubo-server-base --remove --rename "$file" || true
+        dpkg-divert --package nubo-server-core --remove --rename "$file" || true
     done
 fi
 #DEBHELPER#

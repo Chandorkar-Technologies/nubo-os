@@ -1,0 +1,2 @@
+server/podman/50-nubo.conf etc/containers/registries.conf.d/
+server/nubo-podman-init usr/bin/
