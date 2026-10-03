@@ -18,7 +18,8 @@ command -v xorriso >/dev/null || { echo "Missing tool: xorriso" >&2; exit 1; }
 STAGE="${WORK}/stage"; rm -rf "${STAGE}"; mkdir -p "${STAGE}/boot/grub" "${STAGE}/.disk" "${STAGE}/nubo/pool" "${STAGE}/server"
 
 # Only what a server needs; the desktop packages conflict with it.
-for p in nubo-archive nubo-server-base nubo-incus; do
+# Only the base. Incus (containers and VMs) is added later with: apt install nubo-incus
+for p in nubo-archive nubo-base nubo-server-base; do
   f="$(ls "${DEBS}/${p}_"*.deb 2>/dev/null | head -n1 || true)"
   [[ -n "${f}" ]] && cp "${f}" "${STAGE}/nubo/pool/"
 done

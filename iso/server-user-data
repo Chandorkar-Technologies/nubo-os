@@ -39,6 +39,6 @@ autoinstall:
     - cp /cdrom/nubo/pool/*.deb /target/var/tmp/nubo/
     - >-
       curtin in-target --target=/target -- sh -c
-      'DEBIAN_FRONTEND=noninteractive apt-get install -y
+      'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends
       -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb'
     - rm -rf /target/var/tmp/nubo
