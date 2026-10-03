@@ -1,3 +1,10 @@
+nubo-os (0.8.0~beta4) resolute; urgency=medium
+
+  * Image upload no longer checks whether the bucket exists (the access key
+    only allows object reads and writes).
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Sat, 03 Oct 2026 11:45:00 +0530
+
 nubo-os (0.8.0~beta3) resolute; urgency=medium
 
   * Server flavours: nubo-server-core, nubo-edge, nubo-podman; Virtualization
