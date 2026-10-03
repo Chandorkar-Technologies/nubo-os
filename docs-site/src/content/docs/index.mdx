@@ -1,40 +1,52 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Nubo OS documentation
+description: Install, use, run and update Nubo OS, the desktop and the server.
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: Everything you need for Nubo OS 1 "Flow". Install it, learn it, run it, update it.
   image:
-    file: ../../assets/houston.webp
+    file: ../../assets/screens/desktop.jpg
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Install the desktop
+      link: /desktop/get-started/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
+    - text: Install the server
+      link: /server/install/
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-## Next steps
+## I want to
 
-<CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
-	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
-	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
-	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
-	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
-	</Card>
+<CardGrid>
+  <Card title="Try Nubo OS" icon="laptop">
+    Run it from a USB stick without installing, or install it next to what you have now. Start with [Get started](/desktop/get-started/).
+  </Card>
+  <Card title="Set up my account" icon="user">
+    Sign in with a Nubo account for mail, calendar and contacts. See [Nubo account](/desktop/account/).
+  </Card>
+  <Card title="Get my apps" icon="rocket">
+    Install the apps you know from the Nubo Store. See [Apps](/desktop/apps/).
+  </Card>
+  <Card title="Run a server" icon="seti:server">
+    Install Server, Virtualization, Containers or Edge. See [Server](/server/).
+  </Card>
+  <Card title="Keep it up to date" icon="refresh">
+    How updates, channels and the package archive work. See [Updates](/updates/).
+  </Card>
+  <Card title="Fix a problem" icon="warning">
+    Symptom-first help for the desktop. See [Troubleshooting](/desktop/troubleshooting/).
+  </Card>
 </CardGrid>
+
+## Pick your edition
+
+<CardGrid>
+  <LinkCard title="Desktop" description="The Nubo OS desktop for laptops and PCs." href="/desktop/" />
+  <LinkCard title="Server" description="Minimal, secure base for any server." href="/server/flavours/" />
+  <LinkCard title="Reference" description="Commands, files, packages, shortcuts." href="/reference/" />
+  <LinkCard title="Developers" description="Build Nubo OS, images and packages." href="/developers/" />
+</CardGrid>
+
+Nubo OS is built on Ubuntu 26.04 LTS. Where something works exactly as it does on Ubuntu, these pages say so and link to Ubuntu's documentation.
