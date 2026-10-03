@@ -59,6 +59,52 @@ steps:
 ---
 kind: pipeline
 type: docker
+name: isos
+
+platform: {os: linux, arch: amd64}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+depends_on: [debs-amd64]
+
+steps:
+  - name: images
+    image: ubuntu:26.04
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - apt-get update -qq && apt-get install -y -qq ca-certificates
+      - sh ci/use-cumulus.sh
+      - apt-get update -qq && apt-get install -y -qq xorriso squashfs-tools rclone curl
+      - ci/build-isos.sh
+
+---
+kind: pipeline
+type: docker
+name: cleanup
+
+platform: {os: linux, arch: amd64}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+depends_on: [publish, isos]
+
+steps:
+  - name: purge-staging
+    image: ubuntu:26.04
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - apt-get update -qq && apt-get install -y -qq ca-certificates
+      - sh ci/use-cumulus.sh
+      - apt-get update -qq && apt-get install -y -qq rclone
+      - ci/purge-staging.sh
+
+---
+kind: pipeline
+type: docker
 name: promote
 
 platform: {os: linux, arch: amd64}
