@@ -1,12 +1,13 @@
-// Worker "nubo-docs": serves the documentation site from the R2 bucket nubo-docs
-// at docs.nubosuite.tech. Deployed with the Cloudflare API (see ci/deploy-docs.sh for the content).
+// Worker "nubo-docs": serves the documentation site from the docs/ folder of the R2
+// bucket nubo-archive at docs.nubosuite.tech (the CI access key only covers that bucket). Deployed with the Cloudflare API (see ci/deploy-docs.sh for the content).
 const SEC = {
   'x-content-type-options': 'nosniff',
   'referrer-policy': 'strict-origin-when-cross-origin',
   'x-frame-options': 'SAMEORIGIN',
   'permissions-policy': 'camera=(), microphone=(), geolocation=()',
 };
-async function get(env, key) { return env.DOCS.get(key); }
+const PREFIX = 'docs/';
+async function get(env, key) { return env.DOCS.get(PREFIX + key); }
 export default {
   async fetch(req, env) {
     if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
