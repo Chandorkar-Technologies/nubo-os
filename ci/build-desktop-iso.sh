@@ -9,17 +9,20 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 . ci/rclone-env.sh
 VER="${1:?version, for example 0.8.0-beta11}"
-DEBVER="${VER/-/\~}"
 BASE=https://archive.nubosuite.tech/cumulus-releases/26.04
 ISO=ubuntu-26.04.1-desktop-amd64.iso
 mkdir -p debs work out
 
-echo "==> Nubo packages ${DEBVER} from the beta channel"
+echo "==> Nubo packages the beta channel carries"
+# The image label is the release tag; the package version is whatever
+# debian/changelog said when the packages were built, so take the channel's list.
 rclone copy "r2:${R2_BUCKET}/suites/resolute-beta.list" work
-rclone copy "r2:${R2_BUCKET}/pool" debs --fast-list --include "nubo-*_${DEBVER}_*.deb"
-find debs -name '*.deb' -exec mv {} debs/ \; 2>/dev/null || true
+mapfile -t names < <(grep -E '^nubo-.*_(all|amd64)\.deb$' work/resolute-beta.list)
+for n in "${names[@]}"; do
+  rclone copyto "r2:${R2_BUCKET}/pool/main/n/nubo-os/${n}" "debs/${n}"
+done
 ls debs
-compgen -G "debs/nubo-*.deb" >/dev/null || { echo "no nubo-*_${DEBVER}_*.deb in the bucket" >&2; exit 1; }
+compgen -G "debs/nubo-*.deb" >/dev/null || { echo "no nubo packages in the beta channel" >&2; exit 1; }
 
 echo "==> Ubuntu Desktop base image"
 curl -fL --retry 3 -o "work/${ISO}" "${BASE}/${ISO}"
