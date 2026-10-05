@@ -17,7 +17,8 @@ echo "==> Nubo packages the beta channel carries"
 # The image label is the release tag; the package version is whatever
 # debian/changelog said when the packages were built, so take the channel's list.
 rclone copy "r2:${R2_BUCKET}/suites/resolute-beta.list" work
-mapfile -t names < <(grep -E '^nubo-.*_(all|amd64)\.deb$' work/resolute-beta.list)
+mapfile -t names < <(grep -E '^nubo-.*_(all|amd64)\.deb$' work/resolute-beta.list \
+  | grep -v -E '^nubo-(server|edge|podman|incus)')
 for n in "${names[@]}"; do
   rclone copyto "r2:${R2_BUCKET}/pool/main/n/nubo-os/${n}" "debs/${n}"
 done
