@@ -80,12 +80,35 @@ steps:
       - ci/build-isos.sh
 
 ---
-# Desktop installer images are built by hand (the builder needs loop mounts and
-# chroot, which Drone only allows for trusted repositories). To publish one:
-# write version, download URL and SHA-256 in ci/desktop-iso-source and push to master.
 kind: pipeline
 type: docker
-name: desktop-iso-upload
+name: desktop-iso
+
+platform: {os: linux, arch: amd64}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+depends_on: [publish]
+
+steps:
+  - name: image
+    image: ubuntu:26.04
+    privileged: true
+    environment:
+      DEBIAN_FRONTEND: noninteractive
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - apt-get update -qq && apt-get install -y -qq ca-certificates
+      - sh ci/use-cumulus.sh
+      - apt-get update -qq && apt-get install -y -qq xorriso squashfs-tools initramfs-tools-core mount rclone curl
+      - ci/build-desktop-iso.sh "$${DRONE_TAG#v}"
+
+---
+# Rebuild the desktop image for an already published release: edit the version
+# in ci/desktop-iso-version and push to master.
+kind: pipeline
+type: docker
+name: desktop-iso-manual
 
 platform: {os: linux, arch: amd64}
 trigger:
@@ -93,8 +116,9 @@ trigger:
   branch: [master]
 
 steps:
-  - name: upload
+  - name: image
     image: ubuntu:26.04
+    privileged: true
     environment:
       DEBIAN_FRONTEND: noninteractive
       R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
@@ -102,12 +126,12 @@ steps:
       R2_ENDPOINT: {from_secret: r2_endpoint}
     when:
       paths:
-        include: ['ci/desktop-iso-source', 'ci/upload-desktop-iso.sh']
+        include: ['ci/desktop-iso-version']
     commands:
       - apt-get update -qq && apt-get install -y -qq ca-certificates
       - sh ci/use-cumulus.sh
-      - apt-get update -qq && apt-get install -y -qq rclone curl
-      - ci/upload-desktop-iso.sh
+      - apt-get update -qq && apt-get install -y -qq xorriso squashfs-tools initramfs-tools-core mount rclone curl
+      - ci/build-desktop-iso.sh "$(cat ci/desktop-iso-version)"
 
 ---
 kind: pipeline
@@ -116,7 +140,7 @@ name: cleanup
 
 platform: {os: linux, arch: amd64}
 trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
-depends_on: [publish, isos]
+depends_on: [publish, isos, desktop-iso]
 
 steps:
   - name: purge-staging
