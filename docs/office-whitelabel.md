@@ -99,6 +99,36 @@ internal install folder names (`/app/collaboraoffice`), which users never see.
 The script is run on every upstream release we take, so the rebrand is a script plus our brand pack,
 not a fork to maintain by hand.
 
+## Platforms (checked in the source, 2026-10-07)
+
+| Platform | In the source | Build needs | Status |
+|---|---|---|---|
+| Linux desktop | `qt/` app, Flatpak and snap | Linux, Qt6 WebEngine; engine build is hours | Pipeline written (`ci/build-office.sh`, tag `office-*`), not run |
+| Web (any browser, phones too) | Collabora Online server | Linux; the server build | To do: replaces ONLYOFFICE on `office.nubo.email` |
+| Windows desktop | `windows/coda/` Visual Studio project, MSIX/AppX packaging, own README | Windows machine with Visual Studio 2026, WSL, Git Bash (WinGet configs in `windows/.config/`); x64 and ARM64 | Needed. Not started. A Windows runner is a later pipeline stage |
+| macOS desktop | `macos/` app, own README | A Mac with Homebrew, Node 20, Xcode tools | Not started |
+| Android | `android/` app | Linux with the Android NDK | Not started |
+| iOS / iPadOS | `ios/` app | A Mac with Xcode, an Apple Developer membership, a real device (no simulator) | Not started, needs the paid account |
+| WebAssembly | `wasm/` | | Immature upstream; ignore |
+
+Order: Linux desktop (proves the rebrand), then the web server, then Windows (needed), Android and
+macOS, then iOS. The names, logos, colours and welcome slides live in the shared web interface and apply
+everywhere; app ids, icons and store listings are done once per platform.
+
+Windows details: signed MSIX or installer needs a code-signing certificate (cost and lead time), and the
+Microsoft Store needs a verified publisher name. A Windows VM or cloud machine around 8 cores, 32 GB RAM,
+100 GB disk. Check the trademark search before any store submission.
+
+## Sign-in
+
+- Nubo OS: the Nubo account is the machine login (authd with the Nubo sign-in).
+- Desktop apps: no account is needed to open and save files on the computer. It is expected of an office
+  suite and it works offline. A forced login is not planned.
+- Server files: the desktop apps open server documents through a file picker for a WOPI server, which
+  logs in on the server's own page (`qt/RemoteOpen.cpp`, `qt/IntegratorFilePicker.cpp`). We set the
+  server address to the Nubo server only, so the picker cannot be pointed at other providers.
+- The apps have no Collabora account of their own, so nothing sends people to Collabora.
+
 ## Build machine
 
 VM 301 now has 8 cores, 24 GB RAM, 138 GB disk (2026-10-07). The first engine build started there with `--with-product-name="Nubo Office" --with-vendor="Nubo"`.
