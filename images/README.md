@@ -3,8 +3,8 @@
 One command per CPU architecture builds and uploads everything:
 
 ```
-sudo ci/build-all.sh 0.8.0-beta5 amd64     # on an amd64 machine
-sudo ci/build-all.sh 0.8.0-beta5 arm64     # on an arm64 machine
+sudo ci/build-all.sh 0.8.0-beta12 amd64     # on an amd64 machine
+sudo ci/build-all.sh 0.8.0-beta12 arm64     # on an arm64 machine
 ```
 
 Drone does this on tag pushes (`images-amd64`, `images-arm64`, then `release-images`),

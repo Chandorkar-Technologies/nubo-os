@@ -4,7 +4,7 @@
 # The Drone pipeline "images" does this on the build VMs; it also works by hand.
 #
 # Usage: ci/build-all.sh VERSION ARCH [GROUP...]
-#   VERSION  for example 0.8.0-beta5 (the release tag without the leading v)
+#   VERSION  for example 0.8.0-beta12 (the release tag without the leading v)
 #   ARCH     amd64 or arm64; must be this machine's architecture
 #   GROUP    which to build; default is all of these:
 #     iso-server   installer ISOs for server, virt, containers, edge
@@ -21,7 +21,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
-VERSION="${1:?version, for example 0.8.0-beta5}"; ARCH="${2:?amd64 or arm64}"; shift 2
+VERSION="${1:?version, for example 0.8.0-beta12}"; ARCH="${2:?amd64 or arm64}"; shift 2
 GROUPS_WANTED=("$@"); [[ ${#GROUPS_WANTED[@]} -gt 0 ]] || GROUPS_WANTED=(iso-server iso-desktop disks pi containers netboot)
 [[ "${ARCH}" == "$(dpkg --print-architecture)" ]] || { echo "This machine is $(dpkg --print-architecture); run the ${ARCH} build on a ${ARCH} machine." >&2; exit 1; }
 [[ "$(id -u)" -eq 0 ]] || { echo "Run as root." >&2; exit 1; }

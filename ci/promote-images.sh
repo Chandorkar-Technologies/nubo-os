@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Make the beta release the stable release. No rebuild: only the pointer moves.
-# Images keep the version they were built and tested as (for example 0.8.0-beta5).
+# Images keep the version they were built and tested as (for example 0.8.0-beta12).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 . ci/rclone-env.sh

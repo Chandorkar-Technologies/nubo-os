@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Raspberry Pi 4/5 image: Ubuntu's preinstalled arm64 Pi image with the Nubo
 # server packages added. Desktop variant follows once the server image is proven.
-# Usage: VERSION=0.8.0-beta5 [FLAVOUR=server|edge|...] build-pi.sh DEBS_DIR OUT_DIR
+# Usage: VERSION=0.8.0-beta12 [FLAVOUR=server|edge|...] build-pi.sh DEBS_DIR OUT_DIR
 # Output: nubo-os-FLAVOUR-VERSION-arm64-raspi.img.xz
 # Run on an arm64 machine as root. Needs qemu-utils, libguestfs-tools, xz-utils.
 set -euo pipefail

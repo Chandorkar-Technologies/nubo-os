@@ -2,7 +2,7 @@
 # Container-style images: OCI (Docker, Podman, Kubernetes), WSL and Incus/LXC.
 # They carry the Nubo base only (archive, update settings, no crash reports):
 # a container needs no firewall, SSH server or boot loader.
-# Usage: VERSION=0.8.0-beta5 build-containers.sh DEBS_DIR OUT_DIR [amd64|arm64]
+# Usage: VERSION=0.8.0-beta12 build-containers.sh DEBS_DIR OUT_DIR [amd64|arm64]
 # Output: nubo-os-base-VERSION-ARCH.{oci.tar,wsl,incus-container.tar.xz,incus-container.squashfs}
 # Optional: OCI_REPO=ghcr.io/owner/nubo-os with REGISTRY_USER and REGISTRY_PASSWORD
 #   also pushes the image to that registry as :VERSION (and :latest on a final release).

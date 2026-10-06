@@ -1,4 +1,4 @@
-nubo-os (0.8.0~beta5) resolute; urgency=medium
+nubo-os (0.8.0~beta12) resolute; urgency=medium
 
   * Desktop installer image builds the Nubo installer app itself, so no
     screen says Ubuntu; the package install step logs to

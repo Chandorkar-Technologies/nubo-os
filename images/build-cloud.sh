@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Nubo OS Server virtual-machine disks from Ubuntu's cloud image.
-# Usage: VERSION=0.8.0-beta5 [FLAVOUR=server] build-cloud.sh DEBS_DIR OUT_DIR [amd64|arm64]
+# Usage: VERSION=0.8.0-beta12 [FLAVOUR=server] build-cloud.sh DEBS_DIR OUT_DIR [amd64|arm64]
 # Output: nubo-os-FLAVOUR-VERSION-ARCH.{qcow2,raw.xz,vmdk,ova,vhdx,vhd,vdi,gcp.tar.gz}
 # Runs natively: the image's own programs run while the packages install, so an
 # arm64 disk needs an arm64 machine. Needs root, qemu-utils, libguestfs-tools.
@@ -12,7 +12,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 . "${HERE}/lib.sh"
 FLAVOUR="${FLAVOUR:-server}"
-VERSION="${VERSION:?VERSION required, for example 0.8.0-beta5}"
+VERSION="${VERSION:?VERSION required, for example 0.8.0-beta12}"
 PKGS="$(flavour_packages "${FLAVOUR}")"
 DEBLIST=""; for p in ${PKGS}; do DEBLIST="${DEBLIST} /var/tmp/debs/${p}_*.deb"; done
 DEBS="$(readlink -f "${1:?debs dir}")"; OUT="$(readlink -f "${2:?out dir}")"

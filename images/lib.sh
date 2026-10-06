@@ -1,7 +1,7 @@
 # Shared by the image scripts.
 # Artifact names: nubo-os-<flavour>-<version>-<arch>.<extension>
 #   flavour: desktop server virt containers edge base
-#   version: for example 0.8.0-beta5
+#   version: for example 0.8.0-beta12
 
 # Packages each server flavour installs.
 flavour_packages() {
