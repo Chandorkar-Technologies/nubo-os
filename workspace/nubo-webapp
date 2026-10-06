@@ -1,0 +1,120 @@
+#!/usr/bin/python3
+"""nubo-webapp APP: a plain window around one Nubo web app.
+
+APP is mail, calendar, contacts or drive. Each is a section of the Nubo
+workspace (Bulwark, a JMAP client for the Nubo mail server), opened in its own
+window with its own icon, so it behaves like a separate app. All of them share
+one sign-in: they use the same cookie and storage folder.
+
+Addresses on nubo.email stay in the window; everything else opens in the
+person's browser.
+"""
+
+import os
+import sys
+
+import gi
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+gi.require_version("WebKit", "6.0")
+from gi.repository import Adw, Gio, GLib, Gtk, WebKit  # noqa: E402
+
+BASE = os.environ.get("NUBO_WORKSPACE_URL", "https://app.nubo.email").rstrip("/")
+# name, path, application id (the id is the launcher's file name)
+APPS = {
+    "mail": ("Nubo Mail", "/mail", "tech.nubosuite.Mail"),
+    "calendar": ("Nubo Calendar", "/calendar", "tech.nubosuite.Calendar"),
+    "contacts": ("Nubo Contacts", "/contacts", "tech.nubosuite.Contacts"),
+    "drive": ("Nubo Drive", "/files", "tech.nubosuite.Drive"),
+}
+STAY = ("nubo.email",)  # hosts that stay in the window: nubo.email and its subdomains
+
+
+def stays(uri):
+    host = GLib.Uri.parse(uri, GLib.UriFlags.NONE).get_host() if uri else None
+    if uri and uri.split(":", 1)[0] in ("about", "blob", "data"):
+        return True
+    return bool(host) and any(host == h or host.endswith("." + h) for h in STAY)
+
+
+class Window(Adw.ApplicationWindow):
+    def __init__(self, app, title, url):
+        super().__init__(application=app, title=title, default_width=1200, default_height=800)
+        data = os.path.join(GLib.get_user_data_dir(), "nubo-workspace")
+        cache = os.path.join(GLib.get_user_cache_dir(), "nubo-workspace")
+        # One folder for all four apps: this is what makes the sign-in shared.
+        session = WebKit.NetworkSession.new(data, cache)
+        session.get_cookie_manager().set_persistent_storage(
+            os.path.join(data, "cookies.sqlite"), WebKit.CookiePersistentStorage.SQLITE)
+        session.connect("download-started", self.on_download)
+        self.view = WebKit.WebView(network_session=session)
+        self.view.get_settings().set_property("enable-developer-extras", False)
+        self.view.connect("decide-policy", self.on_policy)
+        self.view.connect("create", self.on_create)
+        self.view.connect("permission-request", self.on_permission)
+        header = Adw.HeaderBar()
+        reload = Gtk.Button(icon_name="view-refresh-symbolic", tooltip_text="Reload")
+        reload.connect("clicked", lambda *_: self.view.reload())
+        header.pack_start(reload)
+        view = Adw.ToolbarView(content=self.view)
+        view.add_top_bar(header)
+        self.set_content(view)
+        self.view.connect("notify::title", lambda v, _p: self.set_title(v.get_title() or title))
+        self.view.load_uri(url)
+
+    def on_policy(self, view, decision, kind):
+        if kind in (WebKit.PolicyDecisionType.NAVIGATION_ACTION, WebKit.PolicyDecisionType.NEW_WINDOW_ACTION):
+            uri = decision.get_navigation_action().get_request().get_uri()
+            if not stays(uri):
+                Gtk.UriLauncher.new(uri).launch(self, None, None)
+                decision.ignore()
+                return True
+        return False
+
+    def on_create(self, view, action):
+        uri = action.get_request().get_uri()
+        if uri and not stays(uri):
+            Gtk.UriLauncher.new(uri).launch(self, None, None)
+        else:
+            self.view.load_uri(uri)
+        return None
+
+    def on_permission(self, view, request):
+        # Mail notifications are the one permission a mail app needs.
+        if isinstance(request, WebKit.NotificationPermissionRequest):
+            request.allow()
+            return True
+        return False
+
+    def on_download(self, session, download):
+        download.connect("decide-destination", self.decide)
+
+    def decide(self, download, name):
+        folder = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOWNLOAD) or GLib.get_home_dir()
+        download.set_destination(os.path.join(folder, name or "download"))
+        return True
+
+
+class App(Adw.Application):
+    def __init__(self, key):
+        title, path, app_id = APPS[key]
+        super().__init__(application_id=app_id, flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        self.title, self.url = title, BASE + path
+        self.window = None
+
+    def do_activate(self):
+        if not self.window:
+            self.window = Window(self, self.title, self.url)
+        self.window.present()
+
+
+def main():
+    if len(sys.argv) != 2 or sys.argv[1] not in APPS:
+        print("usage: nubo-webapp {%s}" % "|".join(APPS), file=sys.stderr)
+        return 2
+    return App(sys.argv[1]).run([sys.argv[0]])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

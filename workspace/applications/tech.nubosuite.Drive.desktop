@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Drive
+Comment=Your files in the cloud
+Exec=nubo-webapp drive
+Icon=tech.nubosuite.Drive
+Terminal=false
+Categories=Utility;FileManager;
+Keywords=files;drive;storage;cloud;
+StartupWMClass=tech.nubosuite.Drive
+StartupNotify=true

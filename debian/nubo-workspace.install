@@ -1,0 +1,3 @@
+workspace/nubo-webapp usr/bin/
+workspace/applications/* usr/share/applications/
+workspace/icons/* usr/share/icons/hicolor/scalable/apps/

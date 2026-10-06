@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Mail
+Comment=Read and send email
+Exec=nubo-webapp mail
+Icon=tech.nubosuite.Mail
+Terminal=false
+Categories=Network;Email;
+Keywords=mail;email;jmap;
+StartupWMClass=tech.nubosuite.Mail
+StartupNotify=true

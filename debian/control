@@ -124,6 +124,15 @@ Description: Nubo OS logos, wallpapers, boot screen and desktop defaults
  Logo files, default wallpapers, the boot screen, the system identity,
  first-run defaults and the one-time cleanup after installation.
 
+Package: nubo-workspace
+Architecture: all
+Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1, gir1.2-webkit-6.0,
+         libwebkitgtk-6.0-4, hicolor-icon-theme, ${misc:Depends}
+Description: Nubo Mail, Calendar, Contacts and Drive
+ Four apps, each in its own window with its own icon, that open the Nubo
+ workspace (a JMAP client for the Nubo mail server) at the matching section.
+ They share one sign-in.
+
 Package: nubo-desktop
 Architecture: all
 Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
@@ -135,7 +144,7 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          gnome-software-plugin-flatpak, flatpak, geary,
          gnome-shell-extension-gsconnect, scrcpy,
          nubo-notify (= ${source:Version}),
-         nubo-apps (= ${source:Version}), nubo-archive (= ${source:Version}),
+         nubo-apps (= ${source:Version}), nubo-workspace (= ${source:Version}), nubo-archive (= ${source:Version}),
          nubo-base (= ${source:Version}),
          gstreamer1.0-alsa,
          gstreamer1.0-packagekit, gstreamer1.0-plugins-base-apps, inputattach, iw,

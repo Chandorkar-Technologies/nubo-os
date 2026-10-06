@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Contacts
+Comment=Your address book
+Exec=nubo-webapp contacts
+Icon=tech.nubosuite.Contacts
+Terminal=false
+Categories=Office;ContactManagement;
+Keywords=contacts;addressbook;people;
+StartupWMClass=tech.nubosuite.Contacts
+StartupNotify=true

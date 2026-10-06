@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Calendar
+Comment=Your events and invitations
+Exec=nubo-webapp calendar
+Icon=tech.nubosuite.Calendar
+Terminal=false
+Categories=Office;Calendar;
+Keywords=calendar;events;schedule;
+StartupWMClass=tech.nubosuite.Calendar
+StartupNotify=true
