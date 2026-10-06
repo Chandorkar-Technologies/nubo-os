@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Pages
+Comment=Write letters, reports and documents
+Exec=nubo-office pages %F
+Icon=tech.nubosuite.Pages
+Terminal=false
+Categories=Office;WordProcessor;
+MimeType=application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/msword;application/vnd.oasis.opendocument.text;application/rtf;text/rtf;
+StartupNotify=true

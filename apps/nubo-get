@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Download a popular app from Flathub, then open it.
 
-Usage: nubo-get FLATPAK_ID [NAME]
+Usage: nubo-get [--install-only] FLATPAK_ID [NAME]
 """
 
 import shutil
@@ -26,8 +26,11 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(2)
-    app_id = sys.argv[1]
-    name = sys.argv[2] if len(sys.argv) > 2 else app_id
+    args = sys.argv[1:]
+    install_only = "--install-only" in args
+    args = [a for a in args if a != "--install-only"]
+    app_id = args[0]
+    name = args[1] if len(args) > 1 else app_id
 
     if not installed(app_id):
         subprocess.run(["flatpak", "remote-add", "--user", "--if-not-exists", "flathub", FLATHUB],
@@ -54,6 +57,8 @@ def main():
             sys.exit(1)
 
     subprocess.run(["/usr/libexec/nubo/nubo-app-stubs"], capture_output=True)
+    if install_only:
+        return
     subprocess.Popen(["flatpak", "run", app_id], start_new_session=True,
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 

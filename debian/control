@@ -134,6 +134,15 @@ Description: Nubo Mail, Calendar, Contacts and Drive
  workspace (a JMAP client for the Nubo mail server) at the matching section.
  They share one sign-in.
 
+Package: nubo-office
+Architecture: all
+Depends: python3, nubo-apps (= ${source:Version}), flatpak, zenity, hicolor-icon-theme, ${misc:Depends}
+Description: Nubo Pages, Sheets, Slides and Draw
+ The Collabora Office suite under Nubo names: one launcher each for documents,
+ spreadsheets, presentations and drawings. The suite itself is downloaded from
+ Flathub the first time one of them is opened. Its About window keeps the
+ Collabora name.
+
 Package: nubo-desktop
 Architecture: all
 Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
@@ -145,7 +154,7 @@ Depends: alsa-base, alsa-utils, anacron, at-spi2-core, bc, ca-certificates,
          gnome-software-plugin-flatpak, flatpak, geary,
          gnome-shell-extension-gsconnect, scrcpy,
          nubo-notify (= ${source:Version}),
-         nubo-apps (= ${source:Version}), nubo-workspace (= ${source:Version}), nubo-archive (= ${source:Version}),
+         nubo-apps (= ${source:Version}), nubo-workspace (= ${source:Version}), nubo-office (= ${source:Version}), nubo-archive (= ${source:Version}),
          nubo-base (= ${source:Version}),
          gstreamer1.0-alsa,
          gstreamer1.0-packagekit, gstreamer1.0-plugins-base-apps, inputattach, iw,

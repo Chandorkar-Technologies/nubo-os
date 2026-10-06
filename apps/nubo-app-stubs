@@ -99,8 +99,30 @@ def write_desktop(filename, name, comment, exec_line, icon, categories):
             f.write(text)
 
 
+# Vendor launchers that Nubo shows under its own names (see /usr/bin/nubo-office).
+# Hidden from the app grid once installed; the file stays a handler for its file types.
+HIDE_VENDOR = ["com.collaboraoffice.Office"]
+EXPORT_DIRS = [f"{HOME}/.local/share/flatpak/exports/share/applications", "/var/lib/flatpak/exports/share/applications"]
+
+
+def hide_vendor_launchers(have):
+    for ident in HIDE_VENDOR:
+        target = os.path.join(APPS, f"{ident}.desktop")
+        source = next((os.path.join(d, f"{ident}.desktop") for d in EXPORT_DIRS
+                       if os.path.exists(os.path.join(d, f"{ident}.desktop"))), None)
+        if ident in have and source:
+            lines = [l for l in open(source).read().splitlines() if not l.startswith("NoDisplay=")]
+            text = "\n".join(lines[:1] + ["NoDisplay=true"] + lines[1:]) + "\n"
+            if not os.path.exists(target) or open(target).read() != text:
+                with open(target, "w") as f:
+                    f.write(text)
+        elif os.path.exists(target):
+            os.remove(target)
+
+
 def main():
     have = installed_flatpaks()
+    hide_vendor_launchers(have)
     wanted = set()
     for kind, ident, name, _cat, pre in read_list():
         if kind == "flatpak":

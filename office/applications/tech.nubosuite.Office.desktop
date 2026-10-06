@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Office
+Comment=Documents, spreadsheets and presentations
+Exec=nubo-office office %F
+Icon=tech.nubosuite.Office
+Terminal=false
+Categories=Office;
+StartupNotify=true

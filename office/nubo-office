@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+"""nubo-office MODE [FILE...]: open one of the Nubo office apps.
+
+MODE is office (start centre), pages (documents), sheets (spreadsheets), slides
+(presentations) or draw (drawings). They are Collabora Office, which is
+downloaded from Flathub the first time one is opened.
+"""
+
+import os
+import subprocess
+import sys
+
+APP = "com.collaboraoffice.Office"
+MODES = {
+    "office": ("Nubo Office", []),
+    "pages": ("Nubo Pages", ["--writer"]),
+    "sheets": ("Nubo Sheets", ["--calc"]),
+    "slides": ("Nubo Slides", ["--impress"]),
+    "draw": ("Nubo Draw", ["--draw"]),
+}
+
+
+def installed():
+    return subprocess.run(["flatpak", "info", APP], capture_output=True).returncode == 0
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] not in MODES:
+        print("usage: nubo-office {%s} [FILE...]" % "|".join(MODES), file=sys.stderr)
+        return 2
+    name, flags = MODES[sys.argv[1]]
+    files = sys.argv[2:]
+    if not installed():
+        # First use: download from Flathub with a progress window (see nubo-get).
+        if subprocess.run(["nubo-get", "--install-only", APP, name]).returncode != 0:
+            return 1
+    os.execvp("flatpak", ["flatpak", "run", "--command=coda-qt", "--file-forwarding", APP, *flags, "@@", *files, "@@"]
+              if files else ["flatpak", "run", "--command=coda-qt", APP, *flags])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

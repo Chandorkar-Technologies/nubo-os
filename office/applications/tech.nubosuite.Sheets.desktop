@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Sheets
+Comment=Work with tables, numbers and charts
+Exec=nubo-office sheets %F
+Icon=tech.nubosuite.Sheets
+Terminal=false
+Categories=Office;Spreadsheet;
+MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel;application/vnd.oasis.opendocument.spreadsheet;text/csv;
+StartupNotify=true

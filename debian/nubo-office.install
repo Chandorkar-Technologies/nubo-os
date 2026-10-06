@@ -1,0 +1,3 @@
+office/nubo-office usr/bin/
+office/applications/* usr/share/applications/
+office/icons/* usr/share/icons/hicolor/scalable/apps/

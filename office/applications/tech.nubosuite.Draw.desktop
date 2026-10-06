@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Nubo Draw
+Comment=Create drawings and diagrams
+Exec=nubo-office draw %F
+Icon=tech.nubosuite.Draw
+Terminal=false
+Categories=Office;Graphics;
+MimeType=application/vnd.oasis.opendocument.graphics;application/vnd.visio;
+StartupNotify=true
