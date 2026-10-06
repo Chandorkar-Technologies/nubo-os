@@ -77,9 +77,6 @@ steps:
       R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
       R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
       R2_ENDPOINT: {from_secret: r2_endpoint}
-      OCI_REPO: ghcr.io/chandorkar-technologies/nubo-os
-      REGISTRY_USER: {from_secret: ghcr_user}
-      REGISTRY_PASSWORD: {from_secret: ghcr_token}
     commands:
       - ci/build-all.sh "${DRONE_TAG#v}" amd64
 
@@ -90,6 +87,7 @@ name: images-arm64
 
 platform: {os: linux, arch: arm64}
 node: {nubo-builder: "true"}
+# Stays pending until an arm64 runner is registered; nothing else waits for it yet.
 trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
 depends_on: [debs-amd64, publish]
 
@@ -99,9 +97,6 @@ steps:
       R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
       R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
       R2_ENDPOINT: {from_secret: r2_endpoint}
-      OCI_REPO: ghcr.io/chandorkar-technologies/nubo-os
-      REGISTRY_USER: {from_secret: ghcr_user}
-      REGISTRY_PASSWORD: {from_secret: ghcr_token}
     commands:
       - ci/build-all.sh "${DRONE_TAG#v}" arm64
 
@@ -115,7 +110,9 @@ name: release-images
 platform: {os: linux, arch: amd64}
 node: {nubo-builder: "true"}
 trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
-depends_on: [images-amd64, images-arm64]
+# images-arm64 needs an arm64 runner (ci/setup-build-vm.sh on an arm64 machine). Until one
+# exists it is not waited for; add it back here once it runs.
+depends_on: [images-amd64]
 
 steps:
   - name: publish
