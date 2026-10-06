@@ -51,6 +51,12 @@ RAIL_JS = """(function () {
   new MutationObserver(tidy).observe(document.documentElement, { childList: true, subtree: true });
   tidy();
 })();"""
+OFFLINE_HTML = """<!doctype html><meta charset="utf-8"><meta name="color-scheme" content="light dark">
+<style>body{font:16px system-ui,sans-serif;display:grid;place-items:center;height:100vh;margin:0;text-align:center}
+div{max-width:30em;padding:24px}h1{font-size:1.4em}</style>
+<div><h1>%s can't connect</h1><p>Check your internet connection. This app needs to reach the Nubo server, and it does not work offline yet.</p>
+<p>It will reload by itself when the connection is back.</p></div>
+<script>setInterval(function(){fetch("%s",{method:"HEAD",mode:"no-cors"}).then(function(){location.href="%s"}).catch(function(){})},5000)</script>"""
 STAY = ("nubo.email",)  # hosts that stay in the window: nubo.email and its subdomains
 
 
@@ -80,6 +86,7 @@ class Window(Adw.ApplicationWindow):
         self.view.get_settings().set_property("enable-developer-extras", False)
         self.view.connect("decide-policy", self.on_policy)
         self.view.connect("create", self.on_create)
+        self.view.connect("load-failed", self.on_failed)
         self.view.connect("permission-request", self.on_permission)
         header = Adw.HeaderBar()
         reload = Gtk.Button(icon_name="view-refresh-symbolic", tooltip_text="Reload")
@@ -120,6 +127,12 @@ class Window(Adw.ApplicationWindow):
                 Gtk.UriLauncher.new(uri).launch(self, None, None)
                 decision.ignore()
                 return True
+        return False
+
+    def on_failed(self, view, event, uri, error):
+        if uri.startswith(BASE):
+            view.load_alternate_html(OFFLINE_HTML % (self.app_title, BASE + "/", self.target), self.target, None)
+            return True
         return False
 
     def on_create(self, view, action):
