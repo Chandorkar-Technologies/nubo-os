@@ -191,6 +191,18 @@ def welcome(root):
     return n
 
 
+def welcome_art(root, art_dir):
+    """Our welcome pictures replace Collabora's (only the ones we have)."""
+    n = 0
+    dest = os.path.join(root, "browser", "welcome")
+    if os.path.isdir(art_dir) and os.path.isdir(dest):
+        for name in os.listdir(art_dir):
+            if name.endswith(".png"):
+                shutil.copy(os.path.join(art_dir, name), os.path.join(dest, name))
+                n += 1
+    return n
+
+
 def report(root):
     pat = re.compile(r"collabora|libreoffice", re.I)
     left = {}
@@ -222,9 +234,10 @@ def main():
     version = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "0.0.0"
     meta = metainfo(root, here, version)
     slides = welcome(root)
+    art = welcome_art(root, os.path.join(here, "brand", "welcome"))
     logos = logo_images(root, os.path.join(here, "brand", "images", "full-logo-white.svg"))
-    print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d, welcome texts: %d"
-          % (changed, renamed, icons, manifest, meta, logos, slides))
+    print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d, welcome texts: %d, welcome pictures: %d"
+          % (changed, renamed, icons, manifest, meta, logos, slides, art))
     report(root)
     return 0
 
