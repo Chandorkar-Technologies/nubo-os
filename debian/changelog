@@ -1,3 +1,12 @@
+nubo-os (0.8.0~beta5) resolute; urgency=medium
+
+  * Desktop installer image builds the Nubo installer app itself, so no
+    screen says Ubuntu; the package install step logs to
+    /var/log/nubo-install.log.
+  * A locked "nubo" account (no password, no shell, no SSH) on every flavour.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Tue, 06 Oct 2026 20:00:00 +0530
+
 nubo-os (0.8.0~beta4) resolute; urgency=medium
 
   * Image upload no longer checks whether the bucket exists (the access key
