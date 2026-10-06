@@ -1,5 +1,21 @@
 /* Nubo Office brand pack: written for Nubo OS. */
 
+:root {
+  --color-primary: #2f6fde;
+  --color-primary-dark: #1d56b8;
+  --color-primary-darker: #174690;
+  --color-primary-lighter: #a9c4f0;
+  --color-primary-text: #fff;
+}
+
+html[data-theme=dark] {
+  --color-primary: #5b92ee;
+  --color-primary-dark: #3f78d6;
+  --color-primary-darker: #2d5fb3;
+  --color-primary-lighter: #2a4a80;
+  --color-primary-text: #fff;
+}
+
 .img-coda-app-logo {
   background: url("images/full-logo.svg") no-repeat center !important;
 }

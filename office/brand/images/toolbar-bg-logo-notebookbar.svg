@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="100" viewBox="0 0 420.0 100.0"><g transform="translate(0.0 7.2) scale(0.03273)">
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30.0 30.0"><g transform="translate(0.0 2.2) scale(0.00982)">
 <g transform="translate(-125.217631,2807.797954) scale(0.100000,-0.100000)"
-fill="#ffffff" stroke="none">
+fill="#111214" stroke="none">
 <path d="M11310 28070 c-227 -12 -622 -74 -880 -140 -69 -18 -136 -34 -150
 -37 -209 -43 -747 -245 -1014 -379 -1054 -531 -1896 -1344 -2453 -2367 -51
 -95 -173 -349 -173 -361 0 -3 -23 -57 -51 -119 -81 -179 -145 -355 -214 -587
@@ -90,4 +90,4 @@ fill="#ffffff" stroke="none">
 -712 1586 -1574z"/>
 </g>
 
-</g><text x="115.0" y="64.0" fill="#ffffff" font-family="Inter, Helvetica, Arial, sans-serif" font-size="42.0" font-weight="600">Nubo Office</text></svg>
+</g></svg>

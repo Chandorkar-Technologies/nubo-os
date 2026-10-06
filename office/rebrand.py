@@ -162,6 +162,35 @@ def logo_images(root, white_logo):
     return n
 
 
+WELCOME = {
+    "welcome-slide1-heading-1": "Welcome to Nubo Office",
+    "welcome-slide1-heading-2": "Write, calculate and present",
+    "welcome-slide1-content": "Nubo Write, Nubo Cells, Nubo Present and Nubo Draw open and save the files you already have, in Microsoft Office and OpenDocument formats.",
+    "welcome-slide2-heading-1": "One suite, four apps",
+    "welcome-slide2-heading-2": "Nubo Office",
+    "welcome-slide2-content": "Write letters and reports, build spreadsheets, make presentations and draw diagrams, all in one place.",
+    "welcome-slide3-heading-1": "Part of Nubo OS",
+    "welcome-slide3-heading-2": '<a target="_blank" rel="noopener" href="%s">os.nubosuite.tech</a>' % HOME,
+    "welcome-slide3-content": 'Nubo Office is built on Collabora Online and LibreOffice technology. Read the source and report problems at <a target="_blank" rel="noopener" href="https://github.com/Chandorkar-Technologies/nubo-os">github.com/Chandorkar-Technologies/nubo-os</a>.',
+}
+
+
+def welcome(root):
+    """First-run slides: our words, no Collabora links."""
+    path = os.path.join(root, "browser", "welcome", "welcome.html")
+    if not os.path.exists(path):
+        return 0
+    text = open(path, encoding="utf-8").read()
+    n = 0
+    for ident, inner in WELCOME.items():
+        pat = re.compile(r'(<(h1|h2|p) id="%s"[^>]*>)(.*?)(</\2>)' % re.escape(ident), re.S)
+        text, k = pat.subn(lambda m: m.group(1) + inner + m.group(4), text)
+        n += k
+    text = re.sub(r'<a id="view-supported-versions"[^>]*></a>', "", text)
+    open(path, "w", encoding="utf-8").write(text)
+    return n
+
+
 def report(root):
     pat = re.compile(r"collabora|libreoffice", re.I)
     left = {}
@@ -192,9 +221,10 @@ def main():
     manifest = flatpak_manifest(root, os.path.join(here, "brand"))
     version = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "0.0.0"
     meta = metainfo(root, here, version)
+    slides = welcome(root)
     logos = logo_images(root, os.path.join(here, "brand", "images", "full-logo-white.svg"))
-    print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d"
-          % (changed, renamed, icons, manifest, meta, logos))
+    print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d, welcome texts: %d"
+          % (changed, renamed, icons, manifest, meta, logos, slides))
     report(root)
     return 0
 
