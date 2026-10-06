@@ -31,6 +31,10 @@ if [[ -z "${NO_UPLOAD:-}" ]]; then . ci/rclone-env.sh; fi
 OUT="${OUT:-${ROOT}/out/${VERSION}}"; WORKROOT="${WORKROOT:-/var/tmp/nubo-build}"
 mkdir -p "${OUT}" "${WORKROOT}/src" "${WORKROOT}/debs"
 FAILED=()
+# The biggest single step (the desktop image) needs about 35 GB; refuse to start without it.
+NEED_GB="${NEED_GB:-40}"
+free_gb=$(( $(df --output=avail -B1G "${WORKROOT}" | tail -1) ))
+[[ ${free_gb} -ge ${NEED_GB} ]] || { echo "Only ${free_gb} GB free in ${WORKROOT}; need ${NEED_GB}." >&2; exit 1; }
 
 want() { local g; for g in "${GROUPS_WANTED[@]}"; do [[ "$g" == "$1" ]] && return 0; done; return 1; }
 
@@ -87,6 +91,9 @@ run() {   # NAME COMMAND...
   echo; echo "################ ${name} ($(date -u +%H:%M:%S))"
   # Not "if ( ... )": that would switch off "set -e" inside the group.
   ( set -e; "$@" ); local rc=$?
+  # Everything is built one piece at a time: when a group ends, its work space and
+  # downloaded source images go, so the next group starts with the same free space.
+  rm -rf "${WORKROOT}/iso-desktop" "${WORKROOT}/src"/* /var/tmp/nubo-iso /tmp/nubo-ctr-debs "${WORKROOT}/c.qcow2" 2>/dev/null || true
   if [[ ${rc} -eq 0 ]]; then ship; else echo "!!! ${name} FAILED" >&2; FAILED+=("${name}"); rm -f "${OUT}"/nubo-os-*; fi
 }
 
@@ -96,7 +103,10 @@ iso_server() {
   fetch_verified "$(liveserver_url "${ARCH}")" "${base}" "$(dirname "$(liveserver_url "${ARCH}")")/SHA256SUMS"
   for flavour in ${SERVER_FLAVOURS}; do
     echo "--> ${flavour}"
-    ARCH="${ARCH}" FLAVOUR="${flavour}" WORK="$(mktemp -d)" iso/build-server-iso.sh "${base}" "${DEBS}" "${OUT}/nubo-os-${flavour}-${VERSION}-${ARCH}.iso"
+    local w; w="$(mktemp -d "${WORKROOT}/iso.XXXXXX")"
+    ARCH="${ARCH}" FLAVOUR="${flavour}" WORK="${w}" iso/build-server-iso.sh "${base}" "${DEBS}" "${OUT}/nubo-os-${flavour}-${VERSION}-${ARCH}.iso"
+    rm -rf "${w}"
+    ship
   done
 }
 

@@ -5,7 +5,7 @@
 #
 # Usage (as root on Ubuntu 26.04):
 #   DRONE_RPC_HOST=ci.hostingduty.com DRONE_RPC_SECRET=... ci/setup-build-vm.sh
-# Needs about 150 GB of free disk space under /var/tmp and 8 GB of RAM.
+# Needs about 45 GB of free disk space under /var/tmp and 8 GB of RAM: images are built, uploaded and deleted one at a time.
 #
 # The runner runs pipeline commands as root on this machine. Use a machine that
 # does nothing else, and keep the repository's write access to people you trust.
