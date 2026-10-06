@@ -60,6 +60,8 @@ class Setup(Adw.Application):
         super().__init__(application_id="tech.nubosuite.Setup")
         self.win = None
         self.stop = threading.Event()
+        self.password = ""  # known only when the account was just created here
+        self.display_name = ""
 
     def do_activate(self):
         if os.path.exists(DONE) or os.path.ismount("/cdrom"):
@@ -127,6 +129,7 @@ class Setup(Adw.Application):
             self.create_msg.set_label("Fill in every field. The password needs at least 8 characters.")
             return
         self.create_msg.set_label("Creating your account…")
+        self.password, self.display_name = payload["password"], payload["name"]
 
         def work():
             try:
@@ -211,18 +214,49 @@ class Setup(Adw.Application):
 
     def finish(self, skipped=False, email=""):
         os.makedirs(STATE_DIR, mode=0o700, exist_ok=True)
-        if not skipped or True:
-            open(DONE, "w").close()
-        if not skipped:
-            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
-            col.append(self.label("You're signed in", "title-1"))
-            col.append(self.label(email or "Your Nubo account is connected."))
-            done = Gtk.Button(label="Done", css_classes=["suggested-action", "pill"])
-            done.connect("clicked", lambda *_: self.quit())
-            col.append(done)
-            self.nav.push(self.page("Done", col))
-        else:
+        open(DONE, "w").close()
+        if skipped:
             self.quit()
+            return
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
+        col.append(self.label("You're signed in", "title-1"))
+        col.append(self.label(email or "Your Nubo account is connected."))
+        self.apps_msg = self.label("")
+        if self.password:
+            # Just created here: the password is known, so set up the desktop apps now.
+            col.append(self.apps_msg)
+            threading.Thread(target=self.add_apps, args=(email, self.password), daemon=True).start()
+        else:
+            col.append(self.label("Type your password once to set up Mail, Calendar and Contacts. "
+                                  "They keep a copy on this computer and work offline."))
+            self.f_apps_pw = Adw.PasswordEntryRow(title="Password")
+            group = Adw.PreferencesGroup()
+            group.add(self.f_apps_pw)
+            col.append(group)
+            col.append(self.apps_msg)
+            setup = Gtk.Button(label="Set up Mail, Calendar and Contacts", css_classes=["suggested-action", "pill"])
+            setup.connect("clicked", lambda *_: threading.Thread(
+                target=self.add_apps, args=(email, self.f_apps_pw.get_text()), daemon=True).start())
+            col.append(setup)
+        done = Gtk.Button(label="Done", css_classes=["pill"])
+        done.connect("clicked", lambda *_: self.quit())
+        col.append(done)
+        self.nav.push(self.page("Done", col))
+
+    def add_apps(self, email, password):
+        """Add the account to GNOME Online Accounts; Mail, Calendar and Contacts pick it up."""
+        GLib.idle_add(self.apps_msg.set_label, "Setting up Mail, Calendar and Contacts…")
+        try:
+            r = subprocess.run(["/usr/libexec/nubo/nubo-goa-add", email, self.display_name], input=password + "\n",
+                               text=True, capture_output=True, timeout=120)
+            code = r.returncode
+        except Exception:
+            code = 1
+        msg = {0: "Mail, Calendar and Contacts are ready. They work offline.",
+               2: "That password was not accepted. Check it and try again.",
+               3: "Could not reach Nubo. You can set this up later in Settings > Online Accounts."}.get(
+                   code, "Could not set up Mail, Calendar and Contacts. You can add the account in Settings > Online Accounts.")
+        GLib.idle_add(self.apps_msg.set_label, msg)
 
 
 if __name__ == "__main__":

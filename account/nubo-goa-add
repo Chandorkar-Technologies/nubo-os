@@ -1,0 +1,92 @@
+#!/usr/bin/python3
+"""nubo-goa-add EMAIL [NAME]: add a Nubo account to GNOME Online Accounts.
+
+Reads the password from standard input. Afterwards Mail, Calendar, Contacts and
+Files of the Nubo account appear in the desktop's own apps, which keep a copy on
+this computer and work offline.
+
+Uses only standard account types: no patched package is needed.
+Exit status: 0 added or already present, 2 wrong password, 3 server not
+reachable, 1 anything else.
+"""
+
+import imaplib
+import os
+import socket
+import ssl
+import sys
+
+import gi
+
+gi.require_version("Gio", "2.0")
+from gi.repository import Gio, GLib  # noqa: E402
+
+HOST = os.environ.get("NUBO_GOA_HOST", "mail.nubo.email")
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__, file=sys.stderr)
+        return 1
+    email = sys.argv[1].strip().lower()
+    name = sys.argv[2] if len(sys.argv) > 2 else ""
+    password = sys.stdin.readline().rstrip("\n")
+    if not password:
+        return 2
+
+    # Check the password first, so a typo never creates a broken account.
+    try:
+        with imaplib.IMAP4_SSL(HOST, 993, timeout=20, ssl_context=ssl.create_default_context()) as imap:
+            imap.login(email, password)
+    except imaplib.IMAP4.error:
+        return 2
+    except (OSError, socket.timeout, ssl.SSLError):
+        return 3
+
+    bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+    objects = bus.call_sync("org.gnome.OnlineAccounts", "/org/gnome/OnlineAccounts",
+                            "org.freedesktop.DBus.ObjectManager", "GetManagedObjects",
+                            None, GLib.VariantType("(a{oa{sa{sv}}})"), 0, -1, None).unpack()[0]
+    have = set()
+    for ifaces in objects.values():
+        acct = ifaces.get("org.gnome.OnlineAccounts.Account")
+        if acct and acct.get("Identity", "").lower() == email:
+            have.add(acct.get("ProviderType"))
+
+    # Two standard account types, so Evolution's data server (which feeds Geary,
+    # Calendar and Contacts and keeps their offline copy) accepts them without
+    # any patched package: IMAP/SMTP for mail, WebDAV for calendar, contacts, files.
+    mail = {
+        "MailEnabled": "true", "EmailAddress": email, "Name": name,
+        "ImapHost": HOST, "ImapUserName": email, "ImapUseSsl": "true", "ImapUseTls": "false",
+        "ImapAcceptSslErrors": "false",
+        "SmtpHost": HOST, "SmtpUseAuth": "true", "SmtpUserName": email, "SmtpAuthLogin": "false",
+        "SmtpAuthPlain": "true", "SmtpUseSsl": "true", "SmtpUseTls": "false", "SmtpAcceptSslErrors": "false",
+    }
+    dav = {
+        "CalendarEnabled": "true", "CalDavUri": "https://%s/dav/cal" % HOST,
+        "ContactsEnabled": "true", "CardDavUri": "https://%s/dav/card" % HOST,
+        "FilesEnabled": "true", "Uri": "https://%s/dav/file" % HOST,
+        "AcceptSslErrors": "false",
+    }
+    wanted = (
+        ("imap_smtp", mail, ("imap-password", "smtp-password")),
+        ("webdav", dav, ("password",)),
+    )
+    for provider, details, keys in wanted:
+        if provider in have:
+            continue
+        credentials = {k: GLib.Variant("s", password) for k in keys}
+        try:
+            bus.call_sync("org.gnome.OnlineAccounts", "/org/gnome/OnlineAccounts/Manager",
+                          "org.gnome.OnlineAccounts.Manager", "AddAccount",
+                          GLib.Variant("(sssa{sv}a{ss})", (provider, email, email, credentials, details)),
+                          None, 0, -1, None)
+        except GLib.Error as e:
+            print(e.message, file=sys.stderr)
+            return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

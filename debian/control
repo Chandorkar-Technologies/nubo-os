@@ -67,6 +67,7 @@ Description: Nubo OS installer appearance
 Package: nubo-account
 Architecture: all
 Depends: authd,
+         gnome-online-accounts,
          curl,
          gir1.2-adw-1,
          gir1.2-gtk-4.0,

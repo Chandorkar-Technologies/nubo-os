@@ -1,5 +1,14 @@
 # Nubo account provider for GNOME Online Accounts
 
+> **Status.** The desktop does not need this patch. Evolution's data server (which
+> feeds Geary, Calendar and Contacts and keeps their offline copy) only accepts the
+> standard account types and ignores `nubo`. Nubo Setup therefore adds the account
+> with `account/nubo-goa-add`: a standard IMAP/SMTP account and a standard WebDAV
+> account, tested against the real server. This patch would only add a "Nubo" entry
+> to Settings > Online Accounts, and it would also need a patch for
+> evolution-data-server to be useful.
+
+
 Adds a **Nubo** provider to GNOME Online Accounts (GOA). In Settings > Online
 Accounts a person picks Nubo, types their Nubo email address and password, and
 GOA configures all of this against one host, `mail.nubo.email` (Stalwart):

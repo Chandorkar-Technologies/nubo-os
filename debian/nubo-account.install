@@ -6,3 +6,4 @@ account/nubo-setup usr/libexec/nubo/
 account/tech.nubosuite.Setup.desktop usr/share/applications/
 build/account/tech.nubosuite.Setup.svg usr/share/icons/hicolor/scalable/apps/
 account/nubo-setup-autostart.desktop etc/xdg/autostart/
+account/nubo-goa-add usr/libexec/nubo/
