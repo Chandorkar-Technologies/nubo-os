@@ -47,7 +47,7 @@ done
 gsettings get org.gnome.desktop.wm.preferences titlebar-font 2>/dev/null
 
 section "Package sources"
-grep -rh -E '^(URIs|deb) ' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null | sort -u
+grep -rh -E '^(URIs:|deb )' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null | sort -u
 
 section "Services named after Ubuntu"
 systemctl list-unit-files --no-legend 2>/dev/null | awk '{print $1}' | grep -E 'ubuntu|apport|whoopsie|snap' | tr '\n' ' '; echo
