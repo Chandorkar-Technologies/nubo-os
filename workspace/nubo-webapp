@@ -23,11 +23,34 @@ from gi.repository import Adw, Gio, GLib, Gtk, WebKit  # noqa: E402
 BASE = os.environ.get("NUBO_WORKSPACE_URL", "https://app.nubo.email").rstrip("/")
 # name, path, application id (the id is the launcher's file name)
 APPS = {
-    "mail": ("Nubo Mail", "/mail", "tech.nubosuite.Mail"),
-    "calendar": ("Nubo Calendar", "/calendar", "tech.nubosuite.Calendar"),
-    "contacts": ("Nubo Contacts", "/contacts", "tech.nubosuite.Contacts"),
-    "drive": ("Nubo Drive", "/files", "tech.nubosuite.Drive"),
+    "mail": ("Nubo Mail", "/mail", "tech.nubosuite.Mail", "mail"),
+    "calendar": ("Nubo Calendar", "/calendar", "tech.nubosuite.Calendar", "calendar"),
+    "contacts": ("Nubo Contacts", "/contacts", "tech.nubosuite.Contacts", "contacts"),
+    "drive": ("Nubo Drive", "/files", "tech.nubosuite.Drive", "files"),
 }
+# Bulwark shows a side rail with every section. Each of our apps keeps only its own
+# section there (plus settings, shortcuts and account switching), so it behaves as
+# a separate app.
+RAIL_JS = """(function () {
+  var KEEP = "%s";
+  function section(href) {
+    var m = href.match(/^\\/[A-Za-z-]+(?:\\/([a-z]+))?/);
+    if (!m) return null;
+    return m[1] ? (m[1] === "calendar" || m[1] === "contacts" || m[1] === "files" || m[1] === "settings" ? m[1] : null) : "mail";
+  }
+  function tidy() {
+    document.querySelectorAll("a[href]").forEach(function (a) {
+      if (a.getBoundingClientRect().x > 80) return;
+      var s = section(a.getAttribute("href"));
+      if (s && s !== KEEP && s !== "settings") a.style.display = "none";
+    });
+    document.querySelectorAll("button").forEach(function (b) {
+      if (b.getBoundingClientRect().x < 60 && (b.getAttribute("aria-label") || b.title || "") === "Apps") b.style.display = "none";
+    });
+  }
+  new MutationObserver(tidy).observe(document.documentElement, { childList: true, subtree: true });
+  tidy();
+})();"""
 STAY = ("nubo.email",)  # hosts that stay in the window: nubo.email and its subdomains
 
 
@@ -39,8 +62,9 @@ def stays(uri):
 
 
 class Window(Adw.ApplicationWindow):
-    def __init__(self, app, title, url):
+    def __init__(self, app, title, url, section):
         super().__init__(application=app, title=title, default_width=1200, default_height=800)
+        self.app_title, self.section = title, section
         data = os.path.join(GLib.get_user_data_dir(), "nubo-workspace")
         cache = os.path.join(GLib.get_user_cache_dir(), "nubo-workspace")
         # One folder for all four apps: this is what makes the sign-in shared.
@@ -48,7 +72,11 @@ class Window(Adw.ApplicationWindow):
         session.get_cookie_manager().set_persistent_storage(
             os.path.join(data, "cookies.sqlite"), WebKit.CookiePersistentStorage.SQLITE)
         session.connect("download-started", self.on_download)
-        self.view = WebKit.WebView(network_session=session)
+        content = WebKit.UserContentManager()
+        content.add_script(WebKit.UserScript.new(
+            RAIL_JS % section, WebKit.UserContentInjectedFrames.TOP_FRAME,
+            WebKit.UserScriptInjectionTime.END, None, None))
+        self.view = WebKit.WebView(network_session=session, user_content_manager=content)
         self.view.get_settings().set_property("enable-developer-extras", False)
         self.view.connect("decide-policy", self.on_policy)
         self.view.connect("create", self.on_create)
@@ -60,8 +88,30 @@ class Window(Adw.ApplicationWindow):
         view = Adw.ToolbarView(content=self.view)
         view.add_top_bar(header)
         self.set_content(view)
-        self.view.connect("notify::title", lambda v, _p: self.set_title(v.get_title() or title))
+        self.target, self.came_from_login = url, False
+        self.view.connect("notify::uri", self.on_uri)
+        self.view.connect("notify::title", lambda v, _p: self.set_title(
+            (v.get_title() or title).replace("Nubo Email", title)))
         self.view.load_uri(url)
+        # Developer aid: NUBO_WEBAPP_EVAL=<javascript> prints its result once the page has loaded.
+        probe = os.environ.get("NUBO_WEBAPP_EVAL")
+        if probe:
+            self.view.connect("load-changed", lambda v, ev: ev == WebKit.LoadEvent.FINISHED and GLib.timeout_add(
+                8000, lambda: v.evaluate_javascript(probe, -1, None, None, None,
+                                                    lambda vv, r: print(vv.evaluate_javascript_finish(r).to_string(), flush=True)) or False))
+
+    def on_uri(self, view, _param):
+        # Bulwark always lands on the inbox after signing in; send the person to
+        # the section this app is for.
+        uri = view.get_uri() or ""
+        path = GLib.Uri.parse(uri, GLib.UriFlags.NONE).get_path() if uri.startswith("http") else ""
+        if "/login" in path:
+            self.came_from_login = True
+        elif self.came_from_login and path:
+            self.came_from_login = False
+            want = GLib.Uri.parse(self.target, GLib.UriFlags.NONE).get_path()
+            if self.section != "mail" and not path.rstrip("/").endswith(want):
+                view.load_uri(self.target)
 
     def on_policy(self, view, decision, kind):
         if kind in (WebKit.PolicyDecisionType.NAVIGATION_ACTION, WebKit.PolicyDecisionType.NEW_WINDOW_ACTION):
@@ -98,14 +148,14 @@ class Window(Adw.ApplicationWindow):
 
 class App(Adw.Application):
     def __init__(self, key):
-        title, path, app_id = APPS[key]
+        title, path, app_id, section = APPS[key]
         super().__init__(application_id=app_id, flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
-        self.title, self.url = title, BASE + path
+        self.title, self.url, self.section = title, BASE + path, section
         self.window = None
 
     def do_activate(self):
         if not self.window:
-            self.window = Window(self, self.title, self.url)
+            self.window = Window(self, self.title, self.url, self.section)
         self.window.present()
 
 
