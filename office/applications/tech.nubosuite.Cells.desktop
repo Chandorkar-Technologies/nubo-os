@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Nubo Sheets
+Name=Nubo Cells
 Comment=Work with tables, numbers and charts
-Exec=nubo-office sheets %F
-Icon=tech.nubosuite.Sheets
+Exec=nubo-office cells %F
+Icon=tech.nubosuite.Cells
 Terminal=false
 Categories=Office;Spreadsheet;
 MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel;application/vnd.oasis.opendocument.spreadsheet;text/csv;

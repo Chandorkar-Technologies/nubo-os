@@ -68,7 +68,7 @@ Calendar, Photos, Music (Spotify, grey), Notes, Nubo Search, App Store, Settings
 | Chat, calls | Nubo Chat, Nubo Meet (web app) | none |
 | Browser | Firefox (Flathub) | Ubuntu's Firefox snap |
 | Calendar, Contacts | Calendar, Contacts (GNOME, renamed) wired to the Nubo account | |
-| Documents | Collabora Office as Nubo Pages, Sheets, Slides and Draw (package nubo-office) | LibreOffice |
+| Documents | Collabora Office as Nubo Write, Cells, Present and Draw (package nubo-office) | LibreOffice |
 | Photos | Nubo Photos (new) over Loupe for viewing | Shotwell |
 | Music, video | Spotify (grey), VLC (grey) | Rhythmbox, Totem |
 | Notes, reminders | Nubo Notes (new), Reminders | |

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Nubo Slides
+Name=Nubo Present
 Comment=Make presentations
-Exec=nubo-office slides %F
-Icon=tech.nubosuite.Slides
+Exec=nubo-office present %F
+Icon=tech.nubosuite.Present
 Terminal=false
 Categories=Office;Presentation;
 MimeType=application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.ms-powerpoint;application/vnd.oasis.opendocument.presentation;

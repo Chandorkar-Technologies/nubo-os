@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """nubo-office MODE [FILE...]: open one of the Nubo office apps.
 
-MODE is office (start centre), pages (documents), sheets (spreadsheets), slides
+MODE is office (start centre), write (documents), cells (spreadsheets), present
 (presentations) or draw (drawings). They are Collabora Office, which is
 downloaded from Flathub the first time one is opened.
 """
@@ -13,9 +13,9 @@ import sys
 APP = "com.collaboraoffice.Office"
 MODES = {
     "office": ("Nubo Office", []),
-    "pages": ("Nubo Pages", ["--writer"]),
-    "sheets": ("Nubo Sheets", ["--calc"]),
-    "slides": ("Nubo Slides", ["--impress"]),
+    "write": ("Nubo Write", ["--writer"]),
+    "cells": ("Nubo Cells", ["--calc"]),
+    "present": ("Nubo Present", ["--impress"]),
     "draw": ("Nubo Draw", ["--draw"]),
 }
 

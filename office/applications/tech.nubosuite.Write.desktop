@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Nubo Pages
+Name=Nubo Write
 Comment=Write letters, reports and documents
-Exec=nubo-office pages %F
-Icon=tech.nubosuite.Pages
+Exec=nubo-office write %F
+Icon=tech.nubosuite.Write
 Terminal=false
 Categories=Office;WordProcessor;
 MimeType=application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/msword;application/vnd.oasis.opendocument.text;application/rtf;text/rtf;

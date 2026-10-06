@@ -4,7 +4,14 @@ Status: plan and research (2026-10-06). Nothing is built yet.
 
 Goal: one office engine under Nubo names, used in two places:
 - the desktop apps in Nubo OS (today: Collabora Office from Flathub, renamed at launcher level only);
-- the document editor behind nubo.email (Collabora Online server, `office.nubo.email`).
+- the document editor behind nubo.email (`office.nubo.email`, which runs ONLYOFFICE today and
+  would move to our Collabora Online build).
+
+## Names (decided 2026-10-06)
+
+Suite **Nubo Office**; **Nubo Write** (documents), **Nubo Cells** (spreadsheets),
+**Nubo Present** (presentations), **Nubo Draw** (drawings). Ids `tech.nubosuite.Office|Write|Cells|Present|Draw`.
+Still to do before publishing: a trademark search for each name.
 
 ## What the licence and trademark rules say
 

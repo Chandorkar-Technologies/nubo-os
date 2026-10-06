@@ -23,7 +23,7 @@ web|https://www.instagram.com|Instagram|social|no
 web|https://web.telegram.org|Telegram Web|chat|no
 
 # Work
-# Collabora Office is presented as Nubo Pages, Sheets, Slides and Draw by the nubo-office package.
+# Collabora Office is presented as Nubo Write, Cells, Present and Draw by the nubo-office package.
 flatpak|md.obsidian.Obsidian|Obsidian|work|no
 flatpak|com.visualstudio.code|VS Code|dev|no
 flatpak|com.dropbox.Client|Dropbox|work|no

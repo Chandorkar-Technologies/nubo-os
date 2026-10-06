@@ -137,7 +137,7 @@ Description: Nubo Mail, Calendar, Contacts and Drive
 Package: nubo-office
 Architecture: all
 Depends: python3, nubo-apps (= ${source:Version}), flatpak, zenity, hicolor-icon-theme, ${misc:Depends}
-Description: Nubo Pages, Sheets, Slides and Draw
+Description: Nubo Write, Cells, Present and Draw
  The Collabora Office suite under Nubo names: one launcher each for documents,
  spreadsheets, presentations and drawings. The suite itself is downloaded from
  Flathub the first time one of them is opened. Its About window keeps the
