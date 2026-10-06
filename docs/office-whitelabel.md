@@ -88,9 +88,20 @@ artwork the unbranded defaults from the repository apply.
 **Must stay:** copyright headers ("the Collabora Online contributors"), `COPYING*`,
 `THIRDPARTYLICENSES`, `CODA-THIRDPARTYLICENSES.html`, and a credit line in About.
 
+## Rebrand script
+
+`office/rebrand.py CHECKOUT --version X` applies the names to a checkout (tested on a copy of
+`coda-26.04.3.3-1`: 103 lines, 12 files renamed, 9 icons redrawn, Flatpak manifest switched to
+our brand pack, our own AppStream file). `--report` lists what still names Collabora or
+LibreOffice. Known leftovers to handle next: the first-run welcome slides
+(`browser/welcome/welcome.html`, text about Collabora), server-admin audit links, and
+internal install folder names (`/app/collaboraoffice`), which users never see.
+The script is run on every upstream release we take, so the rebrand is a script plus our brand pack,
+not a fork to maintain by hand.
+
 ## Build machine
 
-VM 301 has 4 cores and 8 GB RAM: enough to read and change the source, not to build the engine.
+VM 301 now has 8 cores, 24 GB RAM, 138 GB disk (2026-10-07). The first engine build started there with `--with-product-name="Nubo Office" --with-vendor="Nubo"`.
 The first engine build is LibreOffice-sized. Measure on the first run; plan 16+ cores, 32+ GB RAM, 150 GB disk.
 
 ## Plan
