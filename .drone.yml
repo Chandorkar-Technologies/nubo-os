@@ -10,7 +10,7 @@ type: docker
 name: debs-amd64
 
 platform: {os: linux, arch: amd64}
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
 
 steps:
   - name: build
@@ -38,7 +38,7 @@ type: docker
 name: publish
 
 platform: {os: linux, arch: amd64}
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
 depends_on: [debs-amd64]
 
 steps:
@@ -68,7 +68,7 @@ name: images-amd64
 
 platform: {os: linux, arch: amd64}
 node: {nubo-builder: "true"}
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
 depends_on: [debs-amd64, publish]
 
 steps:
@@ -88,7 +88,7 @@ name: images-arm64
 platform: {os: linux, arch: arm64}
 node: {nubo-builder: "true"}
 # Stays pending until an arm64 runner is registered; nothing else waits for it yet.
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
 depends_on: [debs-amd64, publish]
 
 steps:
@@ -109,7 +109,7 @@ name: release-images
 
 platform: {os: linux, arch: amd64}
 node: {nubo-builder: "true"}
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
 # images-arm64 needs an arm64 runner (ci/setup-build-vm.sh on an arm64 machine). Until one
 # exists it is not waited for; add it back here once it runs.
 depends_on: [images-amd64]
@@ -126,12 +126,37 @@ steps:
       - ci/publish-release.sh "${DRONE_TAG#v}"
 
 ---
+# Nubo Office: Collabora's code built under Nubo names as a Flatpak, published to our own
+# Flatpak repository. Slow (hours), so it has its own tag: office-26.04.3.3-1 builds upstream
+# tag coda-26.04.3.3-1 as 26.04.3.3-nubo1. See docs/office-whitelabel.md.
+kind: pipeline
+type: exec
+name: office-amd64
+
+platform: {os: linux, arch: amd64}
+node: {nubo-builder: "true"}
+trigger: {event: [tag], ref: {include: ['refs/tags/office-*']}}
+
+steps:
+  - name: build
+    environment:
+      GPG_KEY: {from_secret: nubo_gpg_private_key}
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - echo "$GPG_KEY" | gpg --batch --import
+      - export GPG_KEY_ID="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')"
+      - REL="${DRONE_TAG#office-}"
+      - ci/build-office.sh "coda-${REL}" "${REL%-*}-nubo${REL##*-}"
+
+---
 kind: pipeline
 type: docker
 name: cleanup
 
 platform: {os: linux, arch: amd64}
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
 depends_on: [publish, release-images]
 
 steps:

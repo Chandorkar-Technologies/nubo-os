@@ -120,6 +120,9 @@ def flatpak_manifest(root, brand_dir):
     if os.path.isdir(dest):
         shutil.rmtree(dest)
     shutil.copytree(brand_dir, dest)
+    # The engine is built inside the Flatpak: give it our product name and vendor.
+    text = text.replace("--with-distro=CPLinuxQtFlatpak",
+                        "--with-distro=CPLinuxQtFlatpak --with-product-name='Nubo Office' --with-vendor=Nubo")
     start = text.index('"name": "collabora-office-branding"')
     start = text.rindex("{", 0, start)
     end = text.index("\n    }\n", start) + len("\n    }\n")

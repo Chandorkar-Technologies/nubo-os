@@ -17,7 +17,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -q
 apt-get install -y -q ca-certificates curl git rsync xz-utils xorriso squashfs-tools \
-  qemu-utils libguestfs-tools linux-image-generic buildah mktorrent rclone gnupg \
+  qemu-utils libguestfs-tools linux-image-generic buildah mktorrent rclone gnupg flatpak flatpak-builder \
   python3 nodejs npm build-essential unzip jq cloud-guest-utils
 # libguestfs needs a readable kernel to start its helper machine.
 chmod 0644 /boot/vmlinuz-* 2>/dev/null || true

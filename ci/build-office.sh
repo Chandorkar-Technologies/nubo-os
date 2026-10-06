@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Build Nubo Office (Collabora's code under Nubo names) as a Flatpak and publish
+# it to our own Flatpak repository at archive.nubosuite.tech/flatpak.
+#
+# Usage: ci/build-office.sh UPSTREAM_TAG NUBO_VERSION
+#   UPSTREAM_TAG  Collabora's release tag, for example coda-26.04.3.3-1
+#   NUBO_VERSION  what we call it, for example 26.04.3.3-nubo1
+# Run as root on an amd64 build machine (see ci/setup-build-vm.sh). Takes hours: the
+# engine is LibreOffice-sized. Reuses work in WORK between runs (ccache, downloads).
+# Environment: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT; GPG_KEY_ID of a
+# secret key in the keyring (signs the repository); NO_UPLOAD=1 keeps the repo local.
+#
+# Not run end to end yet: the first run needs watching.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+ROOT="$PWD"
+TAG="${1:?upstream tag, for example coda-26.04.3.3-1}"
+VER="${2:?our version, for example 26.04.3.3-nubo1}"
+WORK="${WORK:-/var/tmp/nubo-office}"
+SRC="${WORK}/src"
+REPO="${WORK}/repo"
+APP_ID=tech.nubosuite.Office
+mkdir -p "${WORK}"
+export TMPDIR="${WORK}/tmp"; mkdir -p "${TMPDIR}"
+
+echo "==> Source ${TAG}"
+rm -rf "${SRC}"
+git clone --depth 1 --branch "${TAG}" https://github.com/CollaboraOnline/online.mirror "${SRC}"
+
+echo "==> Applying the Nubo names"
+python3 office/rebrand.py "${SRC}" --version "${VER}" | tail -4
+if grep -rIl "Collabora Online Development Edition" "${SRC}/browser/src" "${SRC}/qt" >/dev/null 2>&1; then
+  echo "A Collabora product name is left in the interface; refusing to build." >&2
+  python3 office/rebrand.py "${SRC}" --report | tail -20 >&2
+  exit 1
+fi
+
+echo "==> Flatpak runtimes"
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install -y --noninteractive flathub org.kde.Sdk//6.10 org.kde.Platform//6.10 \
+  org.freedesktop.Sdk.Extension.node20//25.08 io.qt.qtwebengine.BaseApp//6.10
+
+echo "==> Building ${APP_ID} (the long step)"
+SIGN=(); [[ -n "${GPG_KEY_ID:-}" ]] && SIGN=(--gpg-sign="${GPG_KEY_ID}")
+(cd "${SRC}" && flatpak-builder --force-clean --ccache --repo="${REPO}" "${SIGN[@]}" \
+  --default-branch=stable "${WORK}/build" "qt/flatpak/${APP_ID}.json")
+flatpak build-update-repo "${SIGN[@]}" --generate-static-deltas --prune "${REPO}"
+
+echo "==> Repository description"
+cat >"${REPO}/nubo.flatpakrepo" <<REPOFILE
+[Flatpak Repo]
+Title=Nubo OS
+Url=https://archive.nubosuite.tech/flatpak/
+Homepage=https://os.nubosuite.tech
+Comment=Apps built by Nubo OS
+$( [[ -n "${GPG_KEY_ID:-}" ]] && echo "GPGKey=$(gpg --export "${GPG_KEY_ID}" | base64 -w0)" )
+REPOFILE
+
+if [[ -z "${NO_UPLOAD:-}" ]]; then
+  . ci/rclone-env.sh
+  echo "==> Uploading to r2:${R2_BUCKET}/flatpak"
+  rclone sync "${REPO}" "r2:${R2_BUCKET}/flatpak" --fast-list --transfers 16 \
+    --header-upload "Cache-Control: public, max-age=300"
+  echo "Add it with: flatpak remote-add --if-not-exists nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo"
+fi
