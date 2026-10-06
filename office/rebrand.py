@@ -169,9 +169,9 @@ WELCOME = {
     "welcome-slide2-heading-1": "One suite, four apps",
     "welcome-slide2-heading-2": "Nubo Office",
     "welcome-slide2-content": "Write letters and reports, build spreadsheets, make presentations and draw diagrams, all in one place.",
-    "welcome-slide3-heading-1": "Part of Nubo OS",
-    "welcome-slide3-heading-2": '<a target="_blank" rel="noopener" href="%s">os.nubosuite.tech</a>' % HOME,
-    "welcome-slide3-content": 'Nubo Office is built on Collabora Online and LibreOffice technology. Read the source and report problems at <a target="_blank" rel="noopener" href="https://github.com/Chandorkar-Technologies/nubo-os">github.com/Chandorkar-Technologies/nubo-os</a>.',
+    "welcome-slide3-heading-1": "Work together",
+    "welcome-slide3-heading-2": "Comments and shared editing",
+    "welcome-slide3-content": "Leave comments, track changes and review other people's edits. With a Nubo server, several people can edit the same document at once.",
 }
 
 

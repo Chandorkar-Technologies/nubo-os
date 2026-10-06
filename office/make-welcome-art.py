@@ -2,7 +2,8 @@
 """Make the first-run welcome pictures for Nubo Office into office/brand/welcome/.
 
   slide1-left/center/right.png   our own app icons (Write, Cells, Present), no AI
-  slide2.png, slide3.png         illustrations from DeepInfra's image API
+  slide2.png                     illustration from DeepInfra's image API
+  slide3.png                     drawn here as SVG (two people editing one document), no AI
 
 The API key is read from DEEPINFRA_API_KEY, or from ~/.config/nubo-os/env (a line
 DEEPINFRA_API_KEY=...). It is never printed or written anywhere else.
@@ -32,8 +33,32 @@ PICTURES = {
     "slide2.png": ("three overlapping app windows in a tidy fan arrangement, centered: on the left a text document with "
                    "heading and paragraph lines, in the middle a spreadsheet with a small bar chart, on the right a presentation "
                    "slide with a donut chart, rounded corners, soft shadows, front view, " + STYLE, 1024, 512),
-    "slide3.png": ("a single soft cloud over a simple desktop window, symbol of an open, private computer, " + STYLE, 768, 512),
 }
+
+
+SLIDE3 = """<svg xmlns="http://www.w3.org/2000/svg" width="768" height="512" viewBox="0 0 768 512">
+<defs><filter id="sh" x="-30%" y="-30%" width="160%" height="190%"><feGaussianBlur in="SourceAlpha" stdDeviation="12"/><feOffset dy="10"/><feComponentTransfer><feFuncA type="linear" slope=".18"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<g filter="url(#sh)"><rect x="96" y="36" width="440" height="420" rx="24" fill="#fff"/></g>
+<rect x="148" y="86" width="190" height="26" rx="13" fill="#23262e"/>
+<g fill="#d3d8e3"><rect x="148" y="146" width="336" height="16" rx="8"/><rect x="148" y="186" width="300" height="16" rx="8"/><rect x="148" y="226" width="336" height="16" rx="8"/><rect x="148" y="266" width="260" height="16" rx="8"/><rect x="148" y="306" width="336" height="16" rx="8"/><rect x="148" y="346" width="200" height="16" rx="8"/><rect x="148" y="386" width="290" height="16" rx="8"/></g>
+<rect x="148" y="182" width="190" height="24" rx="6" fill="#2f6fde" opacity=".28"/>
+<rect x="148" y="302" width="150" height="24" rx="6" fill="#f59a2e" opacity=".32"/>
+<g><rect x="338" y="174" width="3" height="40" rx="1.5" fill="#2f6fde"/><rect x="341" y="150" width="62" height="28" rx="9" fill="#2f6fde"/><text x="372" y="169.5" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">Asha</text></g>
+<g><rect x="298" y="294" width="3" height="40" rx="1.5" fill="#f59a2e"/><rect x="301" y="270" width="58" height="28" rx="9" fill="#f59a2e"/><text x="330" y="289.5" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">Ravi</text></g>
+<g filter="url(#sh)"><path d="M560 120h120a22 22 0 0 1 22 22v62a22 22 0 0 1-22 22h-82l-26 24v-24h-12a22 22 0 0 1-22-22v-62a22 22 0 0 1 22-22z" fill="#fff"/></g>
+<circle cx="590" cy="150" r="13" fill="#f59a2e"/><g fill="#d3d8e3"><rect x="612" y="143" width="62" height="10" rx="5"/><rect x="578" y="176" width="96" height="10" rx="5"/><rect x="578" y="194" width="70" height="10" rx="5"/></g>
+<g filter="url(#sh)"><rect x="560" y="278" width="142" height="56" rx="18" fill="#fff"/></g>
+<circle cx="588" cy="306" r="14" fill="#2f6fde"/><path d="M581 306l5 5 9-10" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><g fill="#d3d8e3"><rect x="610" y="296" width="70" height="9" rx="4.5"/><rect x="610" y="311" width="46" height="9" rx="4.5"/></g>
+</svg>
+"""
+
+
+def slide3():
+    svg = os.path.join(OUT, "slide3.svg")
+    open(svg, "w").write(SLIDE3)
+    subprocess.run(["rsvg-convert", "-w", "768", "-h", "512", svg, "-o", os.path.join(OUT, "slide3.png")], check=True)
+    os.remove(svg)
+    print("made slide3.png")
 
 
 def key():
@@ -78,6 +103,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     if "--ai-only" not in sys.argv:
         icons()
+        slide3()
     if "--no-ai" in sys.argv:
         return 0
     token = key()
