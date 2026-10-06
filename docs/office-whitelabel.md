@@ -47,16 +47,51 @@ SDK theming page, LibreOffice branding notes. Sources at the end.
    with real changes is more likely to be accepted than a renamed launcher, but there is
    no promise. Our own Flatpak repository (archive.nubosuite.tech/flatpak) needs no review.
 
-## What we have not read yet (must be done before the first build)
+## What the source shows (read 2026-10-07, tag `coda-26.04.3.3-1`, the version Flathub ships)
 
-- The monorepo (`gerrit.collaboraoffice.com/online`, mirror `CollaboraOnline/online.mirror`)
-  has `engine/` (the former Collabora Office core) and `qt/` (the desktop app). The public
-  build page covers only the web server (CODE). **The desktop build and its branding
-  resources are not documented there.** We read the `qt/` and `engine/` sources and the
-  branding folders directly, then write the exact steps here.
-- Where the product name appears in the web interface (browser/ folder), in desktop files,
-  in installer/AppStream data, and in translations. A full search for "Collabora" and
-  "LibreOffice" in the checkout gives the list of strings and images to change.
+Checked out on VM 301 at `~/src/collabora` (2.3 GB, `engine/` is part of it).
+
+**The desktop build is documented in `qt/README.md`:**
+1. Engine: `cd engine && ./autogen.sh --with-distro=CPLinux-LOKit --without-package-format --with-system-nss && make`
+2. App: from the top, `./autogen.sh && ./configure --enable-qtapp && make -j$(nproc)` gives `qt/coda-qt`.
+3. Flatpak: `flatpak-builder ... qt/flatpak/com.collaboraoffice.Office.json` (needs the KDE 6.10
+   runtime, node20 extension and the Qt WebEngine base app).
+4. Needs GCC 13+ or Clang 17+, Qt6 WebEngine, and optionally the translations repository.
+
+**Built-in branding hooks (use these first):**
+- Engine configure: `--with-product-name='Nubo Office'` and `--with-vendor='...'`
+  (the name in the About window and in saved files), `--with-branding=<dir>` (intro, about picture).
+- Web interface: `--with-app-branding=<dir>` with `branding.css` and files it references;
+  the web server reads `user_interface.brandProductName` from `coolwsd.xml`
+  (this is what the editor shows in titles, clipboard text, error texts).
+- Without a brand pack the interface says "Collabora Online Development Edition (unbranded)".
+
+**The brand pack is proprietary.** Flatpak downloads `collabora-office-brand-26.04.3.3.tar.gz`
+(145 files: `branding.js`, `branding*.css`, 81 images, 53 theme files, a welcome slideshow).
+Its files are marked "(C) Collabora Productivity 2026, All Rights Reserved". We must not copy
+it. We write our own pack with the same layout (`office/brand/`), and where we have no
+artwork the unbranded defaults from the repository apply.
+
+**Places that name Collabora and need our changes** (counts are files outside translations):
+- `qt/` (44 files): app id and D-Bus name `com.collaboraoffice.Office` (DBusService.cpp), window
+  icon name and description text (coda-qt.cpp), the `.desktop`, `.metainfo.xml` (name, summary,
+  homepage, screenshots), `Makefile.am` icon file names, the Flatpak manifest.
+- `browser/src`: fallback names "Collabora Online Development Edition (unbranded)" (Socket.ts,
+  Toolbar.js, Clipboard.js, ProgressOverlay.js, About dialog), help and forum links
+  (Control.Menubar.ts, PresenterConsole.js, FormulaErrorHelpSection.ts, server-audit dialogs),
+  update message "Your Collabora Online server needs updating" (Map.VersionBar.js), texts in
+  Control.Zotero.js and errormessages.js, `browser/html/*.html` titles, `browser/admin/*`.
+- `engine/`: product name through configure; icon theme and intro images through the branding folder.
+- Translations: the interface files mention the name in every language; the translations
+  repository needs a search and replace as well.
+
+**Must stay:** copyright headers ("the Collabora Online contributors"), `COPYING*`,
+`THIRDPARTYLICENSES`, `CODA-THIRDPARTYLICENSES.html`, and a credit line in About.
+
+## Build machine
+
+VM 301 has 4 cores and 8 GB RAM: enough to read and change the source, not to build the engine.
+The first engine build is LibreOffice-sized. Measure on the first run; plan 16+ cores, 32+ GB RAM, 150 GB disk.
 
 ## Plan
 

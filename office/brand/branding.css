@@ -1,0 +1,9 @@
+/* Nubo Office brand pack: written for Nubo OS. */
+
+.img-coda-app-logo {
+  background: url("images/full-logo.svg") no-repeat center !important;
+}
+
+html[data-theme=dark] .img-coda-app-logo {
+  background: url("images/full-logo-white.svg") no-repeat center !important;
+}
