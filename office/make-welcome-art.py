@@ -8,7 +8,7 @@ The API key is read from DEEPINFRA_API_KEY, or from ~/.config/nubo-os/env (a lin
 DEEPINFRA_API_KEY=...). It is never printed or written anywhere else.
 Needs rsvg-convert for the icons. Run on the build VM, or any machine that has it.
 
-Usage: make-welcome-art.py [--no-ai | --ai-only]
+Usage: make-welcome-art.py [--no-ai | --ai-only] [--only slideN.png]
        DEEPINFRA_MODEL=... overrides the model (default black-forest-labs/FLUX-1-schnell).
 """
 
@@ -29,8 +29,9 @@ STYLE = ("minimal flat vector illustration, calm, soft monochrome greys with one
          "lots of empty space, clean shapes, no text, no letters, no logos, no people's faces")
 PICTURES = {
     # file: (prompt, width, height) - sizes are the ones the welcome page shows, doubled for sharp screens
-    "slide2.png": ("floating abstract documents, a spreadsheet grid, a presentation slide and a pencil drawing "
-                   "arranged together like an open workspace, " + STYLE, 1024, 512),
+    "slide2.png": ("three overlapping app windows in a tidy fan arrangement, centered: on the left a text document with "
+                   "heading and paragraph lines, in the middle a spreadsheet with a small bar chart, on the right a presentation "
+                   "slide with a donut chart, rounded corners, soft shadows, front view, " + STYLE, 1024, 512),
     "slide3.png": ("a single soft cloud over a simple desktop window, symbol of an open, private computer, " + STYLE, 768, 512),
 }
 
@@ -83,7 +84,8 @@ def main():
     if not token:
         print("No DEEPINFRA_API_KEY: slide2.png and slide3.png not made.", file=sys.stderr)
         return 1
-    ok = all([generate(n, p, w, h, token) for n, (p, w, h) in PICTURES.items()])
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
+    ok = all([generate(n, p, w, h, token) for n, (p, w, h) in PICTURES.items() if not only or n == only])
     return 0 if ok else 1
 
 
