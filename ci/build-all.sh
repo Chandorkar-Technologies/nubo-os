@@ -29,7 +29,10 @@ GROUPS_WANTED=("$@"); [[ ${#GROUPS_WANTED[@]} -gt 0 ]] || GROUPS_WANTED=(iso-ser
 if [[ -z "${NO_UPLOAD:-}" ]]; then . ci/rclone-env.sh; fi
 
 OUT="${OUT:-${ROOT}/out/${VERSION}}"; WORKROOT="${WORKROOT:-/var/tmp/nubo-build}"
-mkdir -p "${OUT}" "${WORKROOT}/src" "${WORKROOT}/debs"
+mkdir -p "${OUT}" "${WORKROOT}/src" "${WORKROOT}/debs" "${WORKROOT}/tmp"
+# Temporary files go on the big disk: /tmp can be a small RAM disk, and image
+# conversion and libguestfs write several gigabytes there.
+export TMPDIR="${WORKROOT}/tmp" LIBGUESTFS_TMPDIR="${WORKROOT}/tmp" LIBGUESTFS_CACHEDIR="${WORKROOT}/tmp"
 FAILED=()
 # The biggest single step (the desktop image) needs about 35 GB; refuse to start without it.
 NEED_GB="${NEED_GB:-40}"

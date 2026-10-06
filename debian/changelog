@@ -1,3 +1,16 @@
+nubo-os (0.8.0~beta13) resolute; urgency=medium
+
+  * Nubo Mail, Calendar, Contacts and Drive: separate windows over the Nubo
+    workspace (package nubo-workspace), one shared sign-in.
+  * Nubo Setup adds the account to GNOME Online Accounts (standard IMAP/SMTP and
+    WebDAV accounts), so Mail, Calendar and Contacts keep an offline copy.
+  * Nubo Office: Nubo Write, Cells, Present and Draw launchers for Collabora
+    Office (package nubo-office), downloaded on first use.
+  * Image builds: temporary files on the build disk (fixes disk images running
+    out of space) and a fix for the installer app build.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Tue, 06 Oct 2026 23:40:00 +0530
+
 nubo-os (0.8.0~beta12) resolute; urgency=medium
 
   * Desktop installer image builds the Nubo installer app itself, so no

@@ -56,7 +56,8 @@ cd apps/ubuntu_bootstrap
 # Texts that name the product without going through the flavour: the window
 # title (every language), and the English strings that still say Ubuntu.
 sed -i -E 's/^(  "appTitle": ).*/\1"Nubo OS Installer",/' lib/l10n/*.arb
-sed -i -E '/^  "(landscapeConfirmPageSuccessInfoTitle|notEnoughDiskSpaceUbuntu)"/ s/Ubuntu/Nubo OS/g' lib/l10n/ubuntu_bootstrap_en.arb
+# Only the text after the key: the key itself (notEnoughDiskSpaceUbuntu) must stay a valid name.
+sed -i -E '/^  "(landscapeConfirmPageSuccessInfoTitle|notEnoughDiskSpaceUbuntu)":/ s/(": ".*)Ubuntu/\1Nubo OS/' lib/l10n/ubuntu_bootstrap_en.arb
 flutter gen-l10n >/dev/null
 flutter build linux --release >/dev/null
 bundle="$(readlink -f "$(ls -d build/linux/*/release/bundle)")"
