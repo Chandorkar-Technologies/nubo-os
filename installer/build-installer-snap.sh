@@ -53,10 +53,16 @@ grep -q "ubuntu('${PRODUCT_NAME}')" "${flavor_dir}/lib/src/ubuntu_flavor.dart"
 
 echo "==> Building the app"
 cd apps/ubuntu_bootstrap
+# Texts that name the product without going through the flavour: the window
+# title (every language), and the English strings that still say Ubuntu.
+sed -i -E 's/^(  "appTitle": ).*/\1"Nubo OS Installer",/' lib/l10n/*.arb
+sed -i -E '/^  "(landscapeConfirmPageSuccessInfoTitle|notEnoughDiskSpaceUbuntu)"/ s/Ubuntu/Nubo OS/g' lib/l10n/ubuntu_bootstrap_en.arb
+flutter gen-l10n >/dev/null
 flutter build linux --release >/dev/null
 bundle="$(readlink -f "$(ls -d build/linux/*/release/bundle)")"
 # (grep -q on a pipe would stop strings early and trip pipefail.)
 grep -q "${PRODUCT_NAME}" <(strings "${bundle}/lib/libapp.so")
+if strings "${bundle}/lib/libapp.so" | grep -q "Ubuntu Desktop Installer"; then echo "Installer still carries the Ubuntu window title." >&2; exit 1; fi
 
 echo "==> Repacking the snap"
 cd "${WORK}"
