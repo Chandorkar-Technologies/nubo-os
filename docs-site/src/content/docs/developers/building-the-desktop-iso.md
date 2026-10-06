@@ -37,7 +37,7 @@ sudo ARCH=amd64 iso/build-iso.sh UBUNTU_ISO NUBO_DEBS_DIR OUTPUT_ISO
 |---|---|---|
 | `ARCH` | `dpkg --print-architecture` | Target architecture; used in the volume name and the disc info line. |
 | `WORK` | `/var/tmp/nubo-iso` | Work directory. The script deletes and recreates it. |
-| `INSTALLER_SNAP` | unset | Path to a rebuilt installer snap (see `installer/build-installer-snap.sh`). When set, it replaces Ubuntu's installer app on the media. |
+| `INSTALLER_SNAP` | unset | Path to a rebuilt installer snap. Unset: the script builds one with `installer/build-installer-snap.sh` (needs Flutter's prerequisites, git and network). `none`: keep Ubuntu's installer app. |
 
 ## Steps
 
@@ -110,7 +110,7 @@ One detail to keep: `.disk/info` must contain a quoted codename. The installer t
 - **Package installation in the live session failed.** Read the lines the script prints. A conflict usually means a server package is in the directory; keep only desktop packages there. (`nubo-server-core` conflicts with `nubo-branding`.)
 - **"Rebuilt initramfs has no UUID file" or "lacks the live-boot scripts".** The initramfs was built in a state the script did not expect. Check that the live layer contains the kernel modules for one kernel and that the stubs were unmounted (`umount` of `update-initramfs` happens before the build).
 - **Mounts left behind after an error.** The script cleans up on exit with `umount -l`. If a run was killed, check `mount | grep nubo-iso` and unmount by hand before you start again.
-- **The installer shows "Ubuntu" in its title.** That text is compiled into the installer app. Build the Nubo installer snap with `installer/build-installer-snap.sh` and pass it as `INSTALLER_SNAP`.
+- **The installer shows "Ubuntu" in its title.** That text is compiled into the installer app. The image was built with `INSTALLER_SNAP=none`, or by a script version before the build did this itself. Rebuild the image.
 
 ## See also
 

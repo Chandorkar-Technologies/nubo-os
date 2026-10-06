@@ -172,6 +172,20 @@ rm -rf "${WORK}/live/var/lib/initramfs-tools"
 enter_finish "${WORK}/live-root"
 umount "${WORK}/live-root"
 
+# Without the rebuilt installer app every screen says "Ubuntu", so build it
+# here unless one was handed in. INSTALLER_SNAP=none keeps Ubuntu's own app.
+if [[ -z "${INSTALLER_SNAP:-}" ]]; then
+  orig_snap="$(ls "${WORK}"/live/var/lib/snapd/seed/snaps/ubuntu-desktop-bootstrap_*.snap 2>/dev/null | head -1 || true)"
+  if [[ -n "${orig_snap}" ]]; then
+    echo "==> Building the Nubo installer app (slow the first time)"
+    INSTALLER_SNAP="${WORK}/nubo-installer.snap"
+    "${HERE}/../installer/build-installer-snap.sh" "${orig_snap}" "${INSTALLER_SNAP}"
+  fi
+fi
+if [[ "${INSTALLER_SNAP:-}" == none ]]; then
+  INSTALLER_SNAP=
+fi
+
 if [[ -n "${INSTALLER_SNAP:-}" ]]; then
   echo "==> Replacing the installer app with the Nubo build"
   # The live session has this snap installed already, so swapping the file
