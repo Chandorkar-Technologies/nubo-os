@@ -1,78 +1,115 @@
 {
-  "version": "0.8.0-beta11",
-  "desktop": null,
-  "server": [
+ "channels": {
+  "stable": null,
+  "beta": {
+   "version": "0.8.0-beta11",
+   "generated": null,
+   "images": [
     {
-      "flavour": "server",
-      "name": "Server",
-      "arch": "amd64",
-      "file": "nubo-os-server-0.8.0-beta11-amd64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-server-0.8.0-beta11-amd64.iso",
-      "size": 2918055936,
-      "sha256": "dd6cbcc3c40987f69e0860e10365c00e8d0d9871f1bd99f1c254f682c7653a69"
+     "flavour": "server",
+     "name": "Server",
+     "arch": "amd64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-server-0.8.0-beta11-amd64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-server-0.8.0-beta11-amd64.iso",
+     "size": 2918055936,
+     "sha256": "dd6cbcc3c40987f69e0860e10365c00e8d0d9871f1bd99f1c254f682c7653a69",
+     "torrent": null
     },
     {
-      "flavour": "server",
-      "name": "Server",
-      "arch": "arm64",
-      "file": "nubo-os-server-0.8.0-beta11-arm64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-server-0.8.0-beta11-arm64.iso",
-      "size": 3066757120,
-      "sha256": "ad96177836038aff6c71ec4320986b5b1699875016316f32d619871ca871dfbd"
+     "flavour": "server",
+     "name": "Server",
+     "arch": "arm64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-server-0.8.0-beta11-arm64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-server-0.8.0-beta11-arm64.iso",
+     "size": 3066757120,
+     "sha256": "ad96177836038aff6c71ec4320986b5b1699875016316f32d619871ca871dfbd",
+     "torrent": null
     },
     {
-      "flavour": "virt",
-      "name": "Virtualization",
-      "arch": "amd64",
-      "file": "nubo-os-virt-0.8.0-beta11-amd64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-virt-0.8.0-beta11-amd64.iso",
-      "size": 2918055936,
-      "sha256": "4ffcd3be30dfcf767a6a6250f72d2d805f0310ef2050d90259836732b87aebf4"
+     "flavour": "virt",
+     "name": "Virtualization",
+     "arch": "amd64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-virt-0.8.0-beta11-amd64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-virt-0.8.0-beta11-amd64.iso",
+     "size": 2918055936,
+     "sha256": "4ffcd3be30dfcf767a6a6250f72d2d805f0310ef2050d90259836732b87aebf4",
+     "torrent": null
     },
     {
-      "flavour": "virt",
-      "name": "Virtualization",
-      "arch": "arm64",
-      "file": "nubo-os-virt-0.8.0-beta11-arm64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-virt-0.8.0-beta11-arm64.iso",
-      "size": 3066757120,
-      "sha256": "da925c02c7aeb1ff7af1502a1575bc0cb25837e61752f060e20a124c5dae9583"
+     "flavour": "virt",
+     "name": "Virtualization",
+     "arch": "arm64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-virt-0.8.0-beta11-arm64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-virt-0.8.0-beta11-arm64.iso",
+     "size": 3066757120,
+     "sha256": "da925c02c7aeb1ff7af1502a1575bc0cb25837e61752f060e20a124c5dae9583",
+     "torrent": null
     },
     {
-      "flavour": "containers",
-      "name": "Containers",
-      "arch": "amd64",
-      "file": "nubo-os-containers-0.8.0-beta11-amd64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-containers-0.8.0-beta11-amd64.iso",
-      "size": 2918055936,
-      "sha256": "9b913e32f535233a7ffe59f51e86af2514105a52f547e061493a7ca3e3945829"
+     "flavour": "containers",
+     "name": "Containers",
+     "arch": "amd64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-containers-0.8.0-beta11-amd64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-containers-0.8.0-beta11-amd64.iso",
+     "size": 2918055936,
+     "sha256": "9b913e32f535233a7ffe59f51e86af2514105a52f547e061493a7ca3e3945829",
+     "torrent": null
     },
     {
-      "flavour": "containers",
-      "name": "Containers",
-      "arch": "arm64",
-      "file": "nubo-os-containers-0.8.0-beta11-arm64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-containers-0.8.0-beta11-arm64.iso",
-      "size": 3066757120,
-      "sha256": "a397ffb48d4915a6db918317a7c7a17f6d6e9c4b825fcc0fcb438072cd54a6fe"
+     "flavour": "containers",
+     "name": "Containers",
+     "arch": "arm64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-containers-0.8.0-beta11-arm64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-containers-0.8.0-beta11-arm64.iso",
+     "size": 3066757120,
+     "sha256": "a397ffb48d4915a6db918317a7c7a17f6d6e9c4b825fcc0fcb438072cd54a6fe",
+     "torrent": null
     },
     {
-      "flavour": "edge",
-      "name": "Edge",
-      "arch": "amd64",
-      "file": "nubo-os-edge-0.8.0-beta11-amd64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-edge-0.8.0-beta11-amd64.iso",
-      "size": 2918055936,
-      "sha256": "c10cb3f8999d1aa1f530e2379d96c586c56b3e91d37519ad13f6f9bfac099f18"
+     "flavour": "edge",
+     "name": "Edge",
+     "arch": "amd64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-edge-0.8.0-beta11-amd64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-edge-0.8.0-beta11-amd64.iso",
+     "size": 2918055936,
+     "sha256": "c10cb3f8999d1aa1f530e2379d96c586c56b3e91d37519ad13f6f9bfac099f18",
+     "torrent": null
     },
     {
-      "flavour": "edge",
-      "name": "Edge",
-      "arch": "arm64",
-      "file": "nubo-os-edge-0.8.0-beta11-arm64.iso",
-      "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-edge-0.8.0-beta11-arm64.iso",
-      "size": 3066757120,
-      "sha256": "123db59cd314e05e31376829e45c65687f8b367f7854864069f62ff8f2b331c0"
+     "flavour": "edge",
+     "name": "Edge",
+     "arch": "arm64",
+     "format": "iso",
+     "label": "ISO installer",
+     "kind": "installer",
+     "file": "nubo-os-edge-0.8.0-beta11-arm64.iso",
+     "url": "https://archive.nubosuite.tech/iso/0.8.0-beta11/nubo-os-edge-0.8.0-beta11-arm64.iso",
+     "size": 3066757120,
+     "sha256": "123db59cd314e05e31376829e45c65687f8b367f7854864069f62ff8f2b331c0",
+     "torrent": null
     }
-  ]
+   ]
+  }
+ }
 }

@@ -1,22 +1,34 @@
 #!/usr/bin/env python3
-"""Write data/releases.json from the images published at archive.nubosuite.tech/iso/<version>/.
-Usage: make-releases.py 0.8.0-beta11 [--desktop-url URL --desktop-sha SHA --desktop-size BYTES]"""
-import json, sys, urllib.request
+"""Write data/releases.json from the two release channels at archive.nubosuite.tech/dl/channels/.
+Each channel file points at that release's manifest.json (written by ci/publish-release.sh).
+A channel with no release yet is null. If the channel files cannot be read at all, the
+existing data/releases.json is kept, so a network problem never blanks the download page.
+Usage: make-releases.py"""
+import json, os, sys, urllib.request, urllib.error
 UA = {'User-Agent': 'nubo-website-build/1.0'}
-ver = sys.argv[1]
-BASE = 'https://archive.nubosuite.tech/iso/' + ver
-FLAV = [('server','Server'),('virt','Virtualization'),('containers','Containers'),('edge','Edge')]
-out = {'version': ver, 'desktop': None, 'server': []}
-for key, name in FLAV:
-    for arch in ('amd64','arm64'):
-        f = f'nubo-os-{key}-{ver}-{arch}.iso'
-        url = f'{BASE}/{f}'
-        try:
-            r = urllib.request.urlopen(urllib.request.Request(url, method='HEAD', headers=UA), timeout=30)
-            size = int(r.headers['Content-Length'])
-            sha = urllib.request.urlopen(urllib.request.Request(url + '.sha256', headers=UA), timeout=30).read().decode().split()[0]
-        except Exception as e:
-            print('missing', f, e, file=sys.stderr); continue
-        out['server'].append({'flavour': key, 'name': name, 'arch': arch, 'file': f, 'url': url, 'size': size, 'sha256': sha})
-json.dump(out, open('data/releases.json', 'w'), indent=2)
-print(len(out['server']), 'images')
+BASE = 'https://archive.nubosuite.tech/dl/channels/'
+OUT = os.path.join(os.path.dirname(__file__), '..', 'data', 'releases.json')
+
+def get(url):
+    return json.load(urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=30))
+
+channels, reached = {}, False
+for ch in ('stable', 'beta'):
+    try:
+        ptr = get(BASE + ch + '.json'); reached = True
+        channels[ch] = get(ptr['manifest'])
+    except urllib.error.HTTPError as e:
+        if e.code == 404: reached = True; channels[ch] = None
+        else: print('cannot read', ch, e, file=sys.stderr)
+    except Exception as e:
+        print('cannot read', ch, e, file=sys.stderr)
+if not reached:
+    print('channels not reachable; keeping the current releases.json', file=sys.stderr); sys.exit(0)
+try:
+    old = json.load(open(OUT))['channels']
+except Exception:
+    old = {}
+for ch in ('stable', 'beta'):
+    channels.setdefault(ch, old.get(ch))
+json.dump({'channels': channels}, open(OUT, 'w'), indent=1)
+print({k: (v['version'], len(v['images'])) if v else None for k, v in channels.items()})

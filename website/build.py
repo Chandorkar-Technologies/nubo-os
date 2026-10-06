@@ -371,6 +371,13 @@ th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vert
 th{color:#fff;font-size:13px;letter-spacing:.04em;text-transform:uppercase;background:#0B0C10}
 td{color:var(--mu2)}tr:last-child td{border-bottom:0}
 td.sha{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;word-break:break-all;max-width:260px}
+.tabs input{position:absolute;opacity:0;pointer-events:none}
+.tabbar{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+.tabbar label{cursor:pointer;padding:10px 22px;border-radius:999px;border:1px solid rgba(255,255,255,.28);color:#d0d0d4;font-weight:600}
+#ch-stable:checked ~ .tabbar label[for=ch-stable],#ch-beta:checked ~ .tabbar label[for=ch-beta]{background:#fff;color:#000;border-color:#fff}
+#ch-stable:focus-visible ~ .tabbar label[for=ch-stable],#ch-beta:focus-visible ~ .tabbar label[for=ch-beta]{outline:2px solid #7FE0A8;outline-offset:3px}
+.panel{display:none}
+#ch-stable:checked ~ .panels .p-stable,#ch-beta:checked ~ .panels .p-beta{display:block}
 .note{margin-top:22px;padding:16px 20px;border-radius:14px;background:#14110c;border:1px solid rgba(242,166,90,.3);color:#e9d3b5;font-size:15px;max-width:68ch}
 form.wl{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;max-width:560px}
 form.wl input[type=email]{flex:1 1 240px;min-height:48px;padding:0 18px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:#0E1014;color:#fff;font:inherit}

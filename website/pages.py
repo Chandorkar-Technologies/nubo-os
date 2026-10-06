@@ -28,29 +28,93 @@ def esc(s):
     return html.escape(s, quote=True)
 
 
-def server_table(ctx):
-    rel = ctx['REL']
-    rows = []
-    for key, (name, desc, use) in FLAVOURS.items():
-        cells = []
-        for arch, label in (('amd64', 'Intel and AMD (amd64)'), ('arm64', 'Arm (arm64)')):
-            img = next((i for i in rel['server'] if i['flavour'] == key and i['arch'] == arch), None)
-            if img:
-                cells.append('<a class="in" href="%s">%s</a><br><span style="font-size:13px">%s</span><br><code style="font-size:11px">%s</code>'
-                             % (esc(img['url']), label, ctx['fmt'](img['size']), esc(img['sha256'])))
-            else:
-                cells.append('Not available yet')
-        rows.append('<tr><td><b style="color:#fff">%s</b><br><span style="font-size:14px">%s</span></td><td>%s</td><td>%s</td></tr>' % (name, esc(desc), cells[0], cells[1]))
-    return ('<div class="tablewrap"><table><thead><tr><th>Edition</th><th>Intel and AMD</th><th>Arm</th></tr></thead><tbody>%s</tbody></table></div>'
-            '<p style="font-size:14px">Version %s. Each image is about 3 GB. The line under each link is its SHA-256 checksum.</p>' % (''.join(rows), esc(rel['version'])))
+KINDS = [
+    ('installer', 'Installer images', 'Write one to a USB stick, or attach it to a virtual machine, then follow the installer.'),
+    ('vm', 'Virtual machine disks', 'Ready to boot on KVM, Proxmox, OpenStack, VMware, VirtualBox, Hyper-V, Azure, Google Cloud, AWS and more. These are cloud images: no password is set, so give the machine a login with cloud-init (<a class="in" href="%s/server/install/">how</a>).' % DOCS),
+    ('sbc', 'Raspberry Pi', 'Write the image to an SD card or SSD with Raspberry Pi Imager or <code>dd</code>.'),
+    ('container', 'Containers and WSL', 'The Nubo base as an OCI image for Docker, Podman and Kubernetes, a WSL distribution, and Incus or LXC images.'),
+    ('netboot', 'Network boot', 'Kernel, initial RAM disk and an iPXE script, to install over the network.'),
+]
+ARCHS = (('amd64', 'Intel / AMD'), ('arm64', 'Arm'))
+
+
+def _cell(img, ctx):
+    if not img:
+        return '<span style="color:#7c7c82">-</span>'
+    links = '<a class="in" href="%s">Download</a> <span style="font-size:13px">%s</span>' % (esc(img['url']), ctx['fmt'](img['size']))
+    if img.get('torrent'):
+        links += ' &middot; <a class="in" href="%s">Torrent</a>' % esc(img['torrent'])
+    if img.get('sha256'):
+        links += '<br><code style="font-size:11px;word-break:break-all">%s</code>' % esc(img['sha256'])
+    return links
+
+
+def channel_panel(ch, m, ctx):
+    if not m:
+        other = 'beta' if ch == 'stable' else 'stable'
+        return ('<p>There is no %s release yet.</p><p>The %s release is available in the other tab. See <a class="in" href="%s/updates/channels-stable-and-beta/">channels</a> '
+                'for what the two mean.</p>' % (ch, other, DOCS))
+    imgs = m['images']
+    out = ['<p style="font-size:14px">Version <b style="color:#fff">%s</b>.%s</p>' % (esc(m['version']), (
+        ' Checksums for every file: <a class="in" href="%(u)s">SHA256SUMS</a> and its signature <a class="in" href="%(u)s.asc">SHA256SUMS.asc</a>.'
+        % {'u': esc(m['base'] + '/' + m['version'] + '/SHA256SUMS')}) if m.get('base') else '')]
+    for kind, title, blurb in KINDS:
+        rows = {}
+        for i in imgs:
+            if i['kind'] == kind:
+                rows.setdefault((i['flavour'], i['format'], i.get('label')), {})[i['arch']] = i
+        if not rows:
+            continue
+        order = list(FLAVOURS_ORDER)
+        body = []
+        for key in sorted(rows, key=lambda k: (order.index(k[0]) if k[0] in order else 99, k[1])):
+            first = next(iter(rows[key].values()))
+            body.append('<tr><td><b style="color:#fff">%s</b><br><span style="font-size:14px">%s</span></td><td>%s</td><td>%s</td></tr>'
+                        % (esc(first['name']), esc(first['label']), _cell(rows[key].get('amd64'), ctx), _cell(rows[key].get('arm64'), ctx)))
+        out.append('<h3>%s</h3><p>%s</p><div class="tablewrap"><table><thead><tr><th>Edition and format</th><th>Intel / AMD</th><th>Arm</th></tr></thead><tbody>%s</tbody></table></div>'
+                   % (title, blurb, ''.join(body)))
+    return ''.join(out)
+
+
+FLAVOURS_ORDER = ['desktop', 'server', 'virt', 'containers', 'edge', 'base']
+
+
+def downloads(ctx):
+    ch = ctx['REL']['channels']
+    default = 'stable' if ch.get('stable') else 'beta'
+    radios = ''.join('<input type="radio" name="ch" id="ch-%s"%s>' % (c, ' checked' if c == default else '') for c in ('stable', 'beta'))
+    labels = ('<div class="tabbar" role="presentation"><label for="ch-stable">Stable release</label><label for="ch-beta">Beta release</label></div>')
+    panels = ''.join('<div class="panel p-%s">%s</div>' % (c, channel_panel(c, ch.get(c), ctx)) for c in ('stable', 'beta'))
+    note = ('<p style="font-size:14px"><b style="color:#fff">Stable</b> is what we recommend: it has been through beta. <b style="color:#fff">Beta</b> comes first and may change, but has the newest fixes. '
+            'Every file is also a torrent that lists our server as a web seed, so it downloads even when no other peer is online.</p>')
+    return '<div class="tabs">%s%s%s%s</div>' % (radios, labels, note, '<div class="panels">%s</div>' % panels)
+
+
+def desktop_block(ctx):
+    have = any(i['flavour'] == 'desktop' for c in ctx['REL']['channels'].values() if c for i in c['images'])
+    if have:
+        return '<h2 id="desktop">Desktop</h2><p>The desktop installer is in the table below, under <b>Installer images</b>.</p>'
+    return '''<h2 id="desktop">Desktop: early access</h2>
+<p>The Nubo OS desktop is built and working in our tests, and we are preparing a public image that includes the package archive and automatic updates. Leave your email and we will send you the download link as soon as it is ready. We use your address only for that.</p>
+<form class="wl" id="wl" novalidate>
+<input type="email" id="wlemail" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">
+<select id="wlarch" name="arch" aria-label="Your computer"><option value="amd64">Intel or AMD PC</option><option value="arm64">Arm (for example a Mac with Apple silicon in a VM)</option><option value="unsure">Not sure</option></select>
+<input class="hp" type="text" id="wlcompany" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button class="btn" type="submit">Notify me</button>
+</form>
+<div id="wlmsg" role="status"></div>
+<p style="font-size:14px">By sending your address you agree to the use described on the <a class="in" href="https://nubosuite.tech/privacy/">privacy page</a>.</p>
+'''
 
 
 def verify_block(ctx):
-    img = ctx['REL']['server'][0]
-    return ('<h3>Check your download</h3><p>Compare the checksum before you write the image to a disk. On Linux or macOS:</p>'
+    imgs = [i for c in ctx['REL']['channels'].values() if c for i in c['images']]
+    name = imgs[0]['file'] if imgs else 'nubo-os-server.iso'
+    return ('<h3>Check your download</h3><p>Compare the checksum before you use an image. On Linux or macOS:</p>'
             '<pre><code>sha256sum %s     # Linux\nshasum -a 256 %s   # macOS</code></pre>'
-            '<p>On Windows, in PowerShell: <code>Get-FileHash %s -Algorithm SHA256</code>. The result must match the line shown with the image.</p>'
-            % (esc(img['file']), esc(img['file']), esc(img['file'])))
+            '<p>On Windows, in PowerShell: <code>Get-FileHash %s -Algorithm SHA256</code>. The result must match the checksum shown with the file, or the one in SHA256SUMS. '
+            'To check the signature on SHA256SUMS: <code>gpg --verify SHA256SUMS.asc SHA256SUMS</code> with the key from <a class="in" href="https://archive.nubosuite.tech/nubo-archive-keyring.gpg">the Nubo archive</a>.</p>'
+            % (esc(name), esc(name), esc(name)))
 
 
 def build_all(ctx):
@@ -181,7 +245,7 @@ def build_all(ctx):
 </ul>
 <p>Server and Virtualization and Containers also install automatic updates, brute-force protection and everyday tools. Edge keeps only the core and automatic updates. <a class="in" href="{DOCS}/server/security/what-the-defaults-do/">See exactly what the defaults do</a>.</p>
 <h2 id="download">Download</h2>
-{server_table(ctx)}
+{downloads(ctx)}
 {verify_block(ctx)}
 <h3>Install it</h3>
 <ol><li>Write the image to a USB stick, or attach it to a virtual machine. <a class="in" href="{DOCS}/server/install/choose-an-image/">Which image to pick</a>.</li>
@@ -192,19 +256,10 @@ def build_all(ctx):
 
     P[('os', '/download/')] = ('Download Nubo OS', 'Get Nubo OS: request desktop early access, or download the Nubo OS Server images for Intel, AMD and Arm today.', f"""
 <p class="eyebrow">Download</p><h1>Get Nubo OS.</h1>
-<p class="lead">The server images are ready to download. The desktop is in early access.</p>
-<h2 id="desktop">Desktop: early access</h2>
-<p>The Nubo OS desktop is built and working in our tests, and we are preparing a public image that includes the package archive and automatic updates. Leave your email and we will send you the download link as soon as it is ready. We use your address only for that.</p>
-<form class="wl" id="wl" novalidate>
-<input type="email" id="wlemail" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">
-<select id="wlarch" name="arch" aria-label="Your computer"><option value="amd64">Intel or AMD PC</option><option value="arm64">Arm (for example a Mac with Apple silicon in a VM)</option><option value="unsure">Not sure</option></select>
-<input class="hp" type="text" id="wlcompany" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
-<button class="btn" type="submit">Notify me</button>
-</form>
-<div id="wlmsg" role="status"></div>
-<p style="font-size:14px">By sending your address you agree to the use described on the <a class="in" href="https://nubosuite.tech/privacy/">privacy page</a>.</p>
-<h2 id="server">Server: download now</h2>
-{server_table(ctx)}
+<p class="lead">Every Nubo OS edition, as an installer, a virtual machine disk, a cloud image and more. Choose stable or beta.</p>
+{desktop_block(ctx)}
+<h2 id="server">Downloads</h2>
+{downloads(ctx)}
 {verify_block(ctx)}
 <h3>Write it to a USB stick</h3>
 <p>Use Rufus on Windows, balenaEtcher on macOS or Windows, or the <code>dd</code> command on Linux. Step by step: <a class="in" href="{DOCS}/desktop/get-started/write-the-installer-usb/">writing the installer USB</a>.</p>
@@ -217,9 +272,7 @@ def build_all(ctx):
     P[('os', '/releases/')] = ('Nubo OS releases', 'Release history and checksums for Nubo OS images and packages.', f"""
 <p class="eyebrow">Releases</p><h1>Releases.</h1>
 <p class="lead">Every image published, with its checksum.</p>
-<h2>{esc(rel['version'])}</h2>
-<p>Early access. Server images for four editions, on Intel, AMD and Arm, with the package archive, the Cumulus mirror and the installer's minimal server install.</p>
-{server_table(ctx)}
+{downloads(ctx)}
 <h2>Updates between images</h2>
 <p>Installed systems update from the package archive, not by downloading a new image. A new release goes to the <b>beta</b> channel first and moves to <b>stable</b> after testing. Switch with <code>sudo nubo-channel beta</code> or <code>sudo nubo-channel stable</code>. Details: <a class="in" href="{DOCS}/updates/channels-stable-and-beta/">channels</a>. Release notes: <a class="in" href="{DOCS}/reference/release-notes/">documentation</a>.</p>
 """)

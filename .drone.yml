@@ -2,6 +2,7 @@
 # Tag v0.8.0-beta1 (contains a dash): build and publish to the beta channel.
 # Tag v0.8.0 (no dash): promote what beta carries into stable. No rebuild.
 # Needs Drone secrets: nubo_gpg_private_key, r2_access_key_id, r2_secret_access_key, r2_endpoint.
+# Images: built by the images-* pipelines on our own build VMs (ci/setup-build-vm.sh).
 # arm64 packages: see ci/debs-arm64.drone.yml (needs a Drone runner on an arm64
 # machine; until one exists, upload arm64 builds by hand, they stay in the archive).
 kind: pipeline
@@ -57,57 +58,75 @@ steps:
       - ci/publish-staged.sh "$DRONE_TAG"
 
 ---
+# Every image, built on our own build VMs (Drone exec runners; set one up with
+# ci/setup-build-vm.sh). ISOs and disk images need root, loop mounts and chroot,
+# which Docker pipelines on an untrusted repository cannot have, and each
+# architecture builds on its own CPU. Both run after the packages are published.
 kind: pipeline
-type: docker
-name: isos
+type: exec
+name: images-amd64
 
 platform: {os: linux, arch: amd64}
+node: {nubo-builder: "true"}
 trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
-depends_on: [debs-amd64]
+depends_on: [debs-amd64, publish]
 
 steps:
-  - name: images
-    image: ubuntu:26.04
+  - name: build
     environment:
-      DEBIAN_FRONTEND: noninteractive
       R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
       R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
       R2_ENDPOINT: {from_secret: r2_endpoint}
+      OCI_REPO: ghcr.io/chandorkar-technologies/nubo-os
+      REGISTRY_USER: {from_secret: ghcr_user}
+      REGISTRY_PASSWORD: {from_secret: ghcr_token}
     commands:
-      - apt-get update -qq && apt-get install -y -qq ca-certificates
-      - sh ci/use-cumulus.sh
-      - apt-get update -qq && apt-get install -y -qq xorriso squashfs-tools rclone curl
-      - ci/build-isos.sh
+      - ci/build-all.sh "${DRONE_TAG#v}" amd64
 
 ---
-# Desktop installer images are built by hand (the builder needs loop mounts and
-# chroot, which Drone only allows for trusted repositories). To publish one:
-# write version, download URL and SHA-256 in ci/desktop-iso-source and push to master.
 kind: pipeline
-type: docker
-name: desktop-iso-upload
+type: exec
+name: images-arm64
 
-platform: {os: linux, arch: amd64}
-trigger:
-  event: [push]
-  branch: [master]
+platform: {os: linux, arch: arm64}
+node: {nubo-builder: "true"}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+depends_on: [debs-amd64, publish]
 
 steps:
-  - name: upload
-    image: ubuntu:26.04
+  - name: build
     environment:
-      DEBIAN_FRONTEND: noninteractive
       R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
       R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
       R2_ENDPOINT: {from_secret: r2_endpoint}
-    when:
-      paths:
-        include: ['ci/desktop-iso-source', 'ci/upload-desktop-iso.sh']
+      OCI_REPO: ghcr.io/chandorkar-technologies/nubo-os
+      REGISTRY_USER: {from_secret: ghcr_user}
+      REGISTRY_PASSWORD: {from_secret: ghcr_token}
     commands:
-      - apt-get update -qq && apt-get install -y -qq ca-certificates
-      - sh ci/use-cumulus.sh
-      - apt-get update -qq && apt-get install -y -qq rclone curl
-      - ci/upload-desktop-iso.sh
+      - ci/build-all.sh "${DRONE_TAG#v}" arm64
+
+---
+# Writes the release's manifest and signed checksums, points the beta channel at
+# it and rebuilds the website's download page.
+kind: pipeline
+type: exec
+name: release-images
+
+platform: {os: linux, arch: amd64}
+node: {nubo-builder: "true"}
+trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
+depends_on: [images-amd64, images-arm64]
+
+steps:
+  - name: publish
+    environment:
+      GPG_KEY: {from_secret: nubo_gpg_private_key}
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - echo "$GPG_KEY" | gpg --batch --import
+      - ci/publish-release.sh "${DRONE_TAG#v}"
 
 ---
 kind: pipeline
@@ -116,7 +135,7 @@ name: cleanup
 
 platform: {os: linux, arch: amd64}
 trigger: {event: [tag], ref: {include: ['refs/tags/*-*']}}
-depends_on: [publish, isos]
+depends_on: [publish, release-images]
 
 steps:
   - name: purge-staging
@@ -155,6 +174,15 @@ steps:
       - apt-get update -qq && apt-get install -y -qq reprepro rclone gnupg
       - echo "$GPG_KEY" | gpg --batch --import
       - ci/promote.sh
+  - name: promote-images
+    image: node:24-bookworm
+    environment:
+      R2_ACCESS_KEY_ID: {from_secret: r2_access_key_id}
+      R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
+      R2_ENDPOINT: {from_secret: r2_endpoint}
+    commands:
+      - apt-get update -qq && apt-get install -y -qq rclone python3 ca-certificates
+      - ci/promote-images.sh
 
 ---
 kind: pipeline
