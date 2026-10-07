@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nubo features and pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* Nubo features and pricing: six A4 pages, studio-white style (same look as the flyers).
+     Sizes are in cqw (percent of page width). Rendered to PDF by build.sh. */
+  @page { size: A4; margin: 0 }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #fff }
+  body { font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif; color: #1D1D1F; -webkit-font-smoothing: antialiased }
+  :root { --mu: #6E6E73; --mu2: #8E8E93; --acc: #F26F00; --line: rgba(0,0,0,.10); --card: #fff }
+
+  .page { position: relative; width: 210mm; height: 297mm; overflow: hidden; container-type: size; break-after: page; page-break-after: always;
+          background: linear-gradient(#FBFBFD, #EDEDF1); padding: 8cqw 8.5cqw 6cqw; display: flex; flex-direction: column }
+  .page:last-child { break-after: auto; page-break-after: auto }
+  .top { display: flex; justify-content: space-between; align-items: center; font-size: 2.5cqw; color: var(--mu); letter-spacing: .02em }
+  .logo { display: flex; align-items: center; gap: 1.4cqw; font-size: 3.2cqw; font-weight: 600; color: #1D1D1F; letter-spacing: -.01em }
+  .logo img { height: 3.8cqw; filter: invert(1) }
+  .foot { margin-top: auto; padding-top: 2.4cqw; border-top: .2cqw solid var(--line); display: flex; justify-content: space-between; font-size: 2cqw; color: var(--mu2) }
+
+  .kick { font-size: 2.4cqw; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--acc) }
+  h1 { font-size: 9.6cqw; line-height: 1.03; font-weight: 600; letter-spacing: -.045em; text-wrap: balance }
+  h1 em { font-style: normal; color: var(--acc) }
+  h2 { font-size: 7.6cqw; line-height: 1.05; font-weight: 600; letter-spacing: -.04em }
+  .lede { margin-top: 2.2cqw; font-size: 3.3cqw; line-height: 1.4; color: var(--mu); max-width: 78cqw }
+  .center { text-align: center; align-items: center }
+
+  /* laptop mockup */
+  .laptop { width: 74cqw; margin: 0 auto; filter: drop-shadow(0 3.4cqw 6cqw rgba(0,0,0,.26)) }
+  .lid { background: #0a0a0c; border-radius: 1.6cqw 1.6cqw 0 0; padding: .9cqw .9cqw 0; border: .2cqw solid #34343a; border-bottom: 0 }
+  .lid img { display: block; width: 100%; border-radius: .7cqw .7cqw 0 0 }
+  .base { height: 1.5cqw; margin: 0 -3cqw; border-radius: 0 0 2.2cqw 2.2cqw; background: linear-gradient(#cfcfd4, #a5a5ab); position: relative }
+  .base::after { content: ''; position: absolute; left: 50%; top: 0; width: 11cqw; height: .6cqw; transform: translateX(-50%); border-radius: 0 0 .9cqw .9cqw; background: #8d8d93 }
+
+  /* feature list */
+  .feat { display: grid; gap: 3.2cqw }
+  .feat.two { grid-template-columns: 1fr 1fr; gap: 3.6cqw 5cqw }
+  .f { display: flex; gap: 2.2cqw; align-items: flex-start }
+  .f svg, .f img { flex: none; width: 5.6cqw; height: 5.6cqw }
+  .f svg { fill: none; stroke: var(--acc); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round }
+  .f b { display: block; font-size: 3.2cqw; font-weight: 600; letter-spacing: -.01em }
+  .f span { display: block; margin-top: .5cqw; font-size: 2.6cqw; line-height: 1.38; color: var(--mu) }
+
+  /* plan cards */
+  .plans { display: grid; gap: 2.4cqw }
+  .plans.c4 { grid-template-columns: repeat(4, 1fr) }
+  .plans.c2 { grid-template-columns: 1fr 1fr }
+  .plans.c4 .plan .p { font-size: 5.4cqw }
+  .plans.c4 .plan .p.num { font-size: 8cqw }
+  .plan { background: var(--card); border-radius: 2.4cqw; padding: 3.2cqw 3cqw 3.4cqw; box-shadow: 0 0 0 .2cqw var(--line), 0 1cqw 3cqw rgba(0,0,0,.05) }
+  .plan.hot { box-shadow: 0 0 0 .3cqw var(--acc), 0 1.4cqw 4cqw rgba(242,111,0,.16) }
+  .plan .n { font-size: 2.3cqw; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--mu) }
+  .plan.hot .n { color: var(--acc) }
+  .plan .p { margin-top: 1.4cqw; font-size: 7cqw; line-height: 1; font-weight: 600; letter-spacing: -.045em }
+  .plan .p small { display: block; margin: .9cqw 0 0; font-size: 2.4cqw; font-weight: 500; color: var(--mu); letter-spacing: 0 }
+  .plan .a { margin-top: 1.2cqw; font-size: 2.8cqw; font-weight: 500 }
+  .plan .d { margin-top: 1.8cqw; font-size: 2.4cqw; line-height: 1.4; color: var(--mu) }
+  .note { margin-top: 2.4cqw; font-size: 2.2cqw; color: var(--mu2) }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 2.7cqw }
+  th { text-align: left; font-size: 2.1cqw; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--mu2); padding: 0 0 1.6cqw }
+  td { padding: 1.7cqw 0; border-top: .2cqw solid var(--line) }
+  td.r, th.r { text-align: right }
+  td b { font-weight: 600 }
+  td .s { color: var(--mu); font-size: 2.3cqw }
+  td.price { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap }
+  tr.sec td { border-top: .3cqw solid #1D1D1F; padding-top: 2.4cqw; font-size: 2.2cqw; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--acc) }
+
+  .box { background: #fff; border-radius: 2.4cqw; padding: 3.6cqw 4cqw; box-shadow: 0 0 0 .2cqw var(--line), 0 1cqw 3cqw rgba(0,0,0,.05) }
+  .bigprice { display: flex; align-items: baseline; gap: 1.6cqw }
+  .bigprice b { font-size: 9.2cqw; line-height: .95; font-weight: 600; letter-spacing: -.05em; color: var(--acc) }
+  .bigprice span { white-space: nowrap; font-size: 2.8cqw; color: var(--mu); font-weight: 500 }
+  .tick { list-style: none; display: grid; gap: 1.6cqw; margin-top: 2.6cqw }
+  .tick li { display: flex; gap: 1.8cqw; font-size: 2.7cqw; line-height: 1.35 }
+  .tick li span { display: block }
+  .tick li::before { content: ''; flex: none; width: 3.4cqw; height: 3.4cqw; margin-top: .1cqw; border-radius: 50%; background: rgba(242,111,0,.12) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 6.2l2 2 4-4.4' fill='none' stroke='%23F26F00' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/3.4cqw no-repeat }
+  .sp { height: 3cqw; flex: none } .sp2 { height: 5cqw; flex: none } .sp3 { height: 6cqw; flex: none }
+  .page > * { flex-shrink: 0 }
+</style>
+</head>
+<body>
+
+<!-- 1. COVER -->
+<section class="page center">
+  <div class="top" style="width:100%"><div class="logo"><img src="assets/mark.svg" alt="">Nubo</div><div>Features and pricing · October 2026</div></div>
+  <h1 style="margin-top:12cqw">Everything your office runs on,<br>made in <em>Bharat</em>.</h1>
+  <p class="lede" style="margin-left:auto;margin-right:auto">An operating system, an office suite, email and round-the-clock security. One company, one account, rupee pricing.</p>
+  <div style="flex:1;display:flex;align-items:center;width:100%"><div class="laptop"><div class="lid"><img src="assets/desktop.jpg" alt=""></div><div class="base"></div></div></div>
+  <div style="display:flex;justify-content:space-between;width:100%;font-size:2.9cqw;font-weight:600;margin-top:2cqw"><span>Nubo OS</span><span>Nubo Office</span><span>Nubo Email</span><span>Nubo Secure</span></div>
+  <div class="foot" style="width:100%"><span>nubosuite.tech</span><span>os.nubosuite.tech · nubosuite.tech/office · docs.nubosuite.tech</span></div>
+</section>
+
+<!-- 2. NUBO OS -->
+<section class="page">
+  <div class="top"><div class="logo"><img src="assets/mark.svg" alt="">Nubo OS</div><div>2 of 6</div></div>
+  <div class="kick" style="margin-top:9cqw">The operating system</div>
+  <h2 style="margin-top:1.4cqw">A free desktop,<br>made in <span style="color:var(--acc)">Bharat</span>.</h2>
+  <p class="lede">Fast, secure and simple. Download it free, and add Pro or Server when you want support.</p>
+  <div class="sp3"></div>
+  <div class="feat two">
+    <div class="f"><img src="assets/icon-Mail.svg" alt=""><div><b>Mail, Calendar, Contacts, Drive</b><span>Built in, signed in with one Nubo account.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9.5C7.4 20.4 4 17 4 12V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><div><b>Secure by design</b><span>Built on Ubuntu 26.04 LTS, with regular security updates.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.9-4.4 4-6.5 7.5-6.5s6.6 2.1 7.5 6.5"/></svg><div><b>Nubo Setup</b><span>A guided set-up for your account and apps.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg><div><b>Desktop and Server</b><span>One base for laptops, offices and servers.</span></div></div>
+  </div>
+  <div style="flex:1"></div>
+  <div class="plans c4">
+    <div class="plan"><div class="n">Community</div><div class="p">Free</div><div class="a">&nbsp;</div><div class="d">The full desktop and security updates.</div></div>
+    <div class="plan hot"><div class="n">Nubo Pro</div><div class="p">₹499<small>a year</small></div><div class="a">or ₹2,999 once</div><div class="d">Priority updates, email support, Nubo Setup help.</div></div>
+    <div class="plan"><div class="n">Server</div><div class="p">₹9,999<small>a year</small></div><div class="a">&nbsp;</div><div class="d">Nubo OS Server with priority updates and email support.</div></div>
+    <div class="plan"><div class="n">Server 24×7</div><div class="p">₹49,999<small>a year</small></div><div class="a">&nbsp;</div><div class="d">Server, plus 24×7 phone and chat support.</div></div>
+  </div>
+  <div class="note">Prices per device (per server for Server plans), inclusive of GST.</div>
+  <div class="foot"><span>Nubo OS · os.nubosuite.tech</span><span>Built on Ubuntu 26.04 LTS</span></div>
+</section>
+
+<!-- 3. NUBO OFFICE -->
+<section class="page">
+  <div class="top"><div class="logo"><img src="assets/icon-Office.svg" alt="" style="filter:none;border-radius:.8cqw">Nubo Office</div><div>3 of 6</div></div>
+  <div class="kick" style="margin-top:9cqw">The office suite</div>
+  <h2 style="margin-top:1.4cqw">Office, pay once.</h2>
+  <p class="lede">Opens your Word, Excel and PowerPoint files, and works without internet.</p>
+  <div class="sp2"></div>
+  <div class="laptop" style="width:62cqw"><div class="lid"><img src="assets/office-screen.jpg" alt=""></div><div class="base"></div></div>
+  <div class="sp3"></div>
+  <div class="feat" style="grid-template-columns:repeat(4,1fr);gap:2.4cqw">
+    <div class="f" style="flex-direction:column;gap:1.4cqw"><img src="assets/icon-Write.svg" alt=""><div><b>Write</b><span>Documents, letters and reports.</span></div></div>
+    <div class="f" style="flex-direction:column;gap:1.4cqw"><img src="assets/icon-Cells.svg" alt=""><div><b>Cells</b><span>Spreadsheets, budgets and accounts.</span></div></div>
+    <div class="f" style="flex-direction:column;gap:1.4cqw"><img src="assets/icon-Present.svg" alt=""><div><b>Present</b><span>Slides that look sharp.</span></div></div>
+    <div class="f" style="flex-direction:column;gap:1.4cqw"><img src="assets/icon-Draw.svg" alt=""><div><b>Draw</b><span>Diagrams, posters and flowcharts.</span></div></div>
+  </div>
+  <div style="flex:1"></div>
+  <div class="plans c2">
+    <div class="plan hot"><div class="n">Nubo Office</div><div class="p">₹2,499<small>once</small></div><div class="a">or ₹499 a year</div><div class="d">One plan, everything included. Online editing comes with Nubo Email.</div></div>
+    <div class="plan"><div class="n">Bundle: Nubo Pro + Office</div><div class="p">₹799<small>a year</small></div><div class="a">or ₹3,999 once · save ₹1,499</div><div class="d">The operating system and the office suite, together.</div></div>
+  </div>
+  <div class="note">Prices per device, inclusive of GST.</div>
+  <div class="foot"><span>Nubo Office · nubosuite.tech/office</span><span>Opens .docx, .xlsx and .pptx · saves as PDF</span></div>
+</section>
+
+<!-- 4. NUBO SECURE -->
+<section class="page">
+  <div class="top"><div class="logo"><img src="assets/mark.svg" alt="">Nubo Secure</div><div>4 of 6</div></div>
+  <div class="kick" style="margin-top:9cqw">Managed security</div>
+  <h2 style="margin-top:1.4cqw">Every device,<br>watched and protected.</h2>
+  <p class="lede">On Nubo OS, Windows, macOS, Ubuntu and other Linux. Desktops and servers.</p>
+  <div class="sp3"></div>
+  <div class="feat two">
+    <div class="f"><svg viewBox="0 0 24 24"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><div><b>Real-time threat detection</b><span>Watched around the clock for attacks, odd logins and changed files.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8.4-8 9.5C7.4 20.4 4 17 4 12V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><div><b>Antivirus</b><span>Nubo Shield on Linux and macOS. Microsoft Defender kept on and current on Windows.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 00-14.5-4M4 4v4h4"/><path d="M4 13a8 8 0 0014.5 4M20 20v-4h-4"/></svg><div><b>Patching</b><span>Missing updates found and applied on your schedule, with a report.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 01-.5-9A6 6 0 0118 10a4 4 0 010 8H7z"/><path d="M12 16v-5M9.5 13l2.5-2.5 2.5 2.5"/></svg><div><b>Backup</b><span>Encrypted backups with versions, to restore from before an attack.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 21h8M12 16v5"/></svg><div><b>Investigate and fix remotely</b><span>We find the cause, isolate the device and fix it, with a session log.</span></div></div>
+    <div class="f"><svg viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 14l2 2 4-4"/></svg><div><b>Dashboard and reports</b><span>One view of devices and alerts, a monthly report, and PCI, HIPAA, NIST and GDPR reports.</span></div></div>
+  </div>
+  <div style="flex:1;min-height:5cqw"></div>
+  <div class="box" style="display:grid;grid-template-columns:47cqw 1fr;gap:3cqw;align-items:center">
+    <div><div class="kick">Nubo Secure</div><div class="bigprice" style="margin-top:1cqw"><b>₹4,999</b><span>+ GST<br>a month</span></div><div style="margin-top:1.4cqw;font-size:2.8cqw;color:var(--mu)">Includes 50 devices.</div></div>
+    <ul class="tick" style="margin-top:0"><li><span>Each additional device: <b>₹99 + GST a month</b></span></li><li><span>Desktops and servers on any operating system</span></li><li><span>Billed monthly. Fair-use limits apply to logs and backup storage.</span></li></ul>
+  </div>
+  <div class="note">Prices exclude GST.</div>
+  <div class="foot"><span>Nubo Secure</span><span>Built for offices of any size</span></div>
+</section>
+
+<!-- 5. NUBO SUITE -->
+<section class="page">
+  <div class="top"><div class="logo"><img src="assets/mark.svg" alt="">Nubo Suite</div><div>5 of 6</div></div>
+  <div class="kick" style="margin-top:9cqw">The whole stack</div>
+  <h2 style="margin-top:1.4cqw">Everything.<br>One yearly price.</h2>
+  <div class="sp3"></div>
+  <div class="plans c4">
+    <div class="plan"><div class="n">Nubo Email</div><div class="p num">50<small>mailboxes</small></div><div class="d" style="margin-top:2cqw">5 GB each, on your domain.</div></div>
+    <div class="plan"><div class="n">Nubo OS Pro</div><div class="p num">50<small>devices</small></div><div class="d" style="margin-top:2cqw">Priority updates and support.</div></div>
+    <div class="plan"><div class="n">Nubo Office</div><div class="p num">50<small>devices</small></div><div class="d" style="margin-top:2cqw">Write, Cells, Present, Draw.</div></div>
+    <div class="plan"><div class="n">Nubo Secure</div><div class="p num">50<small>devices</small></div><div class="d" style="margin-top:2cqw">Protection, patching, backup.</div></div>
+  </div>
+  <div class="sp3"></div>
+  <div class="box" style="display:grid;grid-template-columns:47cqw 1fr;gap:3cqw;align-items:center">
+    <div><div class="kick">Nubo Suite</div><div class="bigprice" style="margin-top:1cqw"><b>₹69,999</b><span>+ 18% GST<br>a year</span></div><div style="margin-top:1.4cqw;font-size:2.8cqw;color:var(--mu)">₹82,598.82 with GST.</div></div>
+    <ul class="tick" style="margin-top:0"><li><span>Each additional device: <b>₹1,199 + GST a year</b></span></li><li><span>Includes Nubo OS Pro, Nubo Office and Nubo Secure for that device</span></li><li><span>One account, one invoice, one team to call</span></li></ul>
+  </div>
+  <div style="flex:1;min-height:4cqw"></div>
+  <table>
+    <thead><tr><th>Team size</th><th class="r">Nubo Suite, a year</th><th class="r">With 18% GST</th></tr></thead>
+    <tbody>
+      <tr><td><b>50 devices</b> <span class="s">· 50 mailboxes</span></td><td class="r price">₹69,999</td><td class="r price">₹82,598.82</td></tr>
+      <tr><td><b>100 devices</b></td><td class="r price">₹129,949</td><td class="r price">₹153,339.82</td></tr>
+      <tr><td><b>150 devices</b></td><td class="r price">₹189,899</td><td class="r price">₹224,080.82</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Extra mailboxes on request.</div>
+  <div class="foot"><span>Nubo Suite</span><span>Prices exclude GST unless stated</span></div>
+</section>
+
+<!-- 6. PRICE LIST -->
+<section class="page">
+  <div class="top"><div class="logo"><img src="assets/mark.svg" alt="">Nubo</div><div>6 of 6</div></div>
+  <div class="kick" style="margin-top:9cqw">Price list</div>
+  <h2 style="margin-top:1.4cqw">Everything at a glance.</h2>
+  <div style="height:9cqw"></div>
+  <table>
+    <thead><tr><th>Product and plan</th><th class="r">Price</th><th class="r">Per</th><th class="r">GST</th></tr></thead>
+    <tbody>
+      <tr class="sec"><td colspan="4">Nubo OS</td></tr>
+      <tr><td><b>Community</b></td><td class="r price">Free</td><td class="r">device</td><td class="r">–</td></tr>
+      <tr><td><b>Nubo Pro</b> <span class="s">· yearly</span></td><td class="r price">₹499</td><td class="r">device, year</td><td class="r">included</td></tr>
+      <tr><td><b>Nubo Pro</b> <span class="s">· one-time</span></td><td class="r price">₹2,999</td><td class="r">device, once</td><td class="r">included</td></tr>
+      <tr><td><b>Server</b></td><td class="r price">₹9,999</td><td class="r">server, year</td><td class="r">included</td></tr>
+      <tr><td><b>Server 24×7 support</b></td><td class="r price">₹49,999</td><td class="r">server, year</td><td class="r">included</td></tr>
+      <tr class="sec"><td colspan="4">Nubo Office</td></tr>
+      <tr><td><b>Nubo Office</b> <span class="s">· one-time</span></td><td class="r price">₹2,499</td><td class="r">device, once</td><td class="r">included</td></tr>
+      <tr><td><b>Nubo Office</b> <span class="s">· yearly</span></td><td class="r price">₹499</td><td class="r">device, year</td><td class="r">included</td></tr>
+      <tr><td><b>Bundle: Nubo Pro + Office</b> <span class="s">· yearly</span></td><td class="r price">₹799</td><td class="r">device, year</td><td class="r">included</td></tr>
+      <tr><td><b>Bundle: Nubo Pro + Office</b> <span class="s">· one-time</span></td><td class="r price">₹3,999</td><td class="r">device, once</td><td class="r">included</td></tr>
+      <tr class="sec"><td colspan="4">Nubo Secure</td></tr>
+      <tr><td><b>Nubo Secure</b> <span class="s">· includes 50 devices</span></td><td class="r price">₹4,999</td><td class="r">month</td><td class="r">+ GST</td></tr>
+      <tr><td><b>Additional device</b></td><td class="r price">₹99</td><td class="r">device, month</td><td class="r">+ GST</td></tr>
+      <tr class="sec"><td colspan="4">Nubo Suite</td></tr>
+      <tr><td><b>Nubo Suite</b> <span class="s">· 50 devices, 50 mailboxes of 5 GB</span></td><td class="r price">₹69,999</td><td class="r">year</td><td class="r">+ 18% GST</td></tr>
+      <tr><td><b>Additional device</b></td><td class="r price">₹1,199</td><td class="r">device, year</td><td class="r">+ GST</td></tr>
+    </tbody>
+  </table>
+  <div class="note" style="margin-top:3.4cqw">Nubo OS and Nubo Office prices include GST. Nubo Secure and Nubo Suite prices exclude GST, which is added at 18%.
+  "Once" means a single payment. Fair-use limits apply to security logs and backup storage in Nubo Secure and Nubo Suite.</div>
+  <div class="foot"><span>nubosuite.tech</span><span>Prices in Indian rupees · valid from October 2026</span></div>
+</section>
+
+</body>
+</html>
