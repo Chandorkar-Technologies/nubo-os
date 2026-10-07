@@ -22,7 +22,13 @@ mkdir -p "${OUT}"
 N="nubo-os-${FLAVOUR}-${VERSION}-${ARCH}"
 IMG="${OUT}/${N}.qcow2"
 curl -fL --retry 3 -o "${IMG}" "$(cloudimg_url "${ARCH}")"
-qemu-img resize "${IMG}" 10G
+# The cloud image has a small file system on a small disk. Make a bigger disk and grow
+# the file system into it before installing, so large flavours (Virtualization) fit.
+DISK_GB="${DISK_GB:-16}"
+mv "${IMG}" "${IMG}.orig"
+qemu-img create -q -f qcow2 "${IMG}" "${DISK_GB}G"
+virt-resize --quiet --expand /dev/sda1 "${IMG}.orig" "${IMG}"
+rm -f "${IMG}.orig"
 virt-customize -a "${IMG}" \
   --copy-in "${DEBS}":/var/tmp \
   --copy-in "${HERE}/../ci/use-cumulus.sh":/var/tmp \
