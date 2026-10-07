@@ -38,7 +38,8 @@ fi
 echo "==> Flatpak runtimes"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install -y --noninteractive flathub org.kde.Sdk//6.10 org.kde.Platform//6.10 \
-  org.freedesktop.Sdk.Extension.node20//25.08 io.qt.qtwebengine.BaseApp//6.10
+  org.freedesktop.Sdk.Extension.node20//25.08 io.qt.qtwebengine.BaseApp//6.10 \
+  io.qt.qtwebengine.BaseApp.Debug//6.10
 
 echo "==> Building ${APP_ID} (the long step)"
 SIGN=(); [[ -n "${GPG_KEY_ID:-}" ]] && SIGN=(--gpg-sign="${GPG_KEY_ID}")
