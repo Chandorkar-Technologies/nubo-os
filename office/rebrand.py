@@ -146,6 +146,19 @@ def flatpak_manifest(root, brand_dir):
     return True
 
 
+def installer_product(root):
+    """The engine's packaging step looks its product up by the configured name
+    (--with-product-name 'Nubo Office' -> NuboOffice) in this list, so rename the entry."""
+    path = os.path.join(root, "engine", "instsetoo_native", "util", "openoffice.lst.in")
+    if not os.path.exists(path):
+        return False
+    text = open(path, encoding="utf-8").read()
+    out = text.replace("CollaboraOffice", "NuboOffice").replace("PRODUCTNAME Collabora Office", "PRODUCTNAME Nubo Office")
+    if out != text:
+        open(path, "w", encoding="utf-8").write(out)
+    return "NuboOffice" in out
+
+
 def metainfo(root, here, version):
     """Our own AppStream file replaces Collabora's (name, text, links, screenshots)."""
     path = os.path.join(root, "qt", APP_ID + ".metainfo.xml")
@@ -280,14 +293,15 @@ def main():
     icons = replace_icons(root, os.path.join(here, "icons", "tech.nubosuite.Office.svg"))
     manifest = flatpak_manifest(root, os.path.join(here, "brand"))
     version = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "0.0.0"
+    product = installer_product(root)
     meta = metainfo(root, here, version)
     slides = welcome(root)
     defaults(root)
     about_credit(root)
     art = welcome_art(root, os.path.join(here, "brand", "welcome"))
     logos = logo_images(root, os.path.join(here, "brand", "images", "toolbar-bg-logo-dark.svg"))
-    print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d, welcome texts: %d, welcome pictures: %d"
-          % (changed, renamed, icons, manifest, meta, logos, slides, art))
+    print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, installer product: %s, metainfo: %s, logo images: %d, welcome texts: %d, welcome pictures: %d"
+          % (changed, renamed, icons, manifest, product, meta, logos, slides, art))
     report(root)
     return 0
 

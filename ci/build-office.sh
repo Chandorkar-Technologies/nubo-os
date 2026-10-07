@@ -48,7 +48,8 @@ done
 echo "==> Building ${APP_ID} (the long step)"
 SIGN=(); [[ -n "${GPG_KEY_ID:-}" ]] && SIGN=(--gpg-sign="${GPG_KEY_ID}")
 # --disable-rofiles-fuse: an ordinary user cannot mount the helper on this machine, and it is only a speed-up.
-(cd "${SRC}" && flatpak-builder --force-clean --ccache --disable-rofiles-fuse --repo="${REPO}" "${SIGN[@]}" \
+# --state-dir keeps downloads and the compiler cache outside the fresh checkout, so a rerun is quick.
+(cd "${SRC}" && flatpak-builder --force-clean --ccache --disable-rofiles-fuse --state-dir="${WORK}/state" --repo="${REPO}" "${SIGN[@]}" \
   --default-branch=stable "${WORK}/build" "qt/flatpak/${APP_ID}.json")
 flatpak build-update-repo "${SIGN[@]}" --generate-static-deltas --prune "${REPO}"
 
