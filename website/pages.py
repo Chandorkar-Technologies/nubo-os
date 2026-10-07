@@ -216,18 +216,19 @@ def build_all(ctx):
                     ['.odg', '.vsd', '.pdf']),
     ])
     P[('www', '/office/')] = ('Nubo Office', 'Nubo Write, Cells, Present and Draw: an office suite for the files you already have. Opens Microsoft Office and OpenDocument files, and works without internet.', f"""
-<section class="o-sec" style="--c:#2f6fde;padding-bottom:40px">
+<section class="o-sec plain" style="--c:#2f6fde;padding-bottom:40px;background:radial-gradient(ellipse 55% 340px at 50% 300px,rgba(47,111,222,.20),transparent)">
 <p class="o-eyebrow" style="color:var(--amber)">Nubo Office &nbsp;·&nbsp; Free &nbsp;·&nbsp; Early access</p>
 <h1 class="o-h1 o-grad">Write. Calculate.<br>Present. Draw.</h1>
 <p class="o-lead">Four apps for the files you already have. They open Word, Excel and PowerPoint files, work without internet, and need no account for the files on your own computer.</p>
 <div class="o-row"><a class="o-btn" href="#download">Download Nubo Office</a><a class="o-btn2" href="#write">See the apps</a></div>
 <div class="o-dots"><span>Opens Microsoft Office files</span><span>Works offline</span><span>No account for local files</span><span>Open source</span></div>
-<div class="o-frame"><img src="{A}start.jpg" alt="The Nubo Office start screen with templates and recent documents" width="1440" height="900"></div>
+<div class="o-frame" style="background:none;box-shadow:none;padding:0;max-width:1240px"><img src="{A}hero.jpg" alt="Nubo Write, Nubo Cells and Nubo Present open together" width="2400" height="1350" style="border-radius:0"></div>
 </section>
 {apps_html}
 <section class="o-sec" style="--c:#2f6fde" id="suite">
 <p class="o-eyebrow">One suite</p><h2 class="o-h2 o-grad">Starts from a template,<br>or from your file.</h2>
 <p class="o-lead">Nubo Office opens on templates and your recent documents, and one tap takes you into any of the four apps. Each has its own colour and its own icon.</p>
+<div class="o-frame"><img src="{A}start.jpg" alt="The Nubo Office start screen with templates and recent documents" width="1440" height="900" loading="lazy"></div>
 <div class="o-icons">
 <figure><img src="{A}icon-Office.svg" alt="" width="96" height="96">Office</figure>
 <figure><img src="{A}icon-Write.svg" alt="" width="96" height="96">Write</figure>

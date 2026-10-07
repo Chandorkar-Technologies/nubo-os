@@ -342,7 +342,7 @@ STATIC_CSS = """
 /* Office story page: full-width sections in the same style as the front pages */
 .story{padding:52px 0 0}
 .o-sec{position:relative;overflow:hidden;padding:clamp(72px,10vw,140px) 24px;text-align:center;isolation:isolate}
-.o-sec::before{content:"";position:absolute;z-index:-1;left:50%;top:44%;width:min(1100px,130vw);height:min(760px,90vw);transform:translate(-50%,-50%);background:radial-gradient(closest-side,color-mix(in srgb,var(--c,#2f6fde) 30%,transparent),transparent);opacity:.55}
+.o-sec::before{content:"";position:absolute;z-index:-1;left:50%;top:44%;width:min(1100px,130vw);height:min(760px,90vw);transform:translate(-50%,-50%);background:radial-gradient(closest-side,color-mix(in srgb,var(--c,#2f6fde) 30%,transparent),transparent);opacity:.55;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 62%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 22%,#000 62%,transparent)}
 .o-sec.plain::before{display:none}
 .o-eyebrow{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--amber))}
 .o-h1{font-size:clamp(46px,8.4vw,112px);line-height:.98;letter-spacing:-.05em;font-weight:700;margin-top:16px}
