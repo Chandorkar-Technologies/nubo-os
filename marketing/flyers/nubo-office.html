@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nubo Office flyer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="flyer.css">
+<style>
+  .g1 { width: 440px; height: 440px; left: -160px; top: 120px; background: rgba(70,110,255,.26) }
+  .g2 { width: 420px; height: 420px; right: -150px; top: 60px; background: rgba(242,166,90,.24) }
+  .g3 { width: 400px; height: 400px; right: -120px; top: 520px; background: rgba(150,90,230,.16) }
+  .g4 { width: 380px; height: 380px; left: -140px; top: 640px; background: rgba(61,190,107,.14) }
+
+  .top { margin-top: 16px }
+  .top h1 { font-size: 43px; margin-top: 8px }
+  .top .row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; margin-top: 11px }
+  .top .sub-hi { font-size: 17px }
+  .top .lede { text-align: left }
+
+  .heroimg { position: relative; margin: 8px -15mm 0; height: 232px; overflow: hidden }
+  .heroimg img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 80%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 24%, #000 80%, transparent 100%) }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-top: 4px }
+  .tile { padding: 11px 12px 12px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--card2), var(--card)) }
+  .tile img { width: 40px; height: 40px; display: block }
+  .tile b { display: block; font-size: 14px; font-weight: 800; letter-spacing: -.01em; margin-top: 8px }
+  .tile span { display: block; font-size: 9.5px; color: var(--mu); margin-top: 2px; line-height: 1.35 }
+  .tile.w { box-shadow: inset 0 2px 0 #3f78ff } .tile.c { box-shadow: inset 0 2px 0 #2fbf6a }
+  .tile.p { box-shadow: inset 0 2px 0 #ff7a33 } .tile.d { box-shadow: inset 0 2px 0 #9a6bff }
+
+  .why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px }
+  .why div { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--line) }
+  .why svg { flex: none; width: 24px; height: 24px }
+  .why b { display: block; font-size: 11.5px; font-weight: 700 }
+  .why span { display: block; font-size: 9.5px; color: var(--mu); margin-top: 2px; line-height: 1.35 }
+
+  .price { margin-top: 16px; border-radius: 18px; padding: 16px 18px; border: 1px solid rgba(242,166,90,.55); background: linear-gradient(180deg, #1b1712, #111012); box-shadow: 0 0 0 1px rgba(242,166,90,.2), 0 20px 56px rgba(242,166,90,.14); display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center }
+  .price .nm { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--amber) }
+  .price h2 { font-size: 23px; margin-top: 4px }
+  .price ul { list-style: none; margin-top: 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 10.5px; color: #d7d7db }
+  .price li { display: flex; gap: 6px; line-height: 1.35 }
+  .price li::before { content: ''; flex: none; width: 12px; height: 12px; margin-top: 1px; border-radius: 50%; background: rgba(61,190,107,.18) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 6.2l2 2 4-4.4' fill='none' stroke='%233DBE6B' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/12px no-repeat }
+  .opts { display: grid; gap: 8px }
+  .opt { text-align: center; min-width: 168px; padding: 10px 16px; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid var(--line) }
+  .opt.main { background: linear-gradient(180deg, rgba(242,166,90,.22), rgba(242,166,90,.08)); border-color: rgba(242,166,90,.6) }
+  .opt b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -.04em; line-height: 1.05 }
+  .opt small { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; color: var(--mu); margin-top: 2px }
+  .opt.main small { color: var(--amber) }
+  .cmp { margin-top: 8px; font-size: 9.5px; color: var(--mu2) }
+  .cmp b { color: var(--mu) }
+
+  .bundle { margin-top: 14px }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div><div class="glow g4"></div>
+
+  <header>
+    <div class="brand"><img src="assets/icon-Office.svg" alt="" style="height:28px;width:28px;border-radius:7px">Nubo Office</div>
+    <div class="pill"><i></i><b>भारत में निर्मित</b> · Built in Bharat</div>
+  </header>
+
+  <section class="top">
+    <div class="kick">Write · Calculate · Present · Draw</div>
+    <h1>Office for every desk<br>in <span class="tri">Bharat</span>.</h1>
+    <div class="row">
+      <div class="sub-hi">हर काम के लिए, एक ऑफ़िस।</div>
+      <p class="lede">A complete office suite that opens your Word, Excel and PowerPoint files, works without internet, and costs a fraction of what you pay today.</p>
+    </div>
+  </section>
+
+  <div class="heroimg"><img src="assets/hero.jpg" alt="Nubo Write, Cells and Present"></div>
+
+  <section class="tiles">
+    <div class="tile w"><img src="assets/icon-Write.svg" alt=""><b>Write</b><span>Documents, letters and reports</span></div>
+    <div class="tile c"><img src="assets/icon-Cells.svg" alt=""><b>Cells</b><span>Spreadsheets, budgets and accounts</span></div>
+    <div class="tile p"><img src="assets/icon-Present.svg" alt=""><b>Present</b><span>Slides that look sharp</span></div>
+    <div class="tile d"><img src="assets/icon-Draw.svg" alt=""><b>Draw</b><span>Diagrams, posters and flowcharts</span></div>
+  </section>
+
+  <section class="why">
+    <div>
+      <svg viewBox="0 0 26 26" fill="none" stroke="#F2A65A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l5 5v15H6z"/><path d="M15 3v5h5M9.5 13h7M9.5 17h7"/></svg>
+      <p><b>Opens your files</b><span>Word, Excel and PowerPoint documents, just as they are.</span></p>
+    </div>
+    <div>
+      <svg viewBox="0 0 26 26" fill="none" stroke="#F2A65A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="18" height="12" rx="2"/><path d="M9 21h8M13 17v4"/></svg>
+      <p><b>Works offline</b><span>No account needed for the files on your own computer.</span></p>
+    </div>
+    <div>
+      <svg viewBox="0 0 26 26" fill="none" stroke="#F2A65A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 010-9 6 6 0 0111.5 1.5A3.8 3.8 0 0118 18H7z"/></svg>
+      <p><b>Online with Nubo Email</b><span>Edit together in the browser. Included with your Nubo Email plan.</span></p>
+    </div>
+  </section>
+
+  <section class="price">
+    <div>
+      <div class="nm">One plan · Everything included</div>
+      <h2>Pick how you want to pay.</h2>
+      <ul>
+        <li>Write, Cells, Present and Draw</li>
+        <li>Opens .docx, .xlsx and .pptx files</li>
+        <li>Light and dark themes</li>
+        <li>Linux today. Windows and macOS coming</li>
+      </ul>
+      <div class="cmp">Typical Microsoft Office subscription: <b>₹8,000+ every year</b>.</div>
+    </div>
+    <div class="opts">
+      <div class="opt main"><b>₹2,499</b><small>ONE-TIME · PAY ONCE</small></div>
+      <div class="opt"><b>₹499</b><small>PER YEAR</small></div>
+    </div>
+  </section>
+
+  <section class="bundle">
+    <div class="ic"><img src="assets/icon-Office.svg" alt=""><span>+</span><div class="mk"><img src="assets/mark.svg" alt=""></div></div>
+    <div class="tx">
+      <div class="tag">Bundle offer</div>
+      <div class="nm">Nubo Pro + Nubo Office</div>
+      <div class="nt">The operating system and the office suite, together. Save ₹1,499 on the one-time bundle.</div>
+    </div>
+    <div class="px">
+      <div><b>₹999</b><small>PER YEAR</small></div>
+      <div><b>₹3,999</b><small>ONE-TIME</small></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="qr"><img src="assets/qr-office.svg" alt="QR code to nubosuite.tech/office"></div>
+    <div class="go"><b>See it. Try it.</b><span>nubosuite.tech/office</span></div>
+    <div class="fine">Prices in ₹, per device, plus GST as applicable. One-time means you pay once. Nubo Office is built on Collabora Online and LibreOffice technology. Made in India.</div>
+  </footer>
+</div>
+</body>
+</html>
