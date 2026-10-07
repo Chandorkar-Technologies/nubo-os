@@ -1,9 +1,9 @@
 ---
-title: Nubo OS documentation
-description: Install, use, run and update Nubo OS, the desktop and the server.
+title: Nubo documentation
+description: Install, use, run and update Nubo OS, and use Nubo Office.
 template: splash
 hero:
-  tagline: Everything you need for Nubo OS 1 "Flow". Install it, learn it, run it, update it.
+  tagline: Nubo OS 1 "Flow" and Nubo Office. Install them, learn them, run them, update them.
   image:
     file: ../../assets/screens/desktop.jpg
   actions:
@@ -12,6 +12,9 @@ hero:
       icon: right-arrow
     - text: Install the server
       link: /server/install/
+      variant: minimal
+    - text: Nubo Office
+      link: /office/
       variant: minimal
 ---
 
@@ -32,6 +35,9 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
   <Card title="Run a server" icon="seti:server">
     Install Server, Virtualization, Containers or Edge. See [Server](/server/).
   </Card>
+  <Card title="Write, calculate, present" icon="document">
+    Nubo Write, Cells, Present and Draw open Word, Excel and PowerPoint files. See [Nubo Office](/office/).
+  </Card>
   <Card title="Keep it up to date" icon="refresh">
     How updates, channels and the package archive work. See [Updates](/updates/).
   </Card>
@@ -40,9 +46,10 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
   </Card>
 </CardGrid>
 
-## Pick your edition
+## Pick your product
 
 <CardGrid>
+  <LinkCard title="Nubo Office" description="Write, Cells, Present and Draw. Install, use, and how it is built." href="/office/" />
   <LinkCard title="Desktop" description="The Nubo OS desktop for laptops and PCs." href="/desktop/" />
   <LinkCard title="Server" description="Minimal, secure base for any server." href="/server/flavours/" />
   <LinkCard title="Reference" description="Commands, files, packages, shortcuts." href="/reference/" />

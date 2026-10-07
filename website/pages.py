@@ -178,7 +178,7 @@ def build_all(ctx):
     P[('www', '/office/')] = ('Nubo Office', 'Nubo Write, Cells, Present and Draw: an office suite for the files you already have. Opens Microsoft Office and OpenDocument files, and works without internet.', f"""
 <p class="eyebrow">Nubo Office</p><h1>Documents, spreadsheets, presentations and drawings.</h1>
 <p class="lead">Four apps for the files you already have. They open and save Microsoft Office and OpenDocument files, work without internet, and need no account for files on your own computer.</p>
-<div class="row"><a class="btn" href="#download">Download</a><a class="btn2" href="{DOCS}/">Read the documentation</a></div>
+<div class="row"><a class="btn" href="#download">Download</a><a class="btn2" href="{DOCS}/office/">Read the documentation</a></div>
 <div class="note">Nubo Office is in early access. The Linux version is being built now, and the other platforms follow. The table below shows what is ready.</div>
 <h2>Four apps, one suite</h2>
 <div class="grid">{office_cards}</div>
@@ -200,7 +200,7 @@ def build_all(ctx):
 <li>Add the Nubo repository and install, with the two commands shown in the table.</li>
 <li>Start Nubo Office from the app grid, or open any document with it.</li></ol>
 <h3>Check your download</h3>
-<p>Each file will show its SHA-256 checksum next to the download button. The Nubo repository is signed. <a class="in" href="{DOCS}/">How to verify</a>.</p>
+<p>Each file will show its SHA-256 checksum next to the download button. The Nubo repository is signed. <a class="in" href="{DOCS}/office/install/linux/">How to install and verify</a>.</p>
 <h2>Built on open technology</h2>
 <p>Nubo Office is built on Collabora Online and LibreOffice technology, which are open source under the Mozilla Public License 2.0. Collabora and LibreOffice are trademarks of their owners, and Nubo Office is not made or endorsed by them. Our changes are published: <a class="in" href="https://github.com/Chandorkar-Technologies/nubo-os/tree/master/office">the Nubo Office source</a>.</p>
 <h2>Questions</h2>

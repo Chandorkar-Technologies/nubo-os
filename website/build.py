@@ -117,7 +117,7 @@ def nav_html(site):
         name = 'Nubo Suite'
     else:
         links = [('Desktop', '/'), ('Server', '/server/'), ('Releases', '/releases/'),
-                 ('Docs', 'https://docs.nubosuite.tech/'), ('Suite', 'https://nubosuite.tech/')]
+                 ('Office', 'https://nubosuite.tech/office/'), ('Docs', 'https://docs.nubosuite.tech/'), ('Suite', 'https://nubosuite.tech/')]
         dl = '<a class="dl" href="/download/">Download</a>'
         name = 'Nubo OS'
     a = ''.join('<a class="hide" href="%s">%s</a>' % (h, t) for t, h in links)

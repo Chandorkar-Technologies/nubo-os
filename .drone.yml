@@ -128,7 +128,7 @@ steps:
 ---
 # Nubo Office: Collabora's code built under Nubo names as a Flatpak, published to our own
 # Flatpak repository. Slow (hours), so it has its own tag: office-26.04.3.3-1 builds upstream
-# tag coda-26.04.3.3-1 as 26.04.3.3-nubo1. See docs/office-whitelabel.md.
+# tag coda-26.04.3.3-1 as 26.04.3.3-nubo1. See https://docs.nubosuite.tech/office/collabora/pipeline/.
 kind: pipeline
 type: exec
 name: office-amd64

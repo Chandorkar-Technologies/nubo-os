@@ -29,6 +29,8 @@ try:
 except Exception:
     old = {}
 for ch in ('stable', 'beta'):
-    channels.setdefault(ch, old.get(ch))
+    # A channel with no pointer yet must not blank what the page already shows.
+    if not channels.get(ch):
+        channels[ch] = old.get(ch)
 json.dump({'channels': channels}, open(OUT, 'w'), indent=1)
 print({k: (v['version'], len(v['images'])) if v else None for k, v in channels.items()})

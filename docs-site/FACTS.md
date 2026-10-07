@@ -47,3 +47,12 @@ nubo-get (install an app from Flathub), nubo-app-stubs (writes grey launchers), 
 
 ## Support and contact
 support@nubo.email; docs https://docs.nubosuite.tech; code https://github.com/Chandorkar-Technologies/nubo-os; security reports: security@nubosuite.tech.
+
+## Nubo Office (checked 2026-10-07)
+
+- Names: Nubo Office (suite and start screen), Nubo Write (documents), Nubo Cells (spreadsheets), Nubo Present (presentations), Nubo Draw (drawings). App id `tech.nubosuite.Office`.
+- Package `nubo-office` (in `nubo-desktop`): launchers that download Collabora Office from Flathub on first use and open the matching part. Command `nubo-office write|cells|present|draw|office`.
+- The Nubo build of the suite (our names, our brand pack) built and ran on a test machine. The Flatpak repository `archive.nubosuite.tech/flatpak` and pipeline `office-amd64` (tag `office-*`) are written, not yet run.
+- Built on Collabora Online and LibreOffice technology, under MPLv2. Marks removed from the build; credit line in About. Not endorsed by Collabora or The Document Foundation.
+- Sign-in: local files need no account. Server documents open through the server's own page, and only Nubo servers.
+- Web editor: `office.nubo.email` runs ONLYOFFICE today; the Nubo build of Collabora Online is planned.
