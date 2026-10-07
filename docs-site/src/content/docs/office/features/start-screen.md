@@ -1,33 +1,53 @@
 ---
 title: "Start screen and templates"
-description: "Start a new document from a template, open a file, or return to a recent document."
+description: "The start screen, the File menu with its Home, New, Open, Info, Save, Save As, Print, Export and Sign entries, and templates."
 sidebar:
-  order: 20
+  order: 30
 ---
 
-When you open **Nubo Office** without a file, you see the start screen.
+![The Nubo Office start screen with templates and recent documents](../../../../assets/screens/office/start.jpg)
 
-## What is on it
+## The start screen
 
-- **Home**, **New** and **Open** along the left side.
-- **Templates** across the top of Home. The list includes Blank Document, CV, Default Style and several business letters. **More Templates** shows the rest.
-- **Recent** documents underneath. The list is empty until you have opened something.
+When you open **Nubo Office**, you land on Home. It has:
 
-The header bar carries the Nubo mark and the name, in the suite's blue.
+- **Templates** across the top. For documents they include Blank Document, CV, Default Style, two business letters (sans-serif and serif) and Modern Style. **More Templates** shows the rest. Spreadsheets start from Blank Spreadsheet.
+- **Recent**, a list of your latest documents with the folder they are in and when they were last changed.
+- A blue header with the Nubo mark. The header takes the colour of the app you are in: the same screen is green in Cells.
+
+## The File menu
+
+Every app has a **File** tab. It opens the same full-page menu, with these entries down the left side:
+
+![The File menu in Nubo Write](../../../../assets/screens/office/file-menu.jpg)
+
+| Entry | What it does |
+|---|---|
+| **Home** | Templates and recent documents |
+| **New** | Start a new document |
+| **Open** | Open a file from your computer |
+| **Info** | Details about the current document |
+| **Save** | Save the document. Greyed out when there is nothing new to save |
+| **Save As** | Save a copy under another name or in another format |
+| **Print** | Print the document |
+| **Export** | Make a PDF or another format |
+| **Sign** | Sign the document |
+
+The arrow at the top left takes you back to the document.
 
 ## Start a document
 
-1. Open Nubo Office from the app grid.
-2. Choose a template, for example **Blank Document**.
-3. The matching app opens: a text template opens Nubo Write, and so on.
+1. Open **Nubo Office** from the app grid.
+2. Pick a template, for example **Blank Document**.
+3. The matching app opens with its accent colour.
 
-You can also open one app directly, such as Nubo Write, and it starts on a blank document.
+You can also open one app directly. Nubo Write opens on a blank document.
 
 ## Verify
 
-The new document opens in the app with its own accent colour.
+The new document opens, and the status bar shows its page or sheet count.
 
 ## See also
 
-- [Start an app](/office/use/start-an-app/)
 - [Files and formats](/office/features/formats/)
+- [Start an app](/office/use/start-an-app/)

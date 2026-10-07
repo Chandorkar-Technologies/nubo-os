@@ -134,6 +134,8 @@ def office_table(ctx):
             action = '<a class="in" href="%s">Download</a>' % esc(v['url'])
             if v.get('size'):
                 action += ' <span style="font-size:13px">%s</span>' % ctx['fmt'](v['size'])
+            if v.get('torrent'):
+                action += ' &middot; <a class="in" href="%s">Torrent</a>' % esc(v['torrent'])
             if v.get('sha256'):
                 action += '<br><code style="font-size:11px;word-break:break-all">%s</code>' % esc(v['sha256'])
         else:
@@ -388,6 +390,10 @@ def build_all(ctx):
 <h2 id="server">Downloads</h2>
 {downloads(ctx)}
 {verify_block(ctx)}
+<h2 id="office">Nubo Office</h2>
+<p>Nubo Write, Cells, Present and Draw open Word, Excel and PowerPoint files and work without internet. Nubo OS includes them. For other systems, pick your platform. <a class="in" href="https://nubosuite.tech/office/">All about Nubo Office</a>.</p>
+{office_table(ctx)}
+<p style="font-size:14px">Each file shows its SHA-256 checksum. <a class="in" href="{DOCS}/office/install/">Installation guide</a>.</p>
 <h3>Write it to a USB stick</h3>
 <p>Use Rufus on Windows, balenaEtcher on macOS or Windows, or the <code>dd</code> command on Linux. Step by step: <a class="in" href="{DOCS}/desktop/get-started/write-the-installer-usb/">writing the installer USB</a>.</p>
 <h3>Run it in a virtual machine</h3>

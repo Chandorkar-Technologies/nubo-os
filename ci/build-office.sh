@@ -56,10 +56,25 @@ Comment=Apps built by Nubo OS
 $( [[ -n "${GPG_KEY_ID:-}" ]] && echo "GPGKey=$(gpg --export "${GPG_KEY_ID}" | base64 -w0)" )
 REPOFILE
 
+echo "==> A single downloadable bundle"
+ARCH_FP="$(uname -m)"          # x86_64 or aarch64
+BUNDLE_DIR="${WORK}/bundle"; rm -rf "${BUNDLE_DIR}"; mkdir -p "${BUNDLE_DIR}"
+BUNDLE="nubo-office-${VER}-${ARCH_FP}.flatpak"
+flatpak build-bundle "${REPO}" "${BUNDLE_DIR}/${BUNDLE}" "${APP_ID}" stable
+(cd "${BUNDLE_DIR}" && sha256sum "${BUNDLE}" > "${BUNDLE}.sha256")
+DL_BASE=https://archive.nubosuite.tech/dl/office ci/make-torrent.sh "${BUNDLE_DIR}/${BUNDLE}" "${VER}" || echo "no torrent made" >&2
+python3 ci/make-office-manifest.py "${BUNDLE_DIR}" "${BUNDLE}" "${VER}" "${ARCH_FP}"
+
 if [[ -z "${NO_UPLOAD:-}" ]]; then
   . ci/rclone-env.sh
   echo "==> Uploading to r2:${R2_BUCKET}/flatpak"
   rclone sync "${REPO}" "r2:${R2_BUCKET}/flatpak" --fast-list --transfers 16 \
     --header-upload "Cache-Control: public, max-age=300"
+  rclone copy "${BUNDLE_DIR}" "r2:${R2_BUCKET}/dl/office/${VER}" --exclude 'latest-*.json' \
+    --header-upload "Cache-Control: public, max-age=3600"
+  # The website reads this to show the download.
+  rclone copyto "${BUNDLE_DIR}/latest-${ARCH_FP}.json" "r2:${R2_BUCKET}/dl/office/latest-${ARCH_FP}.json" \
+    --header-upload "Cache-Control: public, max-age=60"
   echo "Add it with: flatpak remote-add --if-not-exists nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo"
+  echo "Download: https://archive.nubosuite.tech/dl/office/${VER}/${BUNDLE}"
 fi

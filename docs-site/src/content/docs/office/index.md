@@ -22,7 +22,9 @@ The Linux version is being finished. Windows, macOS, Android, iPhone, iPad and t
 
 ## Start here
 
-- [Features](/office/features/): what each app can do, and the files it opens.
+- [Features](/office/features/): a tour of each app, files and formats, display options, printing and accessibility.
+- [Guides](/office/guides/): step-by-step help for real tasks, such as a first document, a budget with a chart, or a slide show.
+- [Reference](/office/reference/): every tab and button of the four apps, and the keyboard shortcuts.
 - [Installing Nubo Office](/office/install/): Linux and Nubo OS today, the other platforms next.
 - [Using Nubo Office](/office/use/): start an app, open and save files, get help inside the app.
 - [Accounts and files](/office/account/): when you need a Nubo account.

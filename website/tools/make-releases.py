@@ -34,3 +34,23 @@ for ch in ('stable', 'beta'):
         channels[ch] = old.get(ch)
 json.dump({'channels': channels}, open(OUT, 'w'), indent=1)
 print({k: (v['version'], len(v['images'])) if v else None for k, v in channels.items()})
+
+
+# --- Nubo Office downloads: the build writes dl/office/latest-<arch>.json for each architecture
+OFFICE = os.path.join(os.path.dirname(__file__), '..', 'data', 'office.json')
+try:
+    office = json.load(open(OFFICE))
+    for arch in ('x86_64', 'aarch64'):
+        try:
+            latest = get('https://archive.nubosuite.tech/dl/office/latest-%s.json' % arch)
+        except Exception:
+            continue                       # not published yet, keep the planned row
+        office['version'] = latest.get('version')
+        for new in latest.get('variants', []):
+            for row in office['variants']:
+                if row['name'] == new['name']:
+                    row.update(new)
+    json.dump(office, open(OFFICE, 'w'), indent=2)
+    print('office:', office.get('version'))
+except Exception as e:
+    print('office downloads not updated:', e, file=sys.stderr)

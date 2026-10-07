@@ -2,15 +2,17 @@
 """nubo-office MODE [FILE...]: open one of the Nubo office apps.
 
 MODE is office (start centre), write (documents), cells (spreadsheets), present
-(presentations) or draw (drawings). They are Collabora Office, which is
-downloaded from Flathub the first time one is opened.
+(presentations) or draw (drawings). They are the Nubo Office suite, installed
+from the Nubo Flatpak repository the first time one is opened (from Flathub
+until the Nubo build is published).
 """
 
 import os
 import subprocess
 import sys
 
-APP = "com.collaboraoffice.Office"
+NUBO_APP = "tech.nubosuite.Office"      # our own build, from the Nubo Flatpak repository
+FALLBACK_APP = "com.collaboraoffice.Office"   # downloaded from Flathub until the Nubo build is published
 MODES = {
     "office": ("Nubo Office", []),
     "write": ("Nubo Write", ["--writer"]),
@@ -20,8 +22,21 @@ MODES = {
 }
 
 
-def installed():
-    return subprocess.run(["flatpak", "info", APP], capture_output=True).returncode == 0
+def installed(app):
+    return subprocess.run(["flatpak", "info", app], capture_output=True).returncode == 0
+
+
+def pick_app(name):
+    """The Nubo build if present or installable, else the Flathub one."""
+    if installed(NUBO_APP):
+        return NUBO_APP
+    if subprocess.run(["nubo-get", "--install-only", "--remote", "nubo", NUBO_APP, name],
+                      capture_output=True).returncode == 0 and installed(NUBO_APP):
+        return NUBO_APP
+    if not installed(FALLBACK_APP):
+        if subprocess.run(["nubo-get", "--install-only", FALLBACK_APP, name]).returncode != 0:
+            return None
+    return FALLBACK_APP
 
 
 def main():
@@ -30,12 +45,15 @@ def main():
         return 2
     name, flags = MODES[sys.argv[1]]
     files = sys.argv[2:]
-    if not installed():
-        # First use: download from Flathub with a progress window (see nubo-get).
-        if subprocess.run(["nubo-get", "--install-only", APP, name]).returncode != 0:
-            return 1
-    os.execvp("flatpak", ["flatpak", "run", "--command=coda-qt", "--file-forwarding", APP, *flags, "@@", *files, "@@"]
-              if files else ["flatpak", "run", "--command=coda-qt", APP, *flags])
+    app = pick_app(name)
+    if app is None:
+        return 1
+    cmd = ["flatpak", "run", "--command=coda-qt"]
+    if files:
+        cmd += ["--file-forwarding", app, *flags, "@@", *files, "@@"]
+    else:
+        cmd += [app, *flags]
+    os.execvp("flatpak", cmd)
 
 
 if __name__ == "__main__":

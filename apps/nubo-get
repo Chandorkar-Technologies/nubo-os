@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Download a popular app from Flathub, then open it.
 
-Usage: nubo-get [--install-only] FLATPAK_ID [NAME]
+Usage: nubo-get [--install-only] [--remote flathub|nubo] FLATPAK_ID [NAME]
 """
 
 import shutil
@@ -9,6 +9,8 @@ import subprocess
 import sys
 
 FLATHUB = "https://dl.flathub.org/repo/flathub.flatpakrepo"
+NUBO_REPO = "https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo"
+REMOTES = {"flathub": FLATHUB, "nubo": NUBO_REPO}
 
 
 def notify(kind, text):
@@ -29,11 +31,16 @@ def main():
     args = sys.argv[1:]
     install_only = "--install-only" in args
     args = [a for a in args if a != "--install-only"]
+    remote = "flathub"
+    if "--remote" in args:
+        i = args.index("--remote")
+        remote = args[i + 1]
+        del args[i:i + 2]
     app_id = args[0]
     name = args[1] if len(args) > 1 else app_id
 
     if not installed(app_id):
-        subprocess.run(["flatpak", "remote-add", "--user", "--if-not-exists", "flathub", FLATHUB],
+        subprocess.run(["flatpak", "remote-add", "--user", "--if-not-exists", remote, REMOTES[remote]],
                        capture_output=True)
         progress = None
         if shutil.which("zenity"):
@@ -42,7 +49,7 @@ def main():
                  "--title=Nubo Store", f"--text=Downloading {name}…"],
                 stdin=subprocess.PIPE, text=True)
         result = subprocess.run(
-            ["flatpak", "install", "--user", "--noninteractive", "-y", "flathub", app_id],
+            ["flatpak", "install", "--user", "--noninteractive", "-y", remote, app_id],
             capture_output=True, text=True)
         if progress:
             try:

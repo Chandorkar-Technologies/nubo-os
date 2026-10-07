@@ -48,6 +48,8 @@ export default defineConfig({
 				{ label: 'Nubo Office', items: [
 					{ slug: 'office' },
 					{ label: 'Features', collapsed: true, items: [{ autogenerate: { directory: 'office/features' } }] },
+					{ label: 'Guides', collapsed: true, items: [{ autogenerate: { directory: 'office/guides' } }] },
+					{ label: 'Reference', collapsed: true, items: [{ autogenerate: { directory: 'office/reference' } }] },
 					{ label: 'Installing', collapsed: true, items: [{ autogenerate: { directory: 'office/install' } }] },
 					{ label: 'Using Nubo Office', collapsed: true, items: [{ autogenerate: { directory: 'office/use' } }] },
 					{ label: 'Accounts and files', collapsed: true, items: [{ autogenerate: { directory: 'office/account' } }] },
