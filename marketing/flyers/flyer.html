@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nubo flyer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+Devanagari:wght@700&display=swap" rel="stylesheet">
+<style>
+  /* One idea per flyer: a short headline, one picture, one price, one QR code.
+     Everything is sized in cqw (a percentage of the page width), so the same design
+     works on A4 and on a 4:5 social post.  URL: flyer.html?f=os|office|bundle&theme=dark|light&size=a4|social */
+  @page { size: A4; margin: 0 }
+  :root { --bg: #08090C; --tx: #F7F7F8; --mu: #9A9AA3; --acc: #FF9933; --card: #14161B; --line: rgba(255,255,255,.14); --shadow: rgba(0,0,0,.7); --glow: rgba(255,153,51,.16) }
+  body.light { --bg: #FFFFFF; --tx: #0D0E12; --mu: #5B5B66; --acc: #D45F00; --card: #F3F3F5; --line: rgba(0,0,0,.14); --shadow: rgba(0,0,0,.28); --glow: rgba(255,153,51,.0) }
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  html, body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact }
+  body { font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif; color: var(--tx); -webkit-font-smoothing: antialiased }
+  .page { position: relative; overflow: hidden; background: var(--bg); container-type: size; display: flex; flex-direction: column; padding: 7cqw 7cqw 6cqw }
+  body.a4 .page { width: 210mm; height: 297mm }
+  body.social .page { width: 1080px; height: 1350px }
+  .page::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 88% 10%, var(--glow), transparent 48%) }
+  .page > * { position: relative }
+
+  .top { display: flex; justify-content: space-between; align-items: center }
+  .brand { display: flex; align-items: center; gap: 1.8cqw; font-weight: 800; font-size: 3.6cqw; letter-spacing: -.01em }
+  .brand img { height: 4.6cqw; width: auto; border-radius: 1cqw }
+  body.light .brand img.mark { filter: invert(1) }
+  .made { display: flex; align-items: center; gap: 1.4cqw; font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; font-weight: 700; font-size: 2.7cqw; color: var(--mu) }
+  .made i { display: block; width: 3.4cqw; height: 2.2cqw; border-radius: .4cqw; background: linear-gradient(180deg, #FF9933 33%, #fff 33% 66%, #138808 66%); box-shadow: 0 0 0 .15cqw var(--line) }
+
+  h1 { margin-top: 6.5cqw; font-size: 12.4cqw; line-height: .98; font-weight: 800; letter-spacing: -.045em; text-wrap: balance }
+  h1 em { font-style: normal; color: var(--acc) }
+  .sub { margin-top: 3cqw; font-size: 3.5cqw; line-height: 1.35; color: var(--mu); max-width: 78cqw }
+
+  .hero { flex: 1; min-height: 0; margin-top: 5cqw; position: relative; overflow: hidden; border-radius: 2cqw; border: .2cqw solid var(--line); box-shadow: 0 3cqw 8cqw var(--shadow); background: #000 }
+  .hero img { position: absolute; display: block }
+  .hero .a { left: 0; top: 0; width: 100%; height: 100%; object-fit: cover }
+  .hero .b { right: 4cqw; bottom: -5cqw; width: 66%; border-radius: 1.4cqw; border: .2cqw solid rgba(255,255,255,.2); box-shadow: 0 2cqw 6cqw rgba(0,0,0,.7) }
+
+  .buy { display: grid; grid-template-columns: 1fr auto; gap: 4cqw; align-items: end; margin-top: 3cqw }
+  .lab { font-size: 2.6cqw; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--mu) }
+  .price { display: flex; align-items: baseline; gap: 1.8cqw; margin-top: .8cqw }
+  .price b { font-size: 17cqw; line-height: .9; font-weight: 800; letter-spacing: -.05em; color: var(--acc) }
+  .price span { font-size: 4cqw; font-weight: 600; color: var(--tx) }
+  .alt { margin-top: 1.6cqw; font-size: 3.7cqw; font-weight: 600 }
+  .alt s { text-decoration: none; color: var(--mu) }
+  .cta { text-align: center }
+  .qr { width: 21cqw; height: 21cqw; background: #fff; border-radius: 2cqw; padding: 1.2cqw; margin-left: auto }
+  .qr img { width: 100%; height: 100%; display: block }
+  .cta b { display: block; margin-top: 1.6cqw; font-size: 2.9cqw; font-weight: 800; letter-spacing: -.01em }
+  .cta span { display: block; font-size: 2.3cqw; color: var(--mu); margin-top: .3cqw }
+  .fine { margin-top: 3.2cqw; padding-top: 2.4cqw; border-top: .2cqw solid var(--line); font-size: 1.9cqw; color: var(--mu); display: flex; justify-content: space-between; gap: 4cqw }
+</style>
+</head>
+<body>
+<div class="page" id="page"></div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const f = q.get('f') || 'os', theme = q.get('theme') || 'dark', size = q.get('size') || 'a4';
+  document.body.classList.add(theme, size);
+
+  const FLYERS = {
+    os: {
+      brand: ['assets/mark.svg', 'Nubo OS', 'mark'],
+      h1: 'The free desktop built in <em>Bharat</em>.',
+      sub: 'Fast, secure and yours. Add Pro support when you want it.',
+      hero: ['assets/desktop.jpg'], pos: '50% 100%',
+      lab: 'Nubo Pro support', price: '₹499', unit: 'a year', alt: 'or <b>₹2,999</b> once',
+      cta: ['Scan to download free', 'os.nubosuite.tech'], qr: 'assets/qr-os.svg',
+      fine: ['Community is free. Servers: ₹9,999 a year, ₹49,999 with 24×7 support.', 'Per device, incl. GST.']
+    },
+    office: {
+      brand: ['assets/icon-Office.svg', 'Nubo Office', ''],
+      h1: 'Office. <em>Pay once.</em>',
+      sub: 'Write, Cells, Present and Draw. Opens your Word, Excel and PowerPoint files.',
+      hero: ['assets/hero.jpg'], pos: '50% 62%',
+      lab: 'Nubo Office', price: '₹2,499', unit: 'once', alt: 'or <b>₹499</b> a year',
+      cta: ['Scan to see it', 'nubosuite.tech/office'], qr: 'assets/qr-office.svg',
+      fine: ['One plan. Everything included.', 'Per device, incl. GST.']
+    },
+    bundle: {
+      brand: ['assets/mark.svg', 'Nubo', 'mark'],
+      h1: 'OS + Office. <em>One price.</em>',
+      sub: 'Nubo Pro and Nubo Office, together.',
+      hero: ['assets/desktop.jpg', 'assets/write.jpg'], pos: '50% 100%',
+      lab: 'Nubo Pro + Office', price: '₹799', unit: 'a year', alt: 'or <b>₹3,999</b> once <s>&nbsp;· save ₹1,499</s>',
+      cta: ['Scan to get started', 'os.nubosuite.tech'], qr: 'assets/qr-os.svg',
+      fine: ['Bundle of Nubo Pro and Nubo Office.', 'Per device, incl. GST.']
+    }
+  };
+  const d = FLYERS[f];
+  document.title = 'Nubo flyer: ' + f;
+  document.getElementById('page').innerHTML = `
+    <div class="top">
+      <div class="brand"><img class="${d.brand[2]}" src="${d.brand[0]}" alt="">${d.brand[1]}</div>
+      <div class="made"><i></i>भारत में निर्मित</div>
+    </div>
+    <h1>${d.h1}</h1>
+    <p class="sub">${d.sub}</p>
+    <div class="hero ${d.hero.length === 1 ? 'one' : ''}">
+      <img class="a" style="object-position:${d.pos || '50% 50%'}" src="${d.hero[0]}" alt="">
+      ${d.hero[1] ? `<img class="b" src="${d.hero[1]}" alt="">` : ''}
+    </div>
+    <div class="buy">
+      <div>
+        <div class="lab">${d.lab}</div>
+        <div class="price"><b>${d.price}</b><span>${d.unit}</span></div>
+        <div class="alt">${d.alt}</div>
+      </div>
+      <div class="cta">
+        <div class="qr"><img src="${d.qr}" alt=""></div>
+        <b>${d.cta[0]}</b><span>${d.cta[1]}</span>
+      </div>
+    </div>
+    <div class="fine"><span>${d.fine[0]}</span><span>${d.fine[1]}</span></div>`;
+</script>
+</body>
+</html>
