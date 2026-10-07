@@ -101,3 +101,6 @@ Contours, Beam, Shards. Generated at 3840x2160 during the package build from
 - Boot menu entry reads "Ubuntu" (hidden on a normal start)
 - Sign-in via Nubo account not yet approved end to end with a real account
 - Dark mode for modern apps is libadwaita's own dark grey, not pure black
+
+
+<!-- Security scan triggered at 2026-10-07 11:18:08 -->
