@@ -30,6 +30,11 @@ autoinstall:
         uri: https://archive.nubosuite.tech/cumulus-arm
   late-commands:
     - mkdir -p /target/var/tmp/nubo
+    # scrcpy would download a helper file while installing, and the install fails on a
+    # computer that is offline or blocks the download. The helper is fetched at first boot.
+    - >-
+      curtin in-target --target=/target -- sh -c
+      'echo "scrcpy scrcpy/update_server boolean false" | debconf-set-selections'
     - cp /cdrom/nubo/pool/*.deb /target/var/tmp/nubo/
     - >-
       curtin in-target --target=/target -- sh -c

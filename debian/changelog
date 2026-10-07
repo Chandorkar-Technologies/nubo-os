@@ -1,3 +1,15 @@
+nubo-os (0.8.0~beta14) resolute; urgency=medium
+
+  * Installer: the Android screen-mirroring package (scrcpy) no longer downloads
+    a helper file while installing. That download made the installation fail on
+    computers that are offline or block it, and broke the desktop image build.
+    The helper is fetched at first boot when the computer is online.
+  * VM disks: the file system is grown to the 16 GB disk before installing, so
+    the Virtualization flavour fits.
+  * Nubo Office launchers install the Nubo build from the Nubo repository first.
+
+ -- Ninad Chandorkar <ninad@chandorkartechnologies.com>  Wed, 07 Oct 2026 12:40:00 +0530
+
 nubo-os (0.8.0~beta13) resolute; urgency=medium
 
   * Nubo Mail, Calendar, Contacts and Drive: separate windows over the Nubo

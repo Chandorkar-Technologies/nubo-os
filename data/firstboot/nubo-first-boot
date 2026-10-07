@@ -35,6 +35,13 @@ if command -v flatpak >/dev/null; then
     && log "Flathub added" || log "Flathub not added yet (offline?)"
 fi
 
+# scrcpy (Android screen mirroring) needs a helper file from its makers. It is not fetched while
+# installing, so fetch it now if the computer is online. Harmless to retry on the next boot.
+if [[ ! -s /usr/share/scrcpy/scrcpy-server && -x /usr/libexec/scrcpy-update-server ]]; then
+  /usr/libexec/scrcpy-update-server >/dev/null 2>&1 \
+    && log "scrcpy helper fetched" || log "scrcpy helper not fetched yet (offline?)"
+fi
+
 # Login-screen picture for the account(s) made by the installer.
 if [[ -f /usr/share/nubo/avatar.png ]]; then
   while IFS=: read -r user _ uid _ _ home _; do

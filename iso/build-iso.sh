@@ -128,6 +128,8 @@ cp "${WORK}"/stage/nubo/pool/*.deb "${WORK}/live-root/var/tmp/nubo/"
 if ! chroot "${WORK}/live-root" sh -c '
   set -e
   export DEBIAN_FRONTEND=noninteractive
+  # scrcpy (Android screen mirroring) downloads a helper file while it installs; skip that here.
+  echo "scrcpy scrcpy/update_server boolean false" | debconf-set-selections
   apt-get update -q >/dev/null
   apt-get install -y -q -o Dpkg::Options::=--force-confnew /var/tmp/nubo/*.deb
   rm -rf /var/tmp/nubo
