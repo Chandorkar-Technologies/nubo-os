@@ -99,6 +99,16 @@ internal install folder names (`/app/collaboraoffice`), which users never see.
 The script is run on every upstream release we take, so the rebrand is a script plus our brand pack,
 not a fork to maintain by hand.
 
+## First build result (2026-10-07, VM 301)
+
+The engine and the Qt desktop app built from `coda-26.04.3.3-1` with `rebrand.py` applied, no errors.
+Run under a virtual display the app shows "Nubo Office", the Nubo mark and a blue header on the
+start screen (it was "Collabora Office" and purple until the `.tsx` files and the editor's `--doc-type`
+colours were fixed), and a blank document opens in the editor. `--doc-type` colours now follow the
+icon family: text blue, spreadsheet green, presentation orange, drawing violet. Not yet checked:
+the other three document types, dark and light themes side by side, dialogs, the About window, the
+Flatpak build, file open and save.
+
 ## Platforms (checked in the source, 2026-10-07)
 
 | Platform | In the source | Build needs | Status |

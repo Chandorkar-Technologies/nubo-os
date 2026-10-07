@@ -48,13 +48,22 @@ def logo(path, color, wordmark, size):
     open(os.path.join(IMG, path), "w").write(svg)
 
 
+# The editor colours its header and highlights per kind of document, and uses a purple
+# fallback on the start screen. Ours follow the app icons: Write blue, Cells green,
+# Present orange, Draw violet; the start screen takes the suite blue. Values are r, g, b.
+DOCTYPE = {"text": "47, 111, 222", "spreadsheet": "15, 157, 88", "presentation": "230, 81, 28", "drawing": "138, 56, 238"}
+START = "47, 111, 222"
+
+
 def css():
     def block(sel, c):
         return ("%s {\n  --color-primary: %s;\n  --color-primary-dark: %s;\n  --color-primary-darker: %s;\n"
                 "  --color-primary-lighter: %s;\n  --color-primary-text: #fff;\n}\n"
                 % (sel, c["primary"], c["dark"], c["darker"], c["lighter"]))
     return ("/* Nubo Office brand pack: written for Nubo OS. */\n\n"
-            + block(":root", LIGHT) + "\n" + block("html[data-theme=dark]", DARK) + """
+            + block(":root", LIGHT) + "\n" + block("html[data-theme=dark]", DARK)
+            + ":root {\n  --doc-type: %s;\n}\n" % START
+            + "".join("[data-doctype='%s'] {\n  --doc-type: %s;\n}\n" % kv for kv in DOCTYPE.items()) + """
 .img-coda-app-logo {
   background: url("images/full-logo.svg") no-repeat center !important;
 }

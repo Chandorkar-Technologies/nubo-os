@@ -27,7 +27,7 @@ ISSUES = "https://github.com/Chandorkar-Technologies/nubo-os/issues"
 
 ROOTS = ("qt", "browser")
 SKIP_DIRS = {"node_modules", "l10n", "po", "translations", "test", "mocha_tests", "dist", ".git", "cypress_test"}
-TEXT_EXT = {".ts", ".js", ".html", ".m4", ".css", ".cpp", ".hpp", ".xml", ".desktop", ".json", ".am", ".md", ".py", ".in", ".svg"}
+TEXT_EXT = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".html", ".m4", ".css", ".cpp", ".hpp", ".xml", ".desktop", ".json", ".am", ".md", ".py", ".in", ".svg"}
 KEEP_LINE = re.compile(r"copyright|licen[cs]e|spdx|part of the .* project|\(C\)", re.I)
 
 # Ordered: specific before general.
@@ -123,6 +123,9 @@ def flatpak_manifest(root, brand_dir):
     # The engine is built inside the Flatpak: give it our product name and vendor.
     text = text.replace("--with-distro=CPLinuxQtFlatpak",
                         "--with-distro=CPLinuxQtFlatpak --with-product-name='Nubo Office' --with-vendor=Nubo")
+    if '"name": "collabora-office-branding"' not in text:   # already switched to our pack
+        open(path, "w", encoding="utf-8").write(text)
+        return True
     start = text.index('"name": "collabora-office-branding"')
     start = text.rindex("{", 0, start)
     end = text.index("\n    }\n", start) + len("\n    }\n")
@@ -238,7 +241,7 @@ def main():
     meta = metainfo(root, here, version)
     slides = welcome(root)
     art = welcome_art(root, os.path.join(here, "brand", "welcome"))
-    logos = logo_images(root, os.path.join(here, "brand", "images", "full-logo-white.svg"))
+    logos = logo_images(root, os.path.join(here, "brand", "images", "toolbar-bg-logo-dark.svg"))
     print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d, welcome texts: %d, welcome pictures: %d"
           % (changed, renamed, icons, manifest, meta, logos, slides, art))
     report(root)
