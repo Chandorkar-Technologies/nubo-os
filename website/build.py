@@ -104,6 +104,11 @@ def copy_assets(site, files):
     os.makedirs(os.path.join(base, 'js'), exist_ok=True)
     shutil.copy(NM + '/gsap/dist/gsap.min.js', os.path.join(base, 'js', 'gsap.min.js'))
     shutil.copy(NM + '/gsap/dist/ScrollTrigger.min.js', os.path.join(base, 'js', 'ScrollTrigger.min.js'))
+    office = os.path.join(SRC, 'office')
+    if os.path.isdir(office):
+        os.makedirs(os.path.join(base, 'office'), exist_ok=True)
+        for n in os.listdir(office):
+            shutil.copy(os.path.join(office, n), os.path.join(base, 'office', n))
     shutil.copy(os.path.join(SRC, 'favicon.svg'), os.path.join(DIST, site, 'favicon.svg'))
     shutil.copy(os.path.join(SRC, 'og.jpg'), os.path.join(DIST, site, 'assets', 'og.jpg'))
 
@@ -333,6 +338,23 @@ a.nsc:hover{transform:translateY(-3px);border-color:rgba(242,166,90,.5)}
 
 # ------------------------------------------------------------------ static pages
 STATIC_CSS = """
+.shot{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.5);background:var(--card)}
+.hero-shot{margin-top:44px}
+.cap{font-size:14px;color:var(--mu);margin-top:12px;text-align:center}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:clamp(24px,4vw,56px);align-items:center;margin:56px 0}
+.split.rev{grid-template-columns:minmax(0,8fr) minmax(0,5fr)}.split.rev .txt{order:2}
+.split .txt h3{font-size:26px;letter-spacing:-.02em;margin:14px 0 8px}
+.split .txt p{color:var(--mu2);font-size:16px}
+.split .txt ul{margin:14px 0 0;padding-left:20px;color:var(--mu2);font-size:15px}
+.split .txt ul li{margin:6px 0}
+.appicon{width:76px;height:76px;display:block;border-radius:19px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.fmts{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--mu);margin-top:14px}
+.iconrow{display:flex;flex-wrap:wrap;gap:18px 22px;margin-top:22px}
+.iconrow figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:var(--mu2);width:92px;text-align:center}
+.iconrow img{width:76px;height:76px;border-radius:19px;display:block}
+.pair2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:22px}
+.pair2 img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);display:block;background:#fff}
+@media(max-width:820px){.split,.split.rev{grid-template-columns:minmax(0,1fr)}.split.rev .txt{order:0}}
 :root{--bg:#050608;--bg2:#0B0C10;--card:#101216;--line:rgba(255,255,255,.1);--tx:#F5F5F7;--mu:#86868B;--mu2:#A1A1A6;--amber:#F2A65A;--ok:#7FE0A8;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--tx)}
