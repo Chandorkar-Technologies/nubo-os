@@ -5,6 +5,13 @@
 #   tag office-26.04.3.3-1 builds upstream coda-26.04.3.3-1 as version 26.04.3.3-nubo1
 set -euo pipefail
 cd "$(dirname "$0")/.."
+# Drone runs this as root. The Flatpak build must not run as root (see build-office.sh), so
+# hand over to the ordinary build user, keeping the secrets in the environment.
+if [[ "$(id -u)" -eq 0 ]]; then
+  BUILD_USER="${BUILD_USER:-nubo}"
+  chown -R "${BUILD_USER}" "$PWD" 2>/dev/null || true
+  exec sudo -E -u "${BUILD_USER}" env "PATH=${PATH}" "$PWD/ci/build-office-tag.sh" "$@"
+fi
 TAG="${1:?tag, for example office-26.04.3.3-1}"
 REL="${TAG#office-}"
 UPSTREAM="coda-${REL}"
