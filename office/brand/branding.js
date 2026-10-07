@@ -1,6 +1,9 @@
 /* Nubo Office brand pack: written for Nubo OS, not taken from any other brand pack.
  * Sets the product name and link the editor shows, and credits the technology base. */
 
+// A consumer product: no notices for macro authors about the legacy script interface.
+window.hideLegacyScriptWarning = true;
+
 var brandProductName = brandProductName === undefined ? 'Nubo Office' : brandProductName;
 var brandProductURL = brandProductURL === undefined ? 'https://os.nubosuite.tech/' : brandProductURL;
 

@@ -105,9 +105,13 @@ The engine and the Qt desktop app built from `coda-26.04.3.3-1` with `rebrand.py
 Run under a virtual display the app shows "Nubo Office", the Nubo mark and a blue header on the
 start screen (it was "Collabora Office" and purple until the `.tsx` files and the editor's `--doc-type`
 colours were fixed), and a blank document opens in the editor. `--doc-type` colours now follow the
-icon family: text blue, spreadsheet green, presentation orange, drawing violet. Not yet checked:
-the other three document types, dark and light themes side by side, dialogs, the About window, the
-Flatpak build, file open and save.
+icon family: text blue, spreadsheet green, presentation orange, drawing violet. All four apps open
+(Write blue, Cells green, Present orange, Draw violet). The Help menu links go to our docs and issue
+tracker, and the About window says "Nubo Office", keeps "License Information", and credits
+"Built on Collabora Online and LibreOffice technology". The macro-author notice about the legacy UNO
+interface is hidden (desktop front end, plus a server default). `rebrand.py` is idempotent: a second run changes nothing.
+Not yet checked: light theme, other dialogs, form-control and icon tints, file open and save, the Flatpak
+build, the web server build.
 
 ## Platforms (checked in the source, 2026-10-07)
 

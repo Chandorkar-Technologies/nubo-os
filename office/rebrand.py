@@ -20,6 +20,7 @@ import subprocess
 import sys
 
 NAME = "Nubo Office"
+CREDIT = "Built on Collabora Online and LibreOffice technology"   # attribution; never renamed
 APP_ID = "tech.nubosuite.Office"
 HOME = "https://os.nubosuite.tech"
 DOCS = "https://docs.nubosuite.tech/"
@@ -67,7 +68,7 @@ def rewrite(path):
     out, changed = [], 0
     for line in text.split("\n"):
         new = line
-        if not KEEP_LINE.search(line):
+        if not KEEP_LINE.search(line) and CREDIT not in line:
             for old, rep in TEXT_RULES:
                 new = new.replace(old, rep)
         changed += new != line
@@ -209,6 +210,47 @@ def welcome_art(root, art_dir):
     return n
 
 
+def defaults(root):
+    """Product defaults: hide the macro-author notice about the legacy UNO interface."""
+    n = 0
+    path = os.path.join(root, "common", "ConfigUtil.cpp")
+    if os.path.exists(path):
+        text = open(path, encoding="utf-8").read()
+        out = text.replace('{ "hide_legacy_script_warning", "false" }', '{ "hide_legacy_script_warning", "true" }')
+        if out != text:
+            open(path, "w", encoding="utf-8").write(out)
+            n += 1
+    # The desktop app never gets the server's setting, so the front end hides it there itself.
+    path = os.path.join(root, "browser", "src", "control", "Control.UIManager.ts")
+    if os.path.exists(path):
+        text = open(path, encoding="utf-8").read()
+        out = text.replace("if (window.hideLegacyScriptWarning) return;",
+                           "if (window.hideLegacyScriptWarning || window.mode.isCODesktop()) return;")
+        if out != text:
+            open(path, "w", encoding="utf-8").write(out)
+            n += 1
+    return n
+
+
+def about_credit(root):
+    """The About window credits the technology it is built on (the licence asks us to keep attribution)."""
+    path = os.path.join(root, "browser", "src", "control", "Control.AboutDialog.ts")
+    if not os.path.exists(path):
+        return 0
+    text = open(path, encoding="utf-8").read()
+    if CREDIT in text:
+        return 0
+    anchor = "productNameElement.innerText = productName;\n"
+    if anchor not in text:
+        return 0
+    add = (anchor + "\t\tconst nuboCredit = document.createElement('div');\n"
+           "\t\tnuboCredit.id = 'nubo-credit';\n"
+           "\t\tnuboCredit.textContent = '%s';\n"
+           "\t\tcontent.appendChild(nuboCredit);\n" % CREDIT)
+    open(path, "w", encoding="utf-8").write(text.replace(anchor, add, 1))
+    return 1
+
+
 def report(root):
     pat = re.compile(r"collabora|libreoffice", re.I)
     left = {}
@@ -240,6 +282,8 @@ def main():
     version = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "0.0.0"
     meta = metainfo(root, here, version)
     slides = welcome(root)
+    defaults(root)
+    about_credit(root)
     art = welcome_art(root, os.path.join(here, "brand", "welcome"))
     logos = logo_images(root, os.path.join(here, "brand", "images", "toolbar-bg-logo-dark.svg"))
     print("lines changed: %d, files renamed: %d, icons redrawn: %d, flatpak manifest: %s, metainfo: %s, logo images: %d, welcome texts: %d, welcome pictures: %d"
