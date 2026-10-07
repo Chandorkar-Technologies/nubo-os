@@ -145,11 +145,7 @@ steps:
       R2_SECRET_ACCESS_KEY: {from_secret: r2_secret_access_key}
       R2_ENDPOINT: {from_secret: r2_endpoint}
     commands:
-      - |
-        echo "$GPG_KEY" | gpg --batch --import
-        export GPG_KEY_ID="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')"
-        REL="${DRONE_TAG#office-}"
-        ci/build-office.sh "coda-${REL}" "${REL%-*}-nubo${REL##*-}"
+      - ci/build-office-tag.sh "$DRONE_TAG"
 
 ---
 kind: pipeline
