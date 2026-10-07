@@ -35,6 +35,17 @@ if command -v flatpak >/dev/null; then
     && log "Flathub added" || log "Flathub not added yet (offline?)"
 fi
 
+# Nubo Office: the Nubo repository, and the suite itself. Needs the network. Flathub (above) supplies
+# the runtime it runs on. If this fails the launchers retry the install on first use, so it is harmless.
+if command -v flatpak >/dev/null; then
+  flatpak remote-add --if-not-exists --system nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo >/dev/null 2>&1 \
+    && log "Nubo Flatpak repository added" || log "Nubo Flatpak repository not added yet (offline or not published)"
+  if ! flatpak info tech.nubosuite.Office >/dev/null 2>&1; then
+    flatpak install --system -y --noninteractive nubo tech.nubosuite.Office >/dev/null 2>&1 \
+      && log "Nubo Office installed" || log "Nubo Office not installed yet (offline or not published); the launchers install it on first use"
+  fi
+fi
+
 # scrcpy (Android screen mirroring) needs a helper file from its makers. It is not fetched while
 # installing, so fetch it now if the computer is online. Harmless to retry on the next boot.
 if [[ ! -s /usr/share/scrcpy/scrcpy-server && -x /usr/libexec/scrcpy-update-server ]]; then
