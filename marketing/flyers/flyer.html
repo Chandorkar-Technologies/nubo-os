@@ -3,116 +3,93 @@
 <head>
 <meta charset="utf-8">
 <title>Nubo flyer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+Devanagari:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@500&display=swap" rel="stylesheet">
 <style>
-  /* One idea per flyer: a short headline, one picture, one price, one QR code.
-     Everything is sized in cqw (a percentage of the page width), so the same design
-     works on A4 and on a 4:5 social post.  URL: flyer.html?f=os|office|bundle&theme=dark|light&size=a4|social */
+  /* Nubo flyers: studio-white direction. One file, three flyers, two sizes.
+     flyer.html?f=os|office|bundle&size=a4|social
+     Everything is sized in cqw (percent of page width), so A4 and the 4:5 post share one design. */
   @page { size: A4; margin: 0 }
-  :root { --bg: #08090C; --tx: #F7F7F8; --mu: #9A9AA3; --acc: #FF9933; --card: #14161B; --line: rgba(255,255,255,.14); --shadow: rgba(0,0,0,.7); --glow: rgba(255,153,51,.16) }
-  body.light { --bg: #FFFFFF; --tx: #0D0E12; --mu: #5B5B66; --acc: #D45F00; --card: #F3F3F5; --line: rgba(0,0,0,.14); --shadow: rgba(0,0,0,.28); --glow: rgba(255,153,51,.0) }
   * { box-sizing: border-box; margin: 0; padding: 0 }
-  html, body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact }
-  body { font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif; color: var(--tx); -webkit-font-smoothing: antialiased }
-  .page { position: relative; overflow: hidden; background: var(--bg); container-type: size; display: flex; flex-direction: column; padding: 7cqw 7cqw 6cqw }
+  html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #F6F6F8 }
+  body { font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif; color: #1D1D1F; -webkit-font-smoothing: antialiased }
+  .page { position: relative; overflow: hidden; container-type: size; background: linear-gradient(#FBFBFD, #EDEDF1); display: flex; flex-direction: column; align-items: center; padding: 7.5cqw 8cqw 5.5cqw; text-align: center }
   body.a4 .page { width: 210mm; height: 297mm }
   body.social .page { width: 1080px; height: 1350px }
-  .page::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 88% 10%, var(--glow), transparent 48%) }
-  .page > * { position: relative }
 
-  .top { display: flex; justify-content: space-between; align-items: center }
-  .brand { display: flex; align-items: center; gap: 1.8cqw; font-weight: 800; font-size: 3.6cqw; letter-spacing: -.01em }
-  .brand img { height: 4.6cqw; width: auto; border-radius: 1cqw }
-  body.light .brand img.mark { filter: invert(1) }
-  .made { display: flex; align-items: center; gap: 1.4cqw; font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; font-weight: 700; font-size: 2.7cqw; color: var(--mu) }
-  .made i { display: block; width: 3.4cqw; height: 2.2cqw; border-radius: .4cqw; background: linear-gradient(180deg, #FF9933 33%, #fff 33% 66%, #138808 66%); box-shadow: 0 0 0 .15cqw var(--line) }
+  .logo { display: flex; align-items: center; gap: 1.6cqw; font-size: 3.2cqw; font-weight: 600; letter-spacing: -.01em }
+  .logo img { height: 4cqw; width: auto }
+  .logo img.mark { filter: invert(1) }
+  .logo img.app { border-radius: .9cqw }
 
-  h1 { margin-top: 6.5cqw; font-size: 12.4cqw; line-height: .98; font-weight: 800; letter-spacing: -.045em; text-wrap: balance }
-  h1 em { font-style: normal; color: var(--acc) }
-  .sub { margin-top: 3cqw; font-size: 3.5cqw; line-height: 1.35; color: var(--mu); max-width: 78cqw }
+  h1 { margin-top: 8cqw; font-size: 10.6cqw; line-height: 1.03; font-weight: 600; letter-spacing: -.045em; text-wrap: balance }
+  /* the flag, left to right; the soft edge keeps the white band readable on a white page */
+  h1 em { font-style: normal; background: linear-gradient(90deg, #FF9933 0 37%, #fff 37% 63%, #138808 63% 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 .12cqw rgba(0,0,0,.85)) drop-shadow(0 .1cqw .3cqw rgba(0,0,0,.35)) }
+  .sub { margin-top: 2.6cqw; font-size: 3.5cqw; color: #6E6E73; line-height: 1.35 }
 
-  .hero { flex: 1; min-height: 0; margin-top: 5cqw; position: relative; overflow: hidden; border-radius: 2cqw; border: .2cqw solid var(--line); box-shadow: 0 3cqw 8cqw var(--shadow); background: #000 }
-  .hero img { position: absolute; display: block }
-  .hero .a { left: 0; top: 0; width: 100%; height: 100%; object-fit: cover }
-  .hero .b { right: 4cqw; bottom: -5cqw; width: 66%; border-radius: 1.4cqw; border: .2cqw solid rgba(255,255,255,.2); box-shadow: 0 2cqw 6cqw rgba(0,0,0,.7) }
+  .stage { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center }
+  .laptop { width: 86cqw; filter: drop-shadow(0 4cqw 7cqw rgba(0,0,0,.28)) }
+  body.social .laptop { width: 76cqw }
+  .lid { background: #0a0a0c; border-radius: 1.8cqw 1.8cqw 0 0; padding: 1cqw 1cqw 0; border: .22cqw solid #34343a; border-bottom: 0 }
+  .lid img { display: block; width: 100%; border-radius: .8cqw .8cqw 0 0 }
+  .base { height: 1.7cqw; margin: 0 -3.5cqw; border-radius: 0 0 2.4cqw 2.4cqw; background: linear-gradient(#cfcfd4, #a5a5ab); position: relative }
+  .base::after { content: ''; position: absolute; left: 50%; top: 0; width: 12cqw; height: .7cqw; transform: translateX(-50%); border-radius: 0 0 1cqw 1cqw; background: #8d8d93 }
 
-  .buy { display: grid; grid-template-columns: 1fr auto; gap: 4cqw; align-items: end; margin-top: 3cqw }
-  .lab { font-size: 2.6cqw; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--mu) }
-  .price { display: flex; align-items: baseline; gap: 1.8cqw; margin-top: .8cqw }
-  .price b { font-size: 17cqw; line-height: .9; font-weight: 800; letter-spacing: -.05em; color: var(--acc) }
-  .price span { font-size: 4cqw; font-weight: 600; color: var(--tx) }
-  .alt { margin-top: 1.6cqw; font-size: 3.7cqw; font-weight: 600 }
-  .alt s { text-decoration: none; color: var(--mu) }
-  .cta { text-align: center }
-  .qr { width: 21cqw; height: 21cqw; background: #fff; border-radius: 2cqw; padding: 1.2cqw; margin-left: auto }
+  .row { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; text-align: left }
+  .price { font-size: 3.6cqw; line-height: 1.5; color: #6E6E73 }
+  .price b { display: block; font-size: 8cqw; font-weight: 600; letter-spacing: -.04em; color: #1D1D1F; line-height: 1.05 }
+  .price b small { font-size: 3.4cqw; font-weight: 500; color: #6E6E73; letter-spacing: 0 }
+  .qrbox { text-align: center; font-size: 2.3cqw; color: #6E6E73; line-height: 1.4 }
+  .qr { background: #fff; border-radius: 1.4cqw; padding: .9cqw; width: 15.5cqw; height: 15.5cqw; margin: 0 auto 1.2cqw; box-shadow: 0 0 0 .2cqw rgba(0,0,0,.08) }
   .qr img { width: 100%; height: 100%; display: block }
-  .cta b { display: block; margin-top: 1.6cqw; font-size: 2.9cqw; font-weight: 800; letter-spacing: -.01em }
-  .cta span { display: block; font-size: 2.3cqw; color: var(--mu); margin-top: .3cqw }
-  .fine { margin-top: 3.2cqw; padding-top: 2.4cqw; border-top: .2cqw solid var(--line); font-size: 1.9cqw; color: var(--mu); display: flex; justify-content: space-between; gap: 4cqw }
+  .fine { margin-top: 3.2cqw; font-size: 1.9cqw; color: #8E8E93; letter-spacing: .01em }
 </style>
 </head>
 <body>
-<div class="page" id="page"></div>
+<div class="page" id="p"></div>
 <script>
   const q = new URLSearchParams(location.search);
-  const f = q.get('f') || 'os', theme = q.get('theme') || 'dark', size = q.get('size') || 'a4';
-  document.body.classList.add(theme, size);
-
-  const FLYERS = {
+  const f = q.get('f') || 'os', size = q.get('size') || 'a4';
+  document.body.classList.add(size);
+  const F = {
     os: {
-      brand: ['assets/mark.svg', 'Nubo OS', 'mark'],
-      h1: 'The free desktop built in <em>Bharat</em>.',
-      sub: 'Fast, secure and yours. Add Pro support when you want it.',
-      hero: ['assets/desktop.jpg'], pos: '50% 100%',
-      lab: 'Nubo Pro support', price: '₹499', unit: 'a year', alt: 'or <b>₹2,999</b> once',
-      cta: ['Scan to download free', 'os.nubosuite.tech'], qr: 'assets/qr-os.svg',
-      fine: ['Community is free. Servers: ₹9,999 a year, ₹49,999 with 24×7 support.', 'Per device, incl. GST.']
+      logo: ['assets/mark.svg', 'Nubo OS', 'mark'],
+      h1: 'The desktop,<br>made in <em>Bharat</em>.',
+      sub: 'Free to download. Secure by design.',
+      screen: 'assets/desktop.jpg',
+      lab: 'Pro support', price: '₹499', unit: 'a year', alt: 'or ₹2,999 once',
+      qr: 'assets/qr-os.svg', cta: 'Scan to download free',
+      fine: 'Nubo OS is free. Pro support: per device, inclusive of GST. Servers from ₹9,999 a year.'
     },
     office: {
-      brand: ['assets/icon-Office.svg', 'Nubo Office', ''],
-      h1: 'Office. <em>Pay once.</em>',
-      sub: 'Write, Cells, Present and Draw. Opens your Word, Excel and PowerPoint files.',
-      hero: ['assets/hero.jpg'], pos: '50% 62%',
-      lab: 'Nubo Office', price: '₹2,499', unit: 'once', alt: 'or <b>₹499</b> a year',
-      cta: ['Scan to see it', 'nubosuite.tech/office'], qr: 'assets/qr-office.svg',
-      fine: ['One plan. Everything included.', 'Per device, incl. GST.']
+      logo: ['assets/icon-Office.svg', 'Nubo Office', 'app'],
+      h1: 'The office suite,<br>made in <em>Bharat</em>.',
+      sub: 'Write, Cells, Present and Draw.',
+      screen: 'assets/hero.jpg',
+      lab: 'Nubo Office', price: '₹2,499', unit: 'once', alt: 'or ₹499 a year',
+      qr: 'assets/qr-office.svg', cta: 'Scan to see it',
+      fine: 'One plan, everything included. Per device, inclusive of GST.'
     },
     bundle: {
-      brand: ['assets/mark.svg', 'Nubo', 'mark'],
-      h1: 'OS + Office. <em>One price.</em>',
-      sub: 'Nubo Pro and Nubo Office, together.',
-      hero: ['assets/desktop.jpg', 'assets/write.jpg'], pos: '50% 100%',
-      lab: 'Nubo Pro + Office', price: '₹799', unit: 'a year', alt: 'or <b>₹3,999</b> once <s>&nbsp;· save ₹1,499</s>',
-      cta: ['Scan to get started', 'os.nubosuite.tech'], qr: 'assets/qr-os.svg',
-      fine: ['Bundle of Nubo Pro and Nubo Office.', 'Per device, incl. GST.']
+      logo: ['assets/mark.svg', 'Nubo', 'mark'],
+      h1: 'All you need,<br>made in <em>Bharat</em>.',
+      sub: 'Nubo OS Pro and Nubo Office, together.',
+      screen: 'assets/bundle-screen.jpg',
+      lab: 'Pro + Office', price: '₹799', unit: 'a year', alt: 'or ₹3,999 once. Save ₹1,499.',
+      qr: 'assets/qr-os.svg', cta: 'Scan to get started',
+      fine: 'Per device, inclusive of GST.'
     }
-  };
-  const d = FLYERS[f];
+  }[f];
   document.title = 'Nubo flyer: ' + f;
-  document.getElementById('page').innerHTML = `
-    <div class="top">
-      <div class="brand"><img class="${d.brand[2]}" src="${d.brand[0]}" alt="">${d.brand[1]}</div>
-      <div class="made"><i></i>भारत में निर्मित</div>
+  document.getElementById('p').innerHTML = `
+    <div class="logo"><img class="${F.logo[2]}" src="${F.logo[0]}" alt="">${F.logo[1]}</div>
+    <h1>${F.h1}</h1>
+    <div class="sub">${F.sub}</div>
+    <div class="stage"><div class="laptop"><div class="lid"><img src="${F.screen}" alt=""></div><div class="base"></div></div></div>
+    <div class="row">
+      <div class="price">${F.lab}<b>${F.price} <small>${F.unit}</small></b>${F.alt}</div>
+      <div class="qrbox"><div class="qr"><img src="${F.qr}" alt=""></div>${F.cta}</div>
     </div>
-    <h1>${d.h1}</h1>
-    <p class="sub">${d.sub}</p>
-    <div class="hero ${d.hero.length === 1 ? 'one' : ''}">
-      <img class="a" style="object-position:${d.pos || '50% 50%'}" src="${d.hero[0]}" alt="">
-      ${d.hero[1] ? `<img class="b" src="${d.hero[1]}" alt="">` : ''}
-    </div>
-    <div class="buy">
-      <div>
-        <div class="lab">${d.lab}</div>
-        <div class="price"><b>${d.price}</b><span>${d.unit}</span></div>
-        <div class="alt">${d.alt}</div>
-      </div>
-      <div class="cta">
-        <div class="qr"><img src="${d.qr}" alt=""></div>
-        <b>${d.cta[0]}</b><span>${d.cta[1]}</span>
-      </div>
-    </div>
-    <div class="fine"><span>${d.fine[0]}</span><span>${d.fine[1]}</span></div>`;
+    <div class="fine">${F.fine}</div>`;
 </script>
 </body>
 </html>
