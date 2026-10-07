@@ -87,8 +87,8 @@ name: images-arm64
 
 platform: {os: linux, arch: arm64}
 node: {nubo-builder: "true"}
-# Stays pending until an arm64 runner is registered; nothing else waits for it yet.
-trigger: {event: [tag], ref: {include: ['refs/tags/*-*'], exclude: ['refs/tags/office-*']}}
+# Switched off: with no arm64 runner it would wait forever and keep the whole build open.
+trigger: {event: [tag], ref: {include: ['refs/tags/arm64-images-*']}}   # off until an arm64 runner exists; then trigger like images-amd64
 depends_on: [debs-amd64, publish]
 
 steps:
