@@ -47,12 +47,13 @@ done
 
 echo "==> Building ${APP_ID} (the long step)"
 SIGN=(); [[ -n "${GPG_KEY_ID:-}" ]] && SIGN=(--gpg-sign="${GPG_KEY_ID}")
+# --disable-tests: the manifest runs Collabora's desktop UI tests (needs a real display; the print-dialog one fails here).
 # --disable-rofiles-fuse: an ordinary user cannot mount the helper on this machine, and it is only a speed-up.
 # Old build trees are 30 GB each and only the cache beside them is worth keeping: a failed run left
 # several behind and filled the disk at the final link.
 rm -rf "${WORK}/state/build" "${WORK}/build"
 # --state-dir keeps downloads and the compiler cache outside the fresh checkout, so a rerun is quick.
-(cd "${SRC}" && flatpak-builder --force-clean --ccache --disable-rofiles-fuse --state-dir="${WORK}/state" --repo="${REPO}" "${SIGN[@]}" \
+(cd "${SRC}" && flatpak-builder --force-clean --ccache --disable-rofiles-fuse --disable-tests --state-dir="${WORK}/state" --repo="${REPO}" "${SIGN[@]}" \
   --default-branch=stable "${WORK}/build" "qt/flatpak/${APP_ID}.json")
 flatpak build-update-repo "${SIGN[@]}" --generate-static-deltas --prune "${REPO}"
 
