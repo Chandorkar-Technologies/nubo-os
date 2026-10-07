@@ -7,17 +7,26 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 TAG="${1:?tag, for example office-26.04.3.3-1}"
+SECRET_VARS=(GPG_KEY R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_ENDPOINT R2_BUCKET NUBO_DRY_RUN WORK)
 
 # Drone runs this as root, in a private folder. The Flatpak build must not run as root
-# (see build-office.sh), so copy the checkout somewhere the build user owns and hand over,
-# keeping the secrets in the environment.
+# (see build-office.sh), so copy the checkout somewhere the build user owns and hand over.
+# sudo here ignores -E, so the secrets travel in a file only the build user can read,
+# which it deletes as soon as it has read it.
 if [[ "$(id -u)" -eq 0 ]]; then
   BUILD_USER="${BUILD_USER:-nubo}"
   JOB="$(mktemp -d /var/tmp/nubo-office-job.XXXXXX)"
   cp -a "$PWD/." "${JOB}/"
+  ( umask 077; : > "${JOB}/.job-env"
+    for v in "${SECRET_VARS[@]}"; do
+      [[ -n "${!v:-}" ]] && printf 'export %s=%q\n' "$v" "${!v}" >> "${JOB}/.job-env"
+    done; true )
   chown -R "${BUILD_USER}" "${JOB}"
-  exec sudo -E -u "${BUILD_USER}" env "PATH=${PATH}" "${JOB}/ci/build-office-tag.sh" "$@"
+  sudo -u "${BUILD_USER}" "${JOB}/ci/build-office-tag.sh" "$@" && rc=0 || rc=$?
+  rm -rf "${JOB}"
+  exit "${rc}"
 fi
+if [[ -f "${PWD}/.job-env" ]]; then . "${PWD}/.job-env"; rm -f "${PWD}/.job-env"; fi
 
 REL="${TAG#office-}"
 UPSTREAM="coda-${REL}"
@@ -30,5 +39,5 @@ if [[ -n "${GPG_KEY:-}" ]]; then
   export GPG_KEY_ID
   echo "Signing with key ${GPG_KEY_ID}"
 fi
-[[ -n "${NUBO_DRY_RUN:-}" ]] && { echo "dry run: would build ${UPSTREAM} as ${VERSION}"; exit 0; }
-exec ci/build-office.sh "${UPSTREAM}" "${VERSION}"
+[[ -n "${NUBO_DRY_RUN:-}" ]] && { echo "dry run: would build ${UPSTREAM} as ${VERSION}; R2 set: ${R2_ENDPOINT:+yes}"; exit 0; }
+ci/build-office.sh "${UPSTREAM}" "${VERSION}"
