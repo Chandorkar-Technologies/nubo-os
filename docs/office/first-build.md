@@ -1,9 +1,4 @@
----
-title: "First build results"
-description: "What the first Nubo Office build did, how we checked it, and what is left."
-sidebar:
-  order: 80
----
+# First build results
 
 **Applies to:** Developers
 
@@ -44,5 +39,5 @@ Built on 2026-10-07 on a VM with 8 cores, 22 GB RAM, from tag `coda-26.04.3.3-1`
 
 ## See also
 
-- [Source and build](/office/collabora/source-and-build/)
-- [The rebrand script](/office/collabora/rebrand-script/)
+- [Source and build](source-and-build.md)
+- [The rebrand script](rebrand-script.md)

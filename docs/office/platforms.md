@@ -1,9 +1,4 @@
----
-title: "Platforms and build requirements"
-description: "What the source contains for Linux, web, Windows, macOS, Android and iOS, what each build needs, and the order we plan them."
-sidebar:
-  order: 50
----
+# Platforms and build requirements
 
 **Applies to:** Developers
 
@@ -45,4 +40,4 @@ Run the trademark search for the five names, and ask Collabora to confirm the cr
 ## See also
 
 - [Other platforms](/office/install/other-platforms/)
-- [Pipeline for Nubo Office](/office/collabora/pipeline/)
+- [Pipeline for Nubo Office](pipeline.md)

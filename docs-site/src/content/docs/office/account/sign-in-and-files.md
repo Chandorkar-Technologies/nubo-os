@@ -22,12 +22,12 @@ An office suite is expected to open a file on your disk the moment you double-cl
 The desktop app opens a picker that shows the server's own page. When you choose a document, the server gives the app a short-lived address and token for that one document, using the open WOPI protocol that Nextcloud and other servers use. The app downloads the document, you edit it, and it is saved back to the server.
 
 :::caution[Planned]
-Opening documents from Nubo Email's drive depends on the document server for `office.nubo.email` being switched from ONLYOFFICE to the Nubo build of Collabora Online. See [The web editor](/office/collabora/web-server/).
+Opening documents from Nubo Email's drive in the desktop apps is planned. Today, documents in Nubo Email open in the editor that Nubo Email already has.
 :::
 
 ## Shared editing
 
-Comments and tracked changes work in the desktop apps. Several people editing one document at the same time needs the Nubo document server and is planned.
+Comments and tracked changes work in the desktop apps. Several people editing one document at the same time is planned, for documents stored on a Nubo server.
 
 ## See also
 

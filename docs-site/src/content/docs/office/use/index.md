@@ -1,9 +1,10 @@
 ---
 title: "Using Nubo Office"
-description: "The four apps, how to start them, and what each one opens."
+description: "Start an app, open and save files, and find help inside the apps."
 sidebar:
   order: 10
 ---
 
-- [The four apps](/office/use/the-four-apps/): what Write, Cells, Present and Draw are for, and the files each opens.
 - [Start an app](/office/use/start-an-app/): from the app grid, from a file, or from a terminal.
+- [Open and save files](/office/use/open-and-save/): files on your computer and on a Nubo server.
+- [Help inside the apps](/office/use/help-menu/): the Help menu, keyboard shortcuts and About.

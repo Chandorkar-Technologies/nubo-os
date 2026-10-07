@@ -1,9 +1,4 @@
----
-title: "Licence and trademark rules"
-description: "What the Collabora licence and trademark policy allow us to do with their code, and what we remove, keep and credit."
-sidebar:
-  order: 10
----
+# Licence and trademark rules
 
 This page records what we read and what we do about it. It is not legal advice. We plan to ask `trademark@collaboraoffice.com` to confirm our About wording before release.
 
@@ -24,7 +19,7 @@ This page records what we read and what we do about it. It is not legal advice. 
 ## What we must remove
 
 - **All uses of Collabora's marks in a modified build.** The marks are Collabora, Collabora Office, Collabora Online, CODE and the Collabora Productivity logo. The policy says: remove all trademark uses of the Marks from the version of the software you are modifying.
-- **Their brand pack.** Collabora's Flatpak downloads a separate pack of logos, images and a welcome slideshow marked "All Rights Reserved". We cannot use it, and we do not copy from it. [Our own pack](/office/collabora/brand-pack/) replaces it.
+- **Their brand pack.** Collabora's Flatpak downloads a separate pack of logos, images and a welcome slideshow marked "All Rights Reserved". We cannot use it, and we do not copy from it. [Our own pack](brand-pack.md) replaces it.
 - **Anything that implies endorsement.** Our wording must not suggest more of a link to Collabora than there is.
 
 ## What we must keep
@@ -47,5 +42,5 @@ Nubo Office, Nubo Write, Nubo Cells, Nubo Present and Nubo Draw. A trademark sea
 
 ## See also
 
-- [The rebrand script](/office/collabora/rebrand-script/)
+- [The rebrand script](rebrand-script.md)
 - [Brand and licence rules](/developers/brand-and-licence-rules/) for Nubo OS itself

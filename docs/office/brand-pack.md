@@ -1,9 +1,4 @@
----
-title: "The brand pack and icons"
-description: "Our own logos, colours, icon family and welcome slides for Nubo Office, and the scripts that make them."
-sidebar:
-  order: 40
----
+# The brand pack and icons
 
 **Applies to:** Developers
 
@@ -59,4 +54,4 @@ python3 office/make-welcome-art.py        # needs rsvg-convert and the DeepInfra
 
 ## See also
 
-- [The rebrand script](/office/collabora/rebrand-script/)
+- [The rebrand script](rebrand-script.md)

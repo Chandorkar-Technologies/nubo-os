@@ -1,22 +1,28 @@
 ---
 title: "Linux and Nubo OS"
-description: "Install Nubo Office as a Flatpak from the Nubo repository, and what the Nubo OS launchers do today."
+description: "Install Nubo Office as a Flatpak, or use the launchers that come with Nubo OS."
 sidebar:
-  order: 10
+  order: 20
 ---
 
 **Applies to:** Desktop, and any Linux with Flatpak
 
+## On Nubo OS
+
+Nubo OS includes the launchers **Nubo Office**, **Nubo Write**, **Nubo Cells**, **Nubo Present** and **Nubo Draw**. Open one from the app grid. The first time, the computer must be online: a small window shows the download, then the app opens.
+
+## On other Linux systems
+
 :::caution[Planned]
-The Flatpak repository at `archive.nubosuite.tech/flatpak` is set up in the build pipeline but has not been published yet. The commands below work once the first build is out. Check the download table on [nubosuite.tech/office](https://nubosuite.tech/office/) for the current state.
+The Nubo Flatpak repository is set up but not published yet. The commands below work once it is. The download table on [nubosuite.tech/office](https://nubosuite.tech/office/) shows when.
 :::
 
-## Before you begin
+### Before you begin
 
-- Flatpak installed. Nubo OS has it already.
-- An Intel or AMD computer. Arm is planned after that.
+- Flatpak installed.
+- An Intel or AMD computer. Arm follows.
 
-## Steps
+### Steps
 
 1. Add the Nubo repository:
 
@@ -30,13 +36,13 @@ The Flatpak repository at `archive.nubosuite.tech/flatpak` is set up in the buil
    flatpak install nubo tech.nubosuite.Office
    ```
 
-3. Start it from the app grid, or run `flatpak run tech.nubosuite.Office`.
+3. Start it from the app grid, or run:
 
-The repository is signed. The `.flatpakrepo` file carries the key, so Flatpak checks every update against it.
+   ```bash
+   flatpak run tech.nubosuite.Office
+   ```
 
-## What the Nubo OS launchers do today
-
-Nubo OS includes the package `nubo-office`, which adds the launchers Nubo Office, Nubo Write, Nubo Cells, Nubo Present and Nubo Draw. Until the repository above carries the Nubo build, each launcher downloads Collabora Office from Flathub on first use and opens the matching part of it. Nubo OS hides the original "Collabora Office" entry so you see only the Nubo names. The program inside still shows the Collabora name until the Nubo build replaces it.
+The repository is signed, and Flatpak checks every update against its key.
 
 ## Verify
 
@@ -44,14 +50,15 @@ Nubo OS includes the package `nubo-office`, which adds the launchers Nubo Office
 flatpak list --app | grep -i office
 ```
 
-Look for `tech.nubosuite.Office` (Nubo build) or `com.collaboraoffice.Office` (the Flathub build that the launchers use today).
+The suite appears in the list.
 
 ## Troubleshooting
 
 - **`flatpak: command not found`.** Install Flatpak from your distribution, then add the repository again.
 - **The repository cannot be reached.** It is not published yet, or the computer is offline.
+- **The first start shows a download error.** Connect to the internet and open the app again.
 
 ## See also
 
+- [Update and remove](/office/install/update-and-remove/)
 - [Start an app](/office/use/start-an-app/)
-- [Pipeline for Nubo Office](/office/collabora/pipeline/)

@@ -1,9 +1,4 @@
----
-title: "The web editor"
-description: "The plan to replace the document editor at office.nubo.email with the Nubo build of Collabora Online."
-sidebar:
-  order: 70
----
+# The web editor
 
 **Applies to:** Developers, administrators
 
@@ -38,4 +33,4 @@ Several people editing one document at once is a feature of the Collabora Online
 ## See also
 
 - [Accounts and files](/office/account/sign-in-and-files/)
-- [Platforms and build requirements](/office/collabora/platforms/)
+- [Platforms and build requirements](platforms.md)

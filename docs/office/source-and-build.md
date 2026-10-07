@@ -1,9 +1,4 @@
----
-title: "Source and build"
-description: "Where Collabora's code is, and the steps to build the engine and the Linux desktop app."
-sidebar:
-  order: 20
----
+# Source and build
 
 **Applies to:** Developers
 
@@ -56,7 +51,7 @@ These steps follow `qt/README.md` in the checkout.
    make -j8
    ```
 
-3. Apply the rebrand (see [the rebrand script](/office/collabora/rebrand-script/)), then build the app from the top of the checkout:
+3. Apply the rebrand (see [the rebrand script](rebrand-script.md)), then build the app from the top of the checkout:
 
    ```bash
    python3 office/rebrand.py . --version 26.04.3.3-nubo1
@@ -87,5 +82,5 @@ The product is `Nubo Office` and the vendor is `Nubo`. Running `qt/coda-qt` show
 
 ## See also
 
-- [Pipeline for Nubo Office](/office/collabora/pipeline/)
-- [First build results](/office/collabora/first-build/)
+- [Pipeline for Nubo Office](pipeline.md)
+- [First build results](first-build.md)

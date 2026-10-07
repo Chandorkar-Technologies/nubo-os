@@ -1,9 +1,4 @@
----
-title: "The rebrand script"
-description: "What office/rebrand.py changes in a Collabora checkout, how to run it, and what it leaves alone."
-sidebar:
-  order: 30
----
+# The rebrand script
 
 **Applies to:** Developers
 
@@ -51,5 +46,5 @@ It needs `rsvg-convert` (package `librsvg2-bin`) to redraw the start-centre icon
 
 ## See also
 
-- [The brand pack and icons](/office/collabora/brand-pack/)
-- [Licence and trademark rules](/office/collabora/licence-and-trademark/)
+- [The brand pack and icons](brand-pack.md)
+- [Licence and trademark rules](licence-and-trademark.md)

@@ -1,9 +1,4 @@
----
-title: "Pipeline for Nubo Office"
-description: "How the Nubo Office Flatpak is built in Drone and published to the Nubo Flatpak repository."
-sidebar:
-  order: 60
----
+# Pipeline for Nubo Office
 
 **Applies to:** Developers
 
@@ -51,5 +46,5 @@ After a run, `https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo` answers, 
 
 ## See also
 
-- [Source and build](/office/collabora/source-and-build/)
+- [Source and build](source-and-build.md)
 - [Publishing releases](/developers/publishing-releases/)

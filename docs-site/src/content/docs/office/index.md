@@ -1,23 +1,30 @@
 ---
 title: "Nubo Office"
-description: "Nubo Write, Cells, Present and Draw: what the suite is, how to install it, and how it is built."
+description: "Write, calculate, present and draw with Nubo Write, Cells, Present and Draw: features, installation and help."
 sidebar:
   order: 1
 ---
 
-Nubo Office is the office suite of Nubo OS: **Nubo Write** for documents, **Nubo Cells** for spreadsheets, **Nubo Present** for presentations and **Nubo Draw** for drawings. It opens and saves Microsoft Office and OpenDocument files and works without internet. Files on your own computer need no account.
+Nubo Office is the office suite for Nubo OS. It has four apps that open and save the files you already have, including Microsoft Word, Excel and PowerPoint files, and the open OpenDocument formats.
+
+| App | For | Opens |
+|---|---|---|
+| **Nubo Write** | Letters, reports and any document | `.docx` `.doc` `.odt` `.rtf` `.txt` |
+| **Nubo Cells** | Tables, formulas and charts | `.xlsx` `.xls` `.ods` `.csv` |
+| **Nubo Present** | Slides and slide shows | `.pptx` `.ppt` `.odp` |
+| **Nubo Draw** | Diagrams, flyers and PDF | `.odg` `.vsd` `.pdf` |
+
+Files on your own computer need no account and no internet.
 
 :::caution[Early access]
-The Linux build is being finished, and the other platforms are planned. Today, the Nubo OS launchers for the four apps download Collabora Office from Flathub the first time you open one. The suite built under Nubo's own names is in testing. The pages below say which parts exist and which are planned.
+The Linux version is being finished. Windows, macOS, Android, iPhone, iPad and the web version are planned. Each page says what exists today and what is planned.
 :::
 
-## Sections
+## Start here
 
-- [Using Nubo Office](/office/use/): the four apps, how to start them, and what each opens.
-- [Installing](/office/install/): Linux, Nubo OS, and the other platforms.
-- [Accounts and files](/office/account/): when you need a Nubo account, and which servers the apps can open files from.
-- [Collabora technology and our rebrand](/office/collabora/): the open-source code Nubo Office is built on, the licence and trademark rules we follow, the rebrand script, the brand pack, the build pipeline and the first build results.
-
-## Where Nubo Office is documented
-
-Everything about the suite is in this section. Nubo OS itself (the desktop and the server) has its own documentation, starting at [Start here](/start/).
+- [Features](/office/features/): what each app can do, and the files it opens.
+- [Installing Nubo Office](/office/install/): Linux and Nubo OS today, the other platforms next.
+- [Using Nubo Office](/office/use/): start an app, open and save files, get help inside the app.
+- [Accounts and files](/office/account/): when you need a Nubo account.
+- [Help](/office/help/): troubleshooting and common questions.
+- [Open source and licences](/office/open-source/): what Nubo Office is built on.
