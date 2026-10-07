@@ -121,6 +121,10 @@ def flatpak_manifest(root, brand_dir):
     if os.path.isdir(dest):
         shutil.rmtree(dest)
     shutil.copytree(brand_dir, dest)
+    # Collabora's manifest uses Node 20, whose WebAssembly crashes ("Fatal JavaScript invalid size
+    # error") when esbuild minifies the web interface here. Node 22 runs it every time.
+    text = text.replace("org.freedesktop.Sdk.Extension.node20", "org.freedesktop.Sdk.Extension.node22") \
+               .replace("/usr/lib/sdk/node20/bin", "/usr/lib/sdk/node22/bin")
     # The engine is built inside the Flatpak: give it our product name and vendor.
     text = text.replace("--with-distro=CPLinuxQtFlatpak",
                         "--with-distro=CPLinuxQtFlatpak --with-product-name='Nubo Office' --with-vendor=Nubo")

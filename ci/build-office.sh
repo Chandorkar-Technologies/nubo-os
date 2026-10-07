@@ -40,7 +40,7 @@ fi
 echo "==> Flatpak runtimes"
 FP=(flatpak); [[ "$(id -u)" -ne 0 ]] && FP=(sudo flatpak)
 "${FP[@]}" remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-for ref in org.kde.Sdk//6.10 org.kde.Platform//6.10 org.freedesktop.Sdk.Extension.node20//25.08 \
+for ref in org.kde.Sdk//6.10 org.kde.Platform//6.10 org.freedesktop.Sdk.Extension.node22//25.08 \
            io.qt.qtwebengine.BaseApp//6.10 io.qt.qtwebengine.BaseApp.Debug//6.10; do
   flatpak info "${ref%%//*}//${ref##*//}" >/dev/null 2>&1 || "${FP[@]}" install -y --noninteractive flathub "${ref}"
 done
