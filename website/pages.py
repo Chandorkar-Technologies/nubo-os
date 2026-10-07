@@ -117,6 +117,35 @@ def verify_block(ctx):
             % (esc(name), esc(name), esc(name)))
 
 
+OFFICE_APPS = [
+    ('Nubo Write', 'Letters, reports, anything with paragraphs. Styles, tables, comments and tracked changes.', '.docx  .doc  .odt  .rtf  .txt'),
+    ('Nubo Cells', 'Tables, numbers, formulas and charts, from a household budget to a full model.', '.xlsx  .xls  .ods  .csv'),
+    ('Nubo Present', 'Slides for talking in front of people, with notes, transitions and a presenter view.', '.pptx  .ppt  .odp'),
+    ('Nubo Draw', 'Diagrams, flyers and simple drawings. Also opens and exports PDF.', '.odg  .vsd  .pdf'),
+]
+OFFICE_STATUS = {'available': ('live', 'Available'), 'building': ('beta', 'Building'), 'planned': ('soon', 'Planned')}
+
+
+def office_table(ctx):
+    rows = []
+    for v in ctx['OFFICE']['variants']:
+        tag, label = OFFICE_STATUS[v['status']]
+        if v.get('url'):
+            action = '<a class="in" href="%s">Download</a>' % esc(v['url'])
+            if v.get('size'):
+                action += ' <span style="font-size:13px">%s</span>' % ctx['fmt'](v['size'])
+            if v.get('sha256'):
+                action += '<br><code style="font-size:11px;word-break:break-all">%s</code>' % esc(v['sha256'])
+        else:
+            action = '<span style="color:#6E7380">Not ready yet</span>'
+        cmd = ''
+        if v.get('command'):
+            cmd = '<pre style="margin:8px 0 0"><code>%s</code></pre>' % esc(v['command'])
+        rows.append('<tr><td><b style="color:#fff">%s</b><br><span style="font-size:14px">%s</span>%s</td><td><span class="tag %s">%s</span></td><td>%s</td></tr>'
+                    % (esc(v['name']), esc(v['detail']), cmd, tag, label, action))
+    return ('<div class="tablewrap"><table><thead><tr><th>Platform</th><th>Status</th><th>Download</th></tr></thead><tbody>%s</tbody></table></div>' % ''.join(rows))
+
+
 def build_all(ctx):
     P = {}
     rel = ctx['REL']
@@ -143,6 +172,44 @@ def build_all(ctx):
 <h2>The apps</h2>
 <div class="grid">{cards}</div>
 <p>Status labels are the current state: Live apps are ready to use, Beta apps work and are still changing, and the rest are planned. The apps are built on the Holepunch and Pear peer-to-peer stack.</p>
+""")
+
+    office_cards = ''.join('<div class="card"><b>%s</b><span>%s</span><span style="color:#6E7380;font-size:14px">Opens: %s</span></div>' % (esc(n), esc(d), esc(f)) for n, d, f in OFFICE_APPS)
+    P[('www', '/office/')] = ('Nubo Office', 'Nubo Write, Cells, Present and Draw: an office suite for the files you already have. Opens Microsoft Office and OpenDocument files, and works without internet.', f"""
+<p class="eyebrow">Nubo Office</p><h1>Documents, spreadsheets, presentations and drawings.</h1>
+<p class="lead">Four apps for the files you already have. They open and save Microsoft Office and OpenDocument files, work without internet, and need no account for files on your own computer.</p>
+<div class="row"><a class="btn" href="#download">Download</a><a class="btn2" href="{DOCS}/">Read the documentation</a></div>
+<div class="note">Nubo Office is in early access. The Linux version is being built now, and the other platforms follow. The table below shows what is ready.</div>
+<h2>Four apps, one suite</h2>
+<div class="grid">{office_cards}</div>
+<h2>What you get</h2>
+<ul>
+<li>The formats people actually send: Word, Excel and PowerPoint files, and the open OpenDocument formats. Export to PDF.</li>
+<li>Comments, tracked changes and review tools in all four apps.</li>
+<li>Files on your computer open and save with no account and no internet.</li>
+<li>One look across the suite, in light and dark, matching Nubo OS and Nubo Email.</li>
+</ul>
+<h2>Works with your Nubo account</h2>
+<p>Open documents from Nubo Email's drive, or from any Nubo server you have an account on, through the file picker. You sign in on the server's own page. Nubo Office can only be pointed at Nubo servers, and it has no separate account of its own.</p>
+<h2>Where it runs</h2>
+<p>Linux first, then Windows, macOS, Android, iPhone and iPad, and in your browser. The apps share one interface, so a document looks and behaves the same everywhere.</p>
+<h2 id="download">Download</h2>
+{office_table(ctx)}
+<h3>Install it on Linux</h3>
+<ol><li>Install Flatpak if your system does not have it. Nubo OS already does.</li>
+<li>Add the Nubo repository and install, with the two commands shown in the table.</li>
+<li>Start Nubo Office from the app grid, or open any document with it.</li></ol>
+<h3>Check your download</h3>
+<p>Each file will show its SHA-256 checksum next to the download button. The Nubo repository is signed. <a class="in" href="{DOCS}/">How to verify</a>.</p>
+<h2>Built on open technology</h2>
+<p>Nubo Office is built on Collabora Online and LibreOffice technology, which are open source under the Mozilla Public License 2.0. Collabora and LibreOffice are trademarks of their owners, and Nubo Office is not made or endorsed by them. Our changes are published: <a class="in" href="https://github.com/Chandorkar-Technologies/nubo-os/tree/master/office">the Nubo Office source</a>.</p>
+<h2>Questions</h2>
+<h3>Is it free?</h3>
+<p>Early access builds are free to download and use.</p>
+<h3>Do I need a Nubo account?</h3>
+<p>No, not for files on your computer. You need one only to open documents stored on a Nubo server.</p>
+<h3>Will my Word and Excel files look right?</h3>
+<p>Most do. Complex layouts, macros and some fonts can differ, as in any office suite other than the original. Tell us when something looks wrong.</p>
 """)
 
     P[('www', '/about/')] = ('About Nubo and Chandorkar Technologies', 'Chandorkar Technologies builds Nubo OS, Nubo Email and the Nubo Suite of private apps in India.', f"""

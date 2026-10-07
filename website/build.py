@@ -24,6 +24,7 @@ SITES = {
 }
 TODAY = date.today().isoformat()
 REL = json.load(open(os.path.join(ROOT, 'data', 'releases.json')))
+OFFICE = json.load(open(os.path.join(ROOT, 'data', 'office.json')))
 
 
 def rd(p, mode='r'):
@@ -111,7 +112,7 @@ def copy_assets(site, files):
 def nav_html(site):
     if site == 'www':
         links = [('Nubo OS', 'https://os.nubosuite.tech/'), ('Server', 'https://os.nubosuite.tech/server/'),
-                 ('Apps', '/apps/'), ('Email', 'https://nubo.email'), ('Docs', 'https://docs.nubosuite.tech/')]
+                 ('Office', '/office/'), ('Apps', '/apps/'), ('Email', 'https://nubo.email'), ('Docs', 'https://docs.nubosuite.tech/')]
         dl = '<a class="dl" href="https://os.nubosuite.tech/download/">Download</a>'
         name = 'Nubo Suite'
     else:
@@ -128,7 +129,7 @@ def footer_html(photos=False):
     cols = [
         ('Nubo OS', [('Desktop', 'https://os.nubosuite.tech/'), ('Server', 'https://os.nubosuite.tech/server/'),
                      ('Download', 'https://os.nubosuite.tech/download/'), ('Releases', 'https://os.nubosuite.tech/releases/')]),
-        ('Nubo Suite', [('All apps', 'https://nubosuite.tech/apps/'), ('Nubo Email', 'https://nubo.email'),
+        ('Nubo Suite', [('Nubo Office', 'https://nubosuite.tech/office/'), ('All apps', 'https://nubosuite.tech/apps/'), ('Nubo Email', 'https://nubo.email'),
                         ('Nubo Send', 'https://send.nubosuite.tech/')]),
         ('Learn', [('Documentation', 'https://docs.nubosuite.tech/'), ('Install guide', 'https://docs.nubosuite.tech/desktop/get-started/'),
                    ('Server guide', 'https://docs.nubosuite.tech/server/'), ('FAQ', 'https://docs.nubosuite.tech/start/faq/')]),
@@ -393,7 +394,7 @@ def static_page(site, path, title, desc, body, ld=None):
     mark = rd(os.path.join(SRC, 'mark.symbol'))
     h = head_html(site, path, title, desc, ld, '', '<style>%s%s</style>' % (STATIC_CSS, CHROME_CSS))
     out = (h + '\n<body>\n<svg width="0" height="0" style="position:absolute" aria-hidden="true">%s</svg>\n%s\n<main class="page%s">\n%s\n</main>\n%s\n%s</body>\n</html>\n'
-           % (mark, nav_html(site), ' wide' if path in ('/download/', '/releases/', '/server/', '/apps/') else '', body, footer_html(),
+           % (mark, nav_html(site), ' wide' if path in ('/download/', '/releases/', '/server/', '/apps/', '/office/') else '', body, footer_html(),
               pages.SCRIPTS.get(path, '')))
     d = os.path.join(DIST, site, path.strip('/'))
     wr(os.path.join(d, 'index.html') if path != '/404.html' else os.path.join(DIST, site, '404.html'), out)
@@ -402,7 +403,7 @@ def static_page(site, path, title, desc, body, ld=None):
 def main():
     if os.path.exists(DIST):
         shutil.rmtree(DIST)
-    ctx = {'REL': REL, 'fmt': lambda b: '%.2f GB' % (b / 1e9)}
+    ctx = {'REL': REL, 'OFFICE': OFFICE, 'fmt': lambda b: '%.2f GB' % (b / 1e9)}
     for site in SITES:
         files = build_front(site)
         copy_assets(site, files)
