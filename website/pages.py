@@ -176,84 +176,99 @@ def build_all(ctx):
 
     A = '/assets/office/'
 
-    def split(name, key, blurb, formats, bullets, shot, alt, rev=False):
-        lis = ''.join('<li>%s</li>' % esc(x) for x in bullets)
-        return ('<div class="split%s"><div class="txt"><img class="appicon" src="%sicon-%s.svg" alt="%s icon" width="76" height="76">'
-                '<h3>%s</h3><p>%s</p><ul>%s</ul><p class="fmts">%s</p></div>'
-                '<img class="shot" src="%s%s" alt="%s" width="1440" height="900" loading="lazy"></div>'
-                % (' rev' if rev else '', A, key, esc(name), esc(name), esc(blurb), lis, esc(formats), A, shot, esc(alt)))
+    def app_section(key, name, color, headline, lead, shot, alt, cards, formats):
+        cs = ''.join('<div class="o-card"><h4>%s</h4><p>%s</p></div>' % (esc(t), esc(d)) for t, d in cards)
+        fm = ''.join('<i>%s</i>' % esc(f) for f in formats)
+        return ('<section class="o-sec" style="--c:%s" id="%s"><img class="o-ico" src="%sicon-%s.svg" alt="" width="84" height="84">'
+                '<p class="o-eyebrow">%s</p><h2 class="o-h2 o-grad">%s</h2><p class="o-lead">%s</p>'
+                '<div class="o-frame"><img src="%s%s" alt="%s" width="1440" height="900" loading="lazy"></div>'
+                '<div class="o-cards">%s</div><div class="o-fmts">%s</div></section>'
+                % (color, key.lower(), A, key, esc(name), esc(headline), esc(lead), A, shot, esc(alt), cs, fm))
 
     apps_html = ''.join([
-        split('Nubo Write', 'Write', 'Letters, reports, anything with paragraphs.', '.docx  .doc  .odt  .rtf  .txt',
-              ['Styles for titles and headings, tables, lists and page layout', 'Comments and tracked changes in the Review tab', 'References and forms when you need them'],
-              'write.jpg', 'Nubo Write showing a quarterly report with a title, headings and a table'),
-        split('Nubo Cells', 'Cells', 'Tables, numbers, formulas and charts.', '.xlsx  .xls  .ods  .csv',
-              ['Formulas, totals and number formats', 'Charts that sit next to your data', 'Sheets, with a Data tab for sorting and filtering'],
-              'cells.jpg', 'Nubo Cells showing a budget table with a bar chart of income, costs and profit', True),
-        split('Nubo Present', 'Present', 'Slides for talking in front of people.', '.pptx  .ppt  .odp',
-              ['Slide layouts, shapes, connectors, charts and tables', 'Transitions, and a slide show you can start from any slide', 'A slide list down the side, so you never lose your place'],
-              'present.jpg', 'Nubo Present showing a roadmap slide with three coloured boxes'),
-        split('Nubo Draw', 'Draw', 'Diagrams, flyers and simple drawings.', '.odg  .vsd  .pdf',
-              ['Shapes, text boxes and connectors that stay attached when you move them', 'Opens and exports PDF', 'The same tools as Present, on a blank page'],
-              'draw.jpg', 'Nubo Draw showing a diagram with connected boxes', True),
+        app_section('Write', 'Nubo Write', '#2f6fde', 'Documents that look right.',
+                    'Letters, reports and anything with paragraphs. Titles, headings, tables and page layout, all in one place.',
+                    'write.jpg', 'Nubo Write showing a quarterly report with a title, headings and a table',
+                    [('Styles that stay tidy', 'Apply a title or heading in one click, and change how all of them look at once.'),
+                     ('Tables and lists', 'Build tables, colour the header row, and keep the numbers lined up.'),
+                     ('Review with others', 'Comments and tracked changes live in the Review tab.')],
+                    ['.docx', '.doc', '.odt', '.rtf', '.txt']),
+        app_section('Cells', 'Nubo Cells', '#0f9d58', 'Numbers that add up.',
+                    'Tables, formulas and charts. From a household budget to a full model.',
+                    'cells.jpg', 'Nubo Cells showing a budget table with a bar chart of income, costs and profit',
+                    [('Formulas and totals', 'Sum a column, work out a profit, format the result as a number or a currency.'),
+                     ('Charts beside your data', 'Turn a range into a bar chart and keep it next to the table.'),
+                     ('Sort and filter', 'The Data tab sorts, filters and summarises long lists.')],
+                    ['.xlsx', '.xls', '.ods', '.csv']),
+        app_section('Present', 'Nubo Present', '#e6511c', 'Slides worth watching.',
+                    'Slides for talking in front of people. Layouts, shapes and charts, then a slide show from any slide.',
+                    'present.jpg', 'Nubo Present showing a roadmap slide with three coloured boxes',
+                    [('Layouts and shapes', 'Start from a layout, then add shapes, connectors, tables and charts.'),
+                     ('Transitions', 'Choose how one slide gives way to the next, in the Transition tab.'),
+                     ('Always oriented', 'A slide list down the side shows where you are in the deck.')],
+                    ['.pptx', '.ppt', '.odp']),
+        app_section('Draw', 'Nubo Draw', '#8a38ee', 'Ideas you can draw.',
+                    'Diagrams, flyers and simple drawings, with connectors that stay attached when you move things.',
+                    'draw.jpg', 'Nubo Draw showing a diagram with connected boxes',
+                    [('Shapes and connectors', 'Boxes, ovals and arrows that follow each other around the page.'),
+                     ('Text anywhere', 'Add labels and text boxes, and style them like any other text.'),
+                     ('PDF in and out', 'Open a PDF to mark it up, and export your drawing as one.')],
+                    ['.odg', '.vsd', '.pdf']),
     ])
     P[('www', '/office/')] = ('Nubo Office', 'Nubo Write, Cells, Present and Draw: an office suite for the files you already have. Opens Microsoft Office and OpenDocument files, and works without internet.', f"""
-<p class="eyebrow">Nubo Office</p><h1>Documents, spreadsheets, presentations and drawings.</h1>
-<p class="lead">Four apps for the files you already have. They open and save Microsoft Office and OpenDocument files, work without internet, and need no account for files on your own computer.</p>
-<div class="row"><a class="btn" href="#download">Download</a><a class="btn2" href="{DOCS}/office/">Read the documentation</a></div>
-<div class="note">Nubo Office is in early access. The Linux version is being built now, and the other platforms follow. The table below shows what is ready.</div>
-<div class="hero-shot"><img class="shot" src="{A}write.jpg" alt="Nubo Write open on a quarterly report" width="1440" height="900"><p class="cap">Nubo Write, with a quarterly report. Real window, real app.</p></div>
-<h2>Four apps, one suite</h2>
-<p class="lead" style="max-width:62ch">Each app has its own colour, so you always know which one you are in. The suite opens from one start screen.</p>
+<section class="o-sec" style="--c:#2f6fde;padding-bottom:40px">
+<p class="o-eyebrow" style="color:var(--amber)">Nubo Office &nbsp;·&nbsp; Free &nbsp;·&nbsp; Early access</p>
+<h1 class="o-h1 o-grad">Write. Calculate.<br>Present. Draw.</h1>
+<p class="o-lead">Four apps for the files you already have. They open Word, Excel and PowerPoint files, work without internet, and need no account for the files on your own computer.</p>
+<div class="o-row"><a class="o-btn" href="#download">Download Nubo Office</a><a class="o-btn2" href="#write">See the apps</a></div>
+<div class="o-dots"><span>Opens Microsoft Office files</span><span>Works offline</span><span>No account for local files</span><span>Open source</span></div>
+<div class="o-frame"><img src="{A}start.jpg" alt="The Nubo Office start screen with templates and recent documents" width="1440" height="900"></div>
+</section>
 {apps_html}
-<h2>One start screen</h2>
-<div class="split"><div class="txt"><img class="appicon" src="{A}icon-Office.svg" alt="Nubo Office icon" width="76" height="76"><h3>Start from a template, or from a file</h3>
-<p>Nubo Office opens on templates (a blank document, a CV, business letters and more) and your recent documents. Open a file from anywhere on your computer, or from a Nubo server.</p></div>
-<img class="shot" src="{A}start.jpg" alt="The Nubo Office start screen with templates" width="1440" height="900" loading="lazy"></div>
-<h2>Looks like the rest of Nubo</h2>
-<p>The icons match Nubo Mail, Calendar, Contacts and Drive, so the whole desktop looks like one product.</p>
-<div class="iconrow">
-<figure><img src="{A}icon-Office.svg" alt="" width="76" height="76">Office</figure>
-<figure><img src="{A}icon-Write.svg" alt="" width="76" height="76">Write</figure>
-<figure><img src="{A}icon-Cells.svg" alt="" width="76" height="76">Cells</figure>
-<figure><img src="{A}icon-Present.svg" alt="" width="76" height="76">Present</figure>
-<figure><img src="{A}icon-Draw.svg" alt="" width="76" height="76">Draw</figure>
-<figure><img src="{A}icon-Mail.svg" alt="" width="76" height="76">Mail</figure>
-<figure><img src="{A}icon-Calendar.svg" alt="" width="76" height="76">Calendar</figure>
-<figure><img src="{A}icon-Contacts.svg" alt="" width="76" height="76">Contacts</figure>
-<figure><img src="{A}icon-Drive.svg" alt="" width="76" height="76">Drive</figure>
+<section class="o-sec" style="--c:#2f6fde" id="suite">
+<p class="o-eyebrow">One suite</p><h2 class="o-h2 o-grad">Starts from a template,<br>or from your file.</h2>
+<p class="o-lead">Nubo Office opens on templates and your recent documents, and one tap takes you into any of the four apps. Each has its own colour and its own icon.</p>
+<div class="o-icons">
+<figure><img src="{A}icon-Office.svg" alt="" width="96" height="96">Office</figure>
+<figure><img src="{A}icon-Write.svg" alt="" width="96" height="96">Write</figure>
+<figure><img src="{A}icon-Cells.svg" alt="" width="96" height="96">Cells</figure>
+<figure><img src="{A}icon-Present.svg" alt="" width="96" height="96">Present</figure>
+<figure><img src="{A}icon-Draw.svg" alt="" width="96" height="96">Draw</figure>
 </div>
-<h2>What you get</h2>
-<ul>
-<li>The formats people actually send: Word, Excel and PowerPoint files, and the open OpenDocument formats. Export to PDF.</li>
-<li>Comments, tracked changes and review tools.</li>
-<li>Files on your computer open and save with no account and no internet.</li>
-<li>One look across the suite, matching Nubo OS and Nubo Email.</li>
-</ul>
-<h2>First run</h2>
-<p>The first time you open an app, three short slides say what the suite is for. You can close them at once.</p>
-<div class="pair2"><img src="{A}welcome-2.png" alt="A document, a spreadsheet and a presentation arranged together" width="1024" height="512" loading="lazy"><img src="{A}welcome-3.png" alt="A shared document with two cursors and a comment" width="768" height="512" loading="lazy"></div>
-<h2>Works with your Nubo account</h2>
-<p>Open documents from Nubo Email's drive, or from any Nubo server you have an account on, through the file picker. You sign in on the server's own page. Nubo Office can only be pointed at Nubo servers, and it has no separate account of its own.</p>
-<h2>Where it runs</h2>
-<p>Linux first, then Windows, macOS, Android, iPhone and iPad, and in your browser. The apps share one interface, so a document looks and behaves the same everywhere.</p>
-<h2 id="download">Download</h2>
+<p class="o-lead" style="font-size:16px">The same icon family runs through Nubo Mail, Calendar, Contacts and Drive.</p>
+<div class="o-icons" style="margin-top:20px">
+<figure><img src="{A}icon-Mail.svg" alt="" width="96" height="96">Mail</figure>
+<figure><img src="{A}icon-Calendar.svg" alt="" width="96" height="96">Calendar</figure>
+<figure><img src="{A}icon-Contacts.svg" alt="" width="96" height="96">Contacts</figure>
+<figure><img src="{A}icon-Drive.svg" alt="" width="96" height="96">Drive</figure>
+</div>
+</section>
+<section class="o-sec plain" id="why">
+<p class="o-eyebrow" style="color:var(--amber)">Yours to keep</p><h2 class="o-h2 o-grad">Your files stay yours.</h2>
+<div class="o-cards">
+<div class="o-card"><h4>No account for your own files</h4><p>Open and save files on your computer with no sign-in, and with no internet.</p></div>
+<div class="o-card"><h4>Nubo servers only</h4><p>Documents on a server open through that server's own sign-in. Nubo Office can be pointed only at Nubo servers.</p></div>
+<div class="o-card"><h4>Formats that last</h4><p>Word, Excel, PowerPoint and the open OpenDocument formats, with PDF export.</p></div>
+</div>
+<div class="o-two"><img src="{A}welcome-2.png" alt="A document, a spreadsheet and a presentation arranged together" width="1024" height="512" loading="lazy"><img src="{A}welcome-3.png" alt="A shared document with two cursors and a comment" width="768" height="512" loading="lazy"></div>
+</section>
+<section class="o-sec plain" id="download">
+<p class="o-eyebrow" style="color:var(--amber)">Download</p><h2 class="o-h2 o-grad">Get Nubo Office.</h2>
+<p class="o-lead">Linux comes first. The other platforms follow in this order, and the table shows what is ready.</p>
+<div class="o-narrow">
 {office_table(ctx)}
 <h3>Install it on Linux</h3>
 <ol><li>Install Flatpak if your system does not have it. Nubo OS already does.</li>
 <li>Add the Nubo repository and install, with the two commands shown in the table.</li>
 <li>Start Nubo Office from the app grid, or open any document with it.</li></ol>
-<h3>Check your download</h3>
-<p>Each file will show its SHA-256 checksum next to the download button. The Nubo repository is signed. <a class="in" href="{DOCS}/office/install/linux/">How to install and verify</a>.</p>
-<h2>Built on open technology</h2>
-<p>Nubo Office is built on Collabora Online and LibreOffice technology, which are open source under the Mozilla Public License 2.0. Collabora and LibreOffice are trademarks of their owners, and Nubo Office is not made or endorsed by them. Our changes are published: <a class="in" href="https://github.com/Chandorkar-Technologies/nubo-os/tree/master/office">the Nubo Office source</a>.</p>
-<h2>Questions</h2>
-<h3>Is it free?</h3>
-<p>Early access builds are free to download and use.</p>
-<h3>Do I need a Nubo account?</h3>
-<p>No, not for files on your computer. You need one only to open documents stored on a Nubo server.</p>
-<h3>Will my Word and Excel files look right?</h3>
-<p>Most do. Complex layouts, macros and some fonts can differ, as in any office suite other than the original. Tell us when something looks wrong.</p>
+<p><a class="in" href="{DOCS}/office/install/">Installation guide</a> &nbsp;·&nbsp; <a class="in" href="{DOCS}/office/">Documentation</a></p>
+<h3>Questions</h3>
+<p><b style="color:#fff">Is it free?</b> Early access builds are free to download and use.</p>
+<p><b style="color:#fff">Do I need a Nubo account?</b> Not for files on your computer. Only to open documents stored on a Nubo server.</p>
+<p><b style="color:#fff">Will my Word and Excel files look right?</b> Most do. Complex layouts, macros and some fonts can differ, as in any office suite other than the original. Tell us when something looks wrong.</p>
+<p style="margin-top:30px;font-size:14px;color:var(--mu)">Nubo Office is built on Collabora Online and LibreOffice technology, which are open source under the Mozilla Public License 2.0. Collabora and LibreOffice are trademarks of their owners, and Nubo Office is not made or endorsed by them. <a class="in" href="{DOCS}/office/open-source/">Open source and licences</a>.</p>
+</div>
+</section>
 """)
 
     P[('www', '/about/')] = ('About Nubo and Chandorkar Technologies', 'Chandorkar Technologies builds Nubo OS, Nubo Email and the Nubo Suite of private apps in India.', f"""

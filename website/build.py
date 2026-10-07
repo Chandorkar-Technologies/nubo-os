@@ -338,6 +338,41 @@ a.nsc:hover{transform:translateY(-3px);border-color:rgba(242,166,90,.5)}
 
 # ------------------------------------------------------------------ static pages
 STATIC_CSS = """
+
+/* Office story page: full-width sections in the same style as the front pages */
+.story{padding:52px 0 0}
+.o-sec{position:relative;overflow:hidden;padding:clamp(72px,10vw,140px) 24px;text-align:center;isolation:isolate}
+.o-sec::before{content:"";position:absolute;z-index:-1;left:50%;top:44%;width:min(1100px,130vw);height:min(760px,90vw);transform:translate(-50%,-50%);background:radial-gradient(closest-side,color-mix(in srgb,var(--c,#2f6fde) 30%,transparent),transparent);opacity:.55}
+.o-sec.plain::before{display:none}
+.o-eyebrow{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--amber))}
+.o-h1{font-size:clamp(46px,8.4vw,112px);line-height:.98;letter-spacing:-.05em;font-weight:700;margin-top:16px}
+.o-h2{font-size:clamp(36px,6vw,84px);line-height:1;letter-spacing:-.045em;font-weight:700;margin-top:14px}
+.o-grad{background:linear-gradient(180deg,#fff 30%,#8f94a0 125%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.o-lead{font-size:clamp(18px,2vw,24px);line-height:1.4;color:var(--mu2);max-width:680px;margin:20px auto 0}
+.o-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.o-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;background:#F5F5F7;color:#0A0B0E;font-weight:600;font-size:16px}
+.o-btn2{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;border:1px solid rgba(255,255,255,.3);font-weight:500;font-size:16px}
+.o-btn2:hover{background:rgba(255,255,255,.08)}
+.o-dots{display:flex;gap:10px 22px;flex-wrap:wrap;justify-content:center;margin-top:26px;font-size:14px;color:var(--mu2)}
+.o-dots span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:8px;vertical-align:middle}
+.o-frame{max-width:1120px;margin:clamp(40px,6vw,72px) auto 0;border-radius:18px;padding:1px;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.04));box-shadow:0 40px 120px color-mix(in srgb,var(--c,#2f6fde) 35%,transparent),0 20px 60px rgba(0,0,0,.6)}
+.o-frame img{display:block;width:100%;height:auto;border-radius:17px}
+.o-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:1040px;margin:48px auto 0;text-align:left}
+.o-card{background:rgba(16,18,22,.8);border:1px solid var(--line);border-radius:20px;padding:24px;backdrop-filter:blur(8px)}
+.o-card h4{margin:0 0 8px;font-size:18px;letter-spacing:-.01em}
+.o-card p{margin:0;font-size:15px;color:var(--mu2);line-height:1.5}
+.o-ico{width:84px;height:84px;display:block;margin:0 auto 6px;border-radius:21px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.o-fmts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.o-fmts i{font-style:normal;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--mu2)}
+.o-icons{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;max-width:900px;margin:44px auto 0}
+.o-icons figure{margin:0;width:104px;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:14px;color:var(--mu2)}
+.o-icons img{width:96px;height:96px;border-radius:24px;display:block;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.o-narrow{max-width:960px;margin:44px auto 0;text-align:left}
+.o-narrow h3{font-size:20px;margin:30px 0 8px}
+.o-narrow p,.o-narrow li{color:var(--mu2);font-size:16px}
+.o-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:900px;margin:44px auto 0}
+.o-two img{width:100%;height:auto;border-radius:18px;border:1px solid var(--line);display:block;background:#fff}
+@media(max-width:820px){.o-sec::before{opacity:.4}}
 .shot{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line);box-shadow:0 24px 70px rgba(0,0,0,.5);background:var(--card)}
 .hero-shot{margin-top:44px}
 .cap{font-size:14px;color:var(--mu);margin-top:12px;text-align:center}
@@ -415,8 +450,8 @@ form.wl select{min-height:48px;padding:0 14px;border-radius:999px;border:1px sol
 def static_page(site, path, title, desc, body, ld=None):
     mark = rd(os.path.join(SRC, 'mark.symbol'))
     h = head_html(site, path, title, desc, ld, '', '<style>%s%s</style>' % (STATIC_CSS, CHROME_CSS))
-    out = (h + '\n<body>\n<svg width="0" height="0" style="position:absolute" aria-hidden="true">%s</svg>\n%s\n<main class="page%s">\n%s\n</main>\n%s\n%s</body>\n</html>\n'
-           % (mark, nav_html(site), ' wide' if path in ('/download/', '/releases/', '/server/', '/apps/', '/office/') else '', body, footer_html(),
+    out = (h + '\n<body>\n<svg width="0" height="0" style="position:absolute" aria-hidden="true">%s</svg>\n%s\n<main class="%s">\n%s\n</main>\n%s\n%s</body>\n</html>\n'
+           % (mark, nav_html(site), ('story' if path == '/office/' else 'page' + (' wide' if path in ('/download/', '/releases/', '/server/', '/apps/') else '')), body, footer_html(),
               pages.SCRIPTS.get(path, '')))
     d = os.path.join(DIST, site, path.strip('/'))
     wr(os.path.join(d, 'index.html') if path != '/404.html' else os.path.join(DIST, site, '404.html'), out)
