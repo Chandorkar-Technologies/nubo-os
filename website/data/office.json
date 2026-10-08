@@ -1,17 +1,106 @@
 {
   "version": null,
-  "note": "Filled in by the release pipeline when a build is published. A variant with a url shows a download button; one without shows its status.",
+  "note": "Filled in by the release pipeline when a build is published. A variant with a url shows a download button; one without shows its status. The Linux build 26.04.3.3-nubo1 is published.",
   "variants": [
-    {"platform": "Linux", "name": "Linux, Intel and AMD", "detail": "Flatpak from the Nubo repository", "status": "building", "url": null, "sha256": null, "size": null,
-     "command": "flatpak remote-add --if-not-exists nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo\nflatpak install nubo tech.nubosuite.Office"},
-    {"platform": "Linux", "name": "Linux, Arm", "detail": "Flatpak from the Nubo repository", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "Nubo OS", "name": "Nubo OS", "detail": "Included as Nubo Write, Cells, Present and Draw from the next Nubo OS release", "status": "building", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "Windows", "name": "Windows 11, Intel and AMD", "detail": "Installer (MSIX)", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "Windows", "name": "Windows 11, Arm", "detail": "Installer (MSIX)", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "macOS", "name": "macOS, Apple silicon", "detail": "Disk image", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "macOS", "name": "macOS, Intel", "detail": "Disk image", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "Android", "name": "Android phones and tablets", "detail": "App", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "iPhone and iPad", "name": "iPhone and iPad", "detail": "App", "status": "planned", "url": null, "sha256": null, "size": null, "command": null},
-    {"platform": "Web", "name": "In your browser", "detail": "Any computer or phone, signed in with Nubo Email", "status": "planned", "url": null, "sha256": null, "size": null, "command": null}
+    {
+      "platform": "Linux",
+      "name": "Linux, Intel and AMD",
+      "detail": "Flatpak from the Nubo repository",
+      "status": "building",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": "flatpak remote-add --if-not-exists nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo\nflatpak install nubo tech.nubosuite.Office"
+    },
+    {
+      "platform": "Linux",
+      "name": "Linux, Arm",
+      "detail": "Flatpak from the Nubo repository",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "Nubo OS",
+      "name": "Nubo OS",
+      "detail": "Included as Nubo Write, Cells, Present and Draw from the next Nubo OS release",
+      "status": "building",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "Windows",
+      "name": "Windows 11, Intel and AMD",
+      "detail": "Installer (MSIX)",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "Windows",
+      "name": "Windows 11, Arm",
+      "detail": "Installer (MSIX)",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "macOS",
+      "name": "macOS, Apple silicon",
+      "detail": "Disk image",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "macOS",
+      "name": "macOS, Intel",
+      "detail": "Disk image",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "Android",
+      "name": "Android phones and tablets",
+      "detail": "App",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "iPhone and iPad",
+      "name": "iPhone and iPad",
+      "detail": "App",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    },
+    {
+      "platform": "Web",
+      "name": "In your browser",
+      "detail": "Any computer or phone, signed in with Nubo Email",
+      "status": "planned",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": null
+    }
   ]
 }
