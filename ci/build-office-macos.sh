@@ -24,6 +24,9 @@ LOGS="${WORK}/logs"; mkdir -p "${LOGS}"
 # The helper Python (lxml, polib) goes on PATH only for the later stages: in front of Homebrew's python it breaks meson in the engine build.
 export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/opt/homebrew/opt/make/libexec/gnubin:${PATH}"
 export CCACHE_DIR="${WORK}/ccache"; export CCACHE_MAXSIZE=15G
+# Xcode 27's SDK marks some functions (pipe2, ...) as macOS 27 only while we build for older macOS. The bundled
+# libraries have a fallback, so tell their configure scripts the function is absent (calling it would crash on 26).
+export ac_cv_func_pipe2=no
 [[ -d "${SRC}/engine" ]] || { echo "No source in ${SRC}" >&2; exit 1; }
 stages=("$@"); [[ ${#stages[@]} -eq 0 ]] && stages=(tools engine online app dmg)
 has() { local s; for s in "${stages[@]}"; do [[ "$s" == "$1" ]] && return 0; done; return 1; }
