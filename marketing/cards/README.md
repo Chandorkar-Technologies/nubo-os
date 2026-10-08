@@ -1,6 +1,6 @@
 # Nubo scratch cards (retail activation cards)
 
-White A6 cards for **Nubo OS (Nubo Pro)** and **Nubo Office**, like the activation cards sold for
+Small white hanging cards (A7, with a hang hole) for **Nubo OS (Nubo Pro)** and **Nubo Office**, like the activation cards sold for
 Tally and antivirus in electronics stores. The customer scratches off the silver panel, finds a
 product key, and types it in to activate.
 
@@ -15,28 +15,30 @@ Defaults (change them in the `C` object at the top of the script in `card.html`)
 
 | File | Use |
 |---|---|
-| `os-card.pdf`, `office-card.pdf` | **Send to the printer.** Page 1 is the front, page 2 the back. 111 x 154 mm, which is A6 (105 x 148 mm) plus 3 mm bleed on every side |
-| `os-card-under.pdf`, `office-card-under.pdf` | Proof of the back **as printed under the silver coating**: the key box, in black on white |
+| `os-card.pdf`, `office-card.pdf` | **Send to the printer.** Page 1 is the front, page 2 the back. 80 x 111 mm, which is the 74 x 105 mm card (A7) plus 3 mm bleed on every side |
+| `os-card-under.pdf`, `office-card-under.pdf` | Proof of the back **as printed under the silver coating**: the key box in black on white, with the hang hole marked in pink (the pink is a guide only, do not print it) |
 
 Rebuild after any change: `./build.sh` (needs Google Chrome). Source: `card.html`.
 
 ## Instructions for the printer
 
-1. **Size and stock:** trim to 105 x 148 mm. About 300 to 350 gsm art card, matte or soft-touch, white.
-2. **Colour:** the artwork is RGB. Please convert to CMYK and send a proof first; the orange will
-   look duller in CMYK. The text and images are already high resolution (300 dpi or better).
-3. **Scratch panel:** apply silver scratch-off (latex) coating on the back, over the key box.
-   The box is about **95 x 19 mm, 5 mm from the left trim edge and about 42.5 mm from the top
-   trim edge**. Use the `-under.pdf` proof for the exact position. Print the key first, then the
-   coating. Use an opaque coating that cannot be read through, even against light.
-4. **Variable data (one record per card)** from the CSV we supply (`serial,key`):
-   - **Key:** black, monospaced, 13 to 14 pt, centred under the silver coating.
-   - **Serial number:** printed in the line "Serial no." just below the panel, outside the coating.
-5. **Barcode:** the dashed box at the bottom left is reserved for the retail **EAN-13 barcode**.
-   Shops scan it at the till. Replace the box with the real barcode once we have the number.
-6. **Packing:** the card goes in a clear sleeve. A hang hole can be punched at the top centre.
-7. **Security:** keys are secret. Send the CSV only to the printer, through a secure channel,
-   and ask them to delete it after the job and to keep a record of the batch numbers.
+1. **Size and stock:** trim to 74 x 105 mm. About 300 to 350 gsm art card, matte or soft-touch.
+2. **Hang hole:** punch a **6 mm round hole, centred, 6 mm below the top edge**, so the card hangs on a
+   retail peg hook. The artwork keeps that area clear.
+3. **Colour:** the artwork is RGB. Please convert to CMYK and send a proof first; the orange will
+   look duller in CMYK.
+4. **Scratch panel:** apply silver scratch-off (latex) coating on the back over the key box,
+   about **66 x 14 mm, 4 mm from the left trim edge and about 27 mm from the top trim edge**.
+   Use the `-under.pdf` proof for the exact position. Print the key first, then the coating.
+   The coating must be opaque, so the key cannot be read through it, even against light.
+5. **Variable data (one record per card)** from the CSV we supply (`serial,key`):
+   - **Key:** black, monospaced, 10 to 11 pt, centred under the silver coating.
+   - **Serial number:** in the "Serial no." line just below the panel, outside the coating.
+6. **Barcode:** the dashed box at the bottom left of the back is reserved for the retail **EAN-13
+   barcode**, which shops scan at the till. Replace the box with the real barcode once we have the number.
+7. **Packing:** a clear sleeve or a small blister, so the card can hang on a peg.
+8. **Security:** keys are secret. Send the CSV only to the printer, through a secure channel,
+   and ask them to delete it after the job and keep a record of the batch numbers.
 
 ## Making the keys
 
