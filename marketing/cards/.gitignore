@@ -1,2 +1,3 @@
 # Product keys are secrets. Never commit them.
 codes/
+__pycache__/
