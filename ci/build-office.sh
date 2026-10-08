@@ -76,16 +76,10 @@ flatpak build-bundle "${REPO}" "${BUNDLE_DIR}/${BUNDLE}" "${APP_ID}" stable
 DL_BASE=https://archive.nubosuite.tech/dl/office ci/make-torrent.sh "${BUNDLE_DIR}/${BUNDLE}" "${VER}" || echo "no torrent made" >&2
 python3 ci/make-office-manifest.py "${BUNDLE_DIR}" "${BUNDLE}" "${VER}" "${ARCH_FP}"
 
+# Everything is built and checked. Leave a marker so a later job can upload this build without redoing it
+# (the first build of a version takes hours, longer than a CI job may run).
+echo "$(cat "${BUNDLE_DIR}/${BUNDLE}.sha256")" > "${WORK}/ready-${VER}-${ARCH_FP}"
+
 if [[ -z "${NO_UPLOAD:-}" ]]; then
-  . ci/rclone-env.sh
-  echo "==> Uploading to r2:${R2_BUCKET}/flatpak"
-  rclone sync "${REPO}" "r2:${R2_BUCKET}/flatpak" --fast-list --transfers 16 \
-    --header-upload "Cache-Control: public, max-age=300"
-  rclone copy "${BUNDLE_DIR}" "r2:${R2_BUCKET}/dl/office/${VER}" --exclude 'latest-*.json' \
-    --header-upload "Cache-Control: public, max-age=3600"
-  # The website reads this to show the download.
-  rclone copyto "${BUNDLE_DIR}/latest-${ARCH_FP}.json" "r2:${R2_BUCKET}/dl/office/latest-${ARCH_FP}.json" \
-    --header-upload "Cache-Control: public, max-age=60"
-  echo "Add it with: flatpak remote-add --if-not-exists nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo"
-  echo "Download: https://archive.nubosuite.tech/dl/office/${VER}/${BUNDLE}"
+  WORK="${WORK}" ci/publish-office.sh "${VER}" "${ARCH_FP}"
 fi

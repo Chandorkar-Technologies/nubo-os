@@ -39,5 +39,17 @@ if [[ -n "${GPG_KEY:-}" ]]; then
   export GPG_KEY_ID
   echo "Signing with key ${GPG_KEY_ID}"
 fi
+WORK="${WORK:-/var/tmp/nubo-office}"; export WORK
+READY="${WORK}/ready-${VERSION}-$(uname -m)"
+if [[ -f "${READY}" ]]; then
+  # A finished, checked build of exactly this version is already here: upload it, do not rebuild for hours.
+  BUNDLE="nubo-office-${VERSION}-$(uname -m).flatpak"
+  [[ "$(cut -d' ' -f1 "${READY}")" == "$(sha256sum "${WORK}/bundle/${BUNDLE}" | cut -d' ' -f1)" ]] \
+    || { echo "The finished build does not match its checksum; refusing to publish it." >&2; exit 1; }
+  echo "Finished build of ${VERSION} found; uploading it."
+  [[ -n "${NUBO_DRY_RUN:-}" ]] && { echo "dry run: would upload ${BUNDLE}; R2 set: ${R2_ENDPOINT:+yes}"; exit 0; }
+  ci/publish-office.sh "${VERSION}"
+  exit 0
+fi
 [[ -n "${NUBO_DRY_RUN:-}" ]] && { echo "dry run: would build ${UPSTREAM} as ${VERSION}; R2 set: ${R2_ENDPOINT:+yes}"; exit 0; }
 ci/build-office.sh "${UPSTREAM}" "${VERSION}"
