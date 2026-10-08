@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply the Nubo Office names to a checkout of Collabora's monorepo.
 
-Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--report]
+Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos] [--report]
 
 Run on a fresh checkout of the release we build (for example tag coda-26.04.3.3-1).
 It is safe to run twice. It never touches:
@@ -163,6 +163,30 @@ def installer_product(root):
     return "NuboOffice" in out
 
 
+def macos_app(root, icon_svg):
+    """The macOS app (macos/coda): its visible labels, and the app icon set, in our names."""
+    base = os.path.join(root, "macos", "coda")
+    if not os.path.isdir(base):
+        return (0, 0)
+    exts = {".swift", ".mm", ".h", ".plist", ".in", ".xcconfig", ".strings"}
+    changed = 0
+    for d, dirs, names in os.walk(base):
+        dirs[:] = [x for x in dirs if x not in SKIP_DIRS and not x.endswith((".xcodeproj", "Tests", "UITests"))]
+        for n in names:
+            if os.path.splitext(n)[1] in exts or n.endswith(".in"):
+                changed += rewrite(os.path.join(d, n))
+    icons = 0
+    iconset = os.path.join(base, "coda", "Assets.xcassets", "AppIcon.appiconset")
+    if os.path.isdir(iconset):
+        for name in os.listdir(iconset):
+            m = re.match(r"icon_(\d+)x\d+(@2x)?\.png$", name)
+            if m:
+                px = int(m.group(1)) * (2 if m.group(2) else 1)
+                subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), icon_svg, "-o", os.path.join(iconset, name)], check=True)
+                icons += 1
+    return (changed, icons)
+
+
 def metainfo(root, here, version):
     """Our own AppStream file replaces Collabora's (name, text, links, screenshots)."""
     path = os.path.join(root, "qt", APP_ID + ".metainfo.xml")
@@ -291,6 +315,12 @@ def main():
     here = os.path.dirname(os.path.abspath(__file__))
     if "--report" in sys.argv:
         report(root)
+        return 0
+    platform = sys.argv[sys.argv.index("--platform") + 1] if "--platform" in sys.argv else "linux"
+    if platform == "macos":
+        icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")
+        labels, icons = macos_app(root, icon_svg)
+        print("macOS app: %d lines changed, %d icon sizes redrawn" % (labels, icons))
         return 0
     changed = sum(rewrite(p) for p in files(root))
     renamed = rename_files(root)
