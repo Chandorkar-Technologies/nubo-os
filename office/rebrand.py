@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply the Nubo Office names to a checkout of Collabora's monorepo.
 
-Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos] [--report]
+Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos|windows] [--report]
 
 Run on a fresh checkout of the release we build (for example tag coda-26.04.3.3-1).
 It is safe to run twice. It never touches:
@@ -187,6 +187,59 @@ def macos_app(root, icon_svg):
     return (changed, icons)
 
 
+def windows_app(root, icon_svg):
+    """The Windows app (windows/coda): package names, publisher, the icon and the tile logos, in our names."""
+    base = os.path.join(root, "windows", "coda")
+    if not os.path.isdir(base):
+        return (0, 0)
+    changed = 0
+    for rel in ("AppxManifest.xml.in", "package_appx.py", os.path.join("CODA", "CODA.cpp"), os.path.join("build", "orchestrator.mk")):
+        path = os.path.join(base, rel)
+        if not os.path.exists(path):
+            continue
+        text = open(path, encoding="utf-8", errors="surrogateescape").read()
+        out = text
+        for old, rep in (
+            ('Publisher="CN=E9F172FF-9203-4DB8-A589-184C7A58C071"', 'Publisher="CN=Nubo"'),    # must match the certificate we sign with
+            ("Collabora Productivity Ltd", "Nubo"),
+            ("CollaboraProductivityLtd.CollaboraOfficeDesktop", "Nubo.NuboOffice"),
+            ("Collabora Office Desktop", NAME),
+            ("Collabora Office.exe", NAME + ".exe"),
+        ):
+            out = out.replace(old, rep)
+        out = "\n".join(l if KEEP_LINE.search(l) else _apply_rules(l) for l in out.split("\n"))
+        if out != text:
+            open(path, "w", encoding="utf-8", errors="surrogateescape").write(out)
+            changed += 1
+    icons = 0
+    assets = os.path.join(base, "Assets")
+    sizes = {"Square150x150Logo.png": 150, "Square44x44Logo.png": 44, "logo.png": 50}
+    if os.path.isdir(assets):
+        for name in os.listdir(assets):
+            m = re.search(r"targetsize-(\d+)\.png$", name)
+            px = int(m.group(1)) if m else sizes.get(name)
+            if px:
+                subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), icon_svg, "-o", os.path.join(assets, name)], check=True)
+                icons += 1
+    ico = os.path.join(base, "CODA", "CODA.ico")
+    if os.path.exists(ico):
+        tmp = []
+        for px in (16, 24, 32, 48, 64, 128, 256):
+            f = "/tmp/nubo-ico-%d.png" % px
+            subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), icon_svg, "-o", f], check=True)
+            tmp.append(f)
+        from PIL import Image
+        Image.open(tmp[-1]).save(ico, format="ICO", sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
+        icons += 1
+    return (changed, icons)
+
+
+def _apply_rules(line):
+    for old, rep in TEXT_RULES:
+        line = line.replace(old, rep)
+    return line
+
+
 def metainfo(root, here, version):
     """Our own AppStream file replaces Collabora's (name, text, links, screenshots)."""
     path = os.path.join(root, "qt", APP_ID + ".metainfo.xml")
@@ -321,6 +374,11 @@ def main():
         icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")
         labels, icons = macos_app(root, icon_svg)
         print("macOS app: %d lines changed, %d icon sizes redrawn" % (labels, icons))
+        return 0
+    if platform == "windows":
+        icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")
+        labels, icons = windows_app(root, icon_svg)
+        print("Windows app: %d files changed, %d icon files redrawn" % (labels, icons))
         return 0
     changed = sum(rewrite(p) for p in files(root))
     renamed = rename_files(root)
