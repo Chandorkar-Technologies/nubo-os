@@ -3,12 +3,15 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 BRAND=../../office/brand
+OUT="$(mktemp -d)"
 kubectl apply -f - <<< 'apiVersion: v1
 kind: Namespace
 metadata: { name: nubo-office-web }'
 kubectl -n nubo-office-web create configmap nubo-office-wopi-app --from-file=wopi.py --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n nubo-office-web create configmap nubo-office-brand --from-file="$BRAND/branding.css" --from-file="$BRAND/branding.js" --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n nubo-office-web create configmap nubo-office-brand-images --from-file="$BRAND/images" --dry-run=client -o yaml | kubectl apply -f -
+python3 make-welcome.py collabora/code:26.04.5.1.1 "$OUT"
+kubectl -n nubo-office-web create configmap nubo-office-welcome --from-file="$OUT" --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f manifest.yaml
 # After a change to wopi.py or the brand pack, restart so the pods pick it up:
 kubectl -n nubo-office-web rollout restart deploy/nubo-office-wopi deploy/nubo-office-cool >/dev/null

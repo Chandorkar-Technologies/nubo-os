@@ -43,7 +43,15 @@ spec:
             - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/toolbar-bg-logo-dark.svg, subPath: toolbar-bg-logo-dark.svg }
             - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/toolbar-bg-logo-notebookbar.svg, subPath: toolbar-bg-logo-notebookbar.svg }
             - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/toolbar-bg-logo.svg, subPath: toolbar-bg-logo.svg }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/welcome/welcome.html, subPath: welcome.html }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/welcome/slide1-center.png, subPath: slide1-center.png }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/welcome/slide1-left.png, subPath: slide1-left.png }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/welcome/slide1-right.png, subPath: slide1-right.png }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/welcome/slide2.png, subPath: slide2.png }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/welcome/slide3.png, subPath: slide3.png }
+            - { name: welcome, mountPath: /usr/share/coolwsd/browser/dist/l10n/ui-en_GB.json, subPath: ui-en_GB.json }
       volumes:
+        - { name: welcome, configMap: { name: nubo-office-welcome } }
         - { name: brand, configMap: { name: nubo-office-brand } }
         - { name: brand-images, configMap: { name: nubo-office-brand-images } }
 ---
