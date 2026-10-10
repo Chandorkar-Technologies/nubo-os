@@ -343,7 +343,7 @@ def build_all(ctx):
 <p>The web version at <code>office.nubosuite.tech</code> needs no account. A file you upload or create there is held on our server only so you can edit it. It is reachable only through its private link, which is a long random address. We delete it automatically after 6 hours without use, and you can close the page and ignore it sooner. We do not read your files, do not sell or share them, and do not put file names in our logs. Do not use the web version for files you could not afford to leave on a server for a few hours: the apps for your computer keep everything on your device.</p>
 <h2>Your rights and contact</h2>
 <p>You can ask what we hold about you, and ask us to correct or delete it. Email <a class="in" href="mailto:support@nubo.email">support@nubo.email</a>.</p>
-<p>Last updated 11 October 2026. We will change this page when what we collect changes.</p>
+<p>Last updated 10 October 2026. We will change this page when what we collect changes.</p>
 """)
 
     P[('www', '/terms/')] = ('Terms', 'Terms for using the Nubo websites and the Nubo OS software.', f"""
@@ -358,7 +358,7 @@ def build_all(ctx):
 <h2>Third-party services</h2>
 <p>Nubo OS can install software from Flathub and other sources you choose. That software is provided by others, under their terms.</p>
 <h2>Contact</h2>
-<p>Questions about these terms: <a class="in" href="mailto:support@nubo.email">support@nubo.email</a>. Last updated 11 October 2026.</p>
+<p>Questions about these terms: <a class="in" href="mailto:support@nubo.email">support@nubo.email</a>. Last updated 10 October 2026.</p>
 """)
 
     # ---------------------------------------------------------------- os
