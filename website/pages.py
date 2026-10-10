@@ -336,9 +336,12 @@ def build_all(ctx):
 <h2>Nubo OS itself</h2>
 <p>Nubo OS checks for updates at <code>archive.nubosuite.tech</code>. Ubuntu's own packages come through Nubo Cumulus, a cache of Ubuntu's archive, with Ubuntu's servers as a fallback. Nubo OS turns off Canonical's crash reports, login news and Ubuntu Pro messages, and checks the network and time against neutral servers. The full list, including the few remaining contacts, is in the <a class="in" href="{DOCS}/updates/privacy-and-network-endpoints/">documentation</a>.</p>
 <p>If you sign in with a Nubo account, that account is handled by the Nubo services you sign in to, under their own terms.</p>
+<h2>Nubo Office</h2>
+<p>Nubo Office, the office suite for Mac, Windows, Linux and Android, runs on your own device. Your documents stay on that device, or wherever you choose to save them. We do not receive your documents or what you type in them. The apps contain no advertising and no analytics or tracking code of our own, and they do not need an account.</p>
+<p>If you get Nubo Office from the Apple App Store, Google Play or the Microsoft Store, that store tells us in summary how many people downloaded it, under its own privacy terms. Nubo Office is built on the open source Collabora and LibreOffice technology. When you open a link, or use a feature that needs the internet, your device connects to the address involved, in the same way a web browser would.</p>
 <h2>Your rights and contact</h2>
 <p>You can ask what we hold about you, and ask us to correct or delete it. Email <a class="in" href="mailto:support@nubo.email">support@nubo.email</a>.</p>
-<p>Last updated 3 October 2026. We will change this page when what we collect changes.</p>
+<p>Last updated 10 October 2026. We will change this page when what we collect changes.</p>
 """)
 
     P[('www', '/terms/')] = ('Terms', 'Terms for using the Nubo websites and the Nubo OS software.', f"""
@@ -353,7 +356,7 @@ def build_all(ctx):
 <h2>Third-party services</h2>
 <p>Nubo OS can install software from Flathub and other sources you choose. That software is provided by others, under their terms.</p>
 <h2>Contact</h2>
-<p>Questions about these terms: <a class="in" href="mailto:support@nubo.email">support@nubo.email</a>. Last updated 3 October 2026.</p>
+<p>Questions about these terms: <a class="in" href="mailto:support@nubo.email">support@nubo.email</a>. Last updated 10 October 2026.</p>
 """)
 
     # ---------------------------------------------------------------- os
