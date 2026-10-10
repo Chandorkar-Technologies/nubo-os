@@ -71,7 +71,15 @@ if has engine; then
 --with-product-name=Nubo Office
 --with-vendor=Nubo
 INPUT
-  ( cd "${SRC}/engine" && ./autogen.sh && make ) 2>&1 | tee -a "${LOGS}/engine.log" | tail -20
+  # configure leaves the *_FOR_BUILD settings pointing at the target dirs, so build tools are looked up in workdir/ instead of workdir_for_build/. Point them at the build side.
+  ( cd "${SRC}/engine" && ./autogen.sh && E="$PWD" &&
+    sed -i -e "s#^export WORKDIR_FOR_BUILD=.*#export WORKDIR_FOR_BUILD=$E/workdir_for_build#" \
+           -e "s#^export INSTDIR_FOR_BUILD=.*#export INSTDIR_FOR_BUILD=$E/instdir_for_build#" \
+           -e "s#^export INSTROOT_FOR_BUILD=.*#export INSTROOT_FOR_BUILD=$E/instdir_for_build#" \
+           -e "s#^export OS_FOR_BUILD=.*#export OS_FOR_BUILD=LINUX#" \
+           -e "s#^export CC_FOR_BUILD=.*#export CC_FOR_BUILD=/usr/bin/ccache gcc#" \
+           -e "s#^export CXX_FOR_BUILD=.*#export CXX_FOR_BUILD=/usr/bin/ccache g++#" config_host.mk &&
+    make -j"$(nproc)" ) 2>&1 | tee -a "${LOGS}/engine.log" | tail -20
 fi
 
 if has online; then
@@ -88,5 +96,11 @@ if has app; then
   export ANDROID_HOME="${SDKDIR}"; export ANDROID_SDK_ROOT="${SDKDIR}"
   ( cd "${SRC}/android" && ./gradlew --no-daemon bundleRelease assembleRelease ) 2>&1 | tee -a "${LOGS}/gradle.log" | tail -30
   mkdir -p "${WORK}/out"
+  if [[ -n "${KEYSTORE:-}" ]]; then
+    # the gradle project has no signing config: sign the bundle (and align/sign the apk) afterwards
+    for f in $(find "${SRC}/android" -path '*build*' -name '*.aab' -newer "${LOGS}/gradle.log"); do
+      jarsigner -keystore "${KEYSTORE}" -storepass "${KEYSTORE_PASS}" -keypass "${KEY_PASS:-$KEYSTORE_PASS}" -sigalg SHA256withRSA -digestalg SHA-256 "$f" "${KEY_ALIAS:-nubo-office}"
+    done
+  fi
   find "${SRC}" -path '*build*' \( -name '*.aab' -o -name '*.apk' \) -newer "${LOGS}/gradle.log" -exec ls -la {} \; | tee "${WORK}/out/files.txt"
 fi
