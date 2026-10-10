@@ -1,26 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop">
+<component type="desktop-application">
   <id>tech.nubosuite.Office</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MPL-2.0</project_license>
   <name>Nubo Office</name>
-  <summary>Documents, spreadsheets, presentations and drawings</summary>
+  <summary>Documents, spreadsheets, slides</summary>
   <description>
-    <p>Nubo Office is the office suite of Nubo OS: Nubo Write for documents, Nubo Cells for spreadsheets, Nubo Present for presentations and Nubo Draw for drawings. It opens and saves Microsoft Office and OpenDocument files.</p>
-    <p>Built on Collabora Online and LibreOffice technology.</p>
+    <p>Nubo Office is a free office suite for your own computer. Write letters and reports, calculate in spreadsheets, build presentations and draw diagrams, all without an account and without sending your files anywhere.</p>
+    <p>It has four apps in one:</p>
+    <ul>
+      <li>Nubo Write for documents, reports and forms</li>
+      <li>Nubo Cells for spreadsheets, charts and data tools</li>
+      <li>Nubo Present for slide shows with themes, transitions and notes</li>
+      <li>Nubo Draw for diagrams, flowcharts and drawings</li>
+    </ul>
+    <p>It opens and saves the files you already have: .docx, .xlsx and .pptx, the open formats .odt, .ods and .odp, plain text and CSV, and exports any document to PDF. It works offline and has no advertising and no tracking.</p>
+    <p>Nubo Office is made by Nubo and built on the open source Collabora Online and LibreOffice technology. Collabora and LibreOffice are trademarks of their owners; Nubo Office is not made or endorsed by them.</p>
   </description>
   <launchable type="desktop-id">tech.nubosuite.Office.desktop</launchable>
-  <url type="homepage">https://os.nubosuite.tech</url>
+  <icon type="stock">tech.nubosuite.Office.startcenter</icon>
+  <categories>
+    <category>Office</category>
+    <category>WordProcessor</category>
+    <category>Spreadsheet</category>
+    <category>Presentation</category>
+  </categories>
+  <keywords>
+    <keyword>office</keyword>
+    <keyword>word processor</keyword>
+    <keyword>spreadsheet</keyword>
+    <keyword>presentation</keyword>
+    <keyword>docx</keyword>
+    <keyword>xlsx</keyword>
+    <keyword>pptx</keyword>
+    <keyword>odf</keyword>
+    <keyword>pdf</keyword>
+  </keywords>
+  <url type="homepage">https://nubosuite.tech/office/</url>
   <url type="bugtracker">https://github.com/Chandorkar-Technologies/nubo-os/issues</url>
+  <url type="help">https://docs.nubosuite.tech/office/</url>
+  <url type="contact">https://nubosuite.tech/contact/</url>
   <url type="vcs-browser">https://github.com/Chandorkar-Technologies/nubo-os/tree/master/office</url>
   <developer id="tech.nubosuite">
     <name>Chandorkar Technologies</name>
   </developer>
+  <branding>
+    <color type="primary" scheme_preference="light">#ffd9a8</color>
+    <color type="primary" scheme_preference="dark">#2a2f3a</color>
+  </branding>
+  <screenshots>
+    <screenshot type="default">
+      <image type="source" width="1440" height="900">https://nubosuite.tech/assets/office/write.jpg</image>
+      <caption>Nubo Write: documents, reports and forms</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source" width="1440" height="900">https://nubosuite.tech/assets/office/cells.jpg</image>
+      <caption>Nubo Cells: spreadsheets with formulas and charts</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source" width="1440" height="900">https://nubosuite.tech/assets/office/present.jpg</image>
+      <caption>Nubo Present: slide shows</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source" width="1440" height="900">https://nubosuite.tech/assets/office/draw.jpg</image>
+      <caption>Nubo Draw: diagrams and drawings</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source" width="1440" height="900">https://nubosuite.tech/assets/office/start.jpg</image>
+      <caption>The start screen with templates and recent documents</caption>
+    </screenshot>
+  </screenshots>
   <content_rating type="oars-1.1"/>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
   <provides>
     <binary>coda-qt</binary>
+    <mediatype>application/vnd.openxmlformats-officedocument.wordprocessingml.document</mediatype>
+    <mediatype>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</mediatype>
+    <mediatype>application/vnd.openxmlformats-officedocument.presentationml.presentation</mediatype>
+    <mediatype>application/vnd.oasis.opendocument.text</mediatype>
+    <mediatype>application/vnd.oasis.opendocument.spreadsheet</mediatype>
+    <mediatype>application/vnd.oasis.opendocument.presentation</mediatype>
   </provides>
   <releases>
-    <release version="@VERSION@" date="@DATE@"/>
+    <release version="@VERSION@" date="@DATE@">
+      <description>
+        <p>First public release of Nubo Office for Linux: Write, Cells, Present and Draw in one app.</p>
+      </description>
+    </release>
   </releases>
 </component>

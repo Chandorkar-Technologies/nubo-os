@@ -106,7 +106,10 @@ def replace_icons(root, icon_svg):
                 elif name.endswith(".png"):
                     size = re.search(r"(\d+)x\d+", path)
                     px = int(size.group(1)) if size else 128
-                    subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), icon_svg, "-o", path], check=True)
+                    if shutil.which("rsvg-convert"):
+                        subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), icon_svg, "-o", path], check=True)
+                    else:   # inside the Flathub sandbox: use the pictures drawn from the same SVG ahead of time
+                        shutil.copy(os.path.join(os.path.dirname(os.path.abspath(icon_svg)), "png", "Office-%d.png" % px), path)
                 n += 1
     return n
 
@@ -247,7 +250,7 @@ def metainfo(root, here, version):
         return False
     text = open(os.path.join(here, APP_ID + ".metainfo.xml"), encoding="utf-8").read()
     import datetime
-    text = text.replace("@VERSION@", version).replace("@DATE@", datetime.date.today().isoformat())
+    text = text.replace("@VERSION@", version).replace("@DATE@", os.environ.get("NUBO_RELEASE_DATE") or datetime.date.today().isoformat())
     open(path, "w", encoding="utf-8").write(text)
     return True
 
