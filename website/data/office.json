@@ -55,7 +55,7 @@
     {
       "platform": "macOS",
       "name": "macOS, Apple silicon",
-      "detail": "Mac App Store, in review with Apple",
+      "detail": "Disk image, notarized by Apple. Also coming to the Mac App Store",
       "status": "building",
       "url": null,
       "sha256": null,
