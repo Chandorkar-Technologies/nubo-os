@@ -3,6 +3,7 @@
 # substitution never sees our variables.
 # Usage: ci/build-office-tag.sh office-26.04.3.3-1
 #   tag office-26.04.3.3-1 builds upstream coda-26.04.3.3-1 as version 26.04.3.3-nubo1
+#   tag office-26.04.3.3-1+2 publishes that same version again (new tag, so Drone runs it with the newer scripts)
 # NUBO_DRY_RUN=1 prints what would be built and stops.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -29,6 +30,7 @@ fi
 if [[ -f "${PWD}/.job-env" ]]; then . "${PWD}/.job-env"; rm -f "${PWD}/.job-env"; fi
 
 REL="${TAG#office-}"
+REL="${REL%%+*}"   # office-26.04.3.3-1+2 republishes 26.04.3.3-1 (a new tag, same version)
 UPSTREAM="coda-${REL}"
 VERSION="${REL%-*}-nubo${REL##*-}"
 echo "Upstream ${UPSTREAM}, version ${VERSION}, running as $(id -un)"
