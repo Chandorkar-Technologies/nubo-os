@@ -16,6 +16,7 @@ WORK="${WORK:-/var/tmp/nubo-office-android}"
 SRC_FROM="${SRC:-/var/tmp/nubo-office/src}"
 APP_ID="${APP_ID:-tech.nubosuite.office}"
 VER="${VER:-26.04.3.3-nubo1}"
+VERCODE="${VERCODE:-2}"   # Google Play needs a higher number for every upload (1 was used by the first)
 ABI="${ABI:-arm64-v8a}"
 NDK_VER="29.0.14206865"
 SDKDIR="${WORK}/android-sdk"
@@ -93,6 +94,7 @@ fi
 if has app; then
   echo "==> app (gradle)"
   # Google Play requires the newest target API level
+  sed -i "s/versionCode [0-9]*$/versionCode ${VERCODE}/" "${SRC}/android/app/appSettings.gradle"
   sed -i "s/targetSdk [0-9]*/targetSdk 36/" "${SRC}/android/app/build.gradle" "${SRC}/android/lib/build.gradle"
   export JAVA_HOME="${JDKDIR}"; export PATH="${JAVA_HOME}/bin:${PATH}"
   export ANDROID_HOME="${SDKDIR}"; export ANDROID_SDK_ROOT="${SDKDIR}"
