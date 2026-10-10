@@ -1,0 +1,117 @@
+# Nubo Office on the web: Collabora Online (our brand pack on top) plus a small file host, at office.nubosuite.tech.
+# Apply with deploy.sh, which also creates the ConfigMaps from wopi.py and office/brand.
+apiVersion: v1
+kind: Namespace
+metadata: { name: nubo-office-web }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: nubo-office-cool, namespace: nubo-office-web }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: nubo-office-cool } }
+  template:
+    metadata: { labels: { app: nubo-office-cool } }
+    spec:
+      containers:
+        - name: cool
+          image: collabora/code:26.04.5.1.1
+          ports: [{ containerPort: 9980 }]
+          env:
+            - { name: server_name, value: office.nubosuite.tech }
+            - { name: DONT_GEN_SSL_CERT, value: "1" }
+            - { name: aliasgroup1, value: "http://nubo-office-wopi:8080" }
+            - { name: dictionaries, value: "en_US en_GB hi_IN mr_IN" }
+            - name: extra_params
+              value: >-
+                --o:ssl.enable=false --o:ssl.termination=true
+                --o:net.frame_ancestors=https://office.nubosuite.tech
+                --o:admin_console.enable=false
+                --o:per_document.max_concurrency=2
+                --o:logging.level=warning
+          securityContext:
+            capabilities: { add: ["CHOWN", "FOWNER", "SYS_CHROOT", "MKNOD"] }
+          readinessProbe: { httpGet: { path: /hosting/discovery, port: 9980 }, initialDelaySeconds: 15, periodSeconds: 10 }
+          resources:
+            requests: { cpu: 500m, memory: 1Gi }
+            limits: { cpu: "4", memory: 4Gi }
+          volumeMounts:
+            - { name: brand, mountPath: /usr/share/coolwsd/browser/dist/branding.css, subPath: branding.css }
+            - { name: brand, mountPath: /usr/share/coolwsd/browser/dist/branding.js, subPath: branding.js }
+            - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/full-logo-white.svg, subPath: full-logo-white.svg }
+            - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/full-logo.svg, subPath: full-logo.svg }
+            - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/toolbar-bg-logo-dark.svg, subPath: toolbar-bg-logo-dark.svg }
+            - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/toolbar-bg-logo-notebookbar.svg, subPath: toolbar-bg-logo-notebookbar.svg }
+            - { name: brand-images, mountPath: /usr/share/coolwsd/browser/dist/images/toolbar-bg-logo.svg, subPath: toolbar-bg-logo.svg }
+      volumes:
+        - { name: brand, configMap: { name: nubo-office-brand } }
+        - { name: brand-images, configMap: { name: nubo-office-brand-images } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: nubo-office-cool, namespace: nubo-office-web }
+spec:
+  selector: { app: nubo-office-cool }
+  ports: [{ port: 9980, targetPort: 9980 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: nubo-office-wopi, namespace: nubo-office-web }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: nubo-office-wopi } }
+  template:
+    metadata: { labels: { app: nubo-office-wopi } }
+    spec:
+      containers:
+        - name: wopi
+          image: python:3.12-slim
+          command: ["python3", "/app/wopi.py"]
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: DATA_DIR, value: /data }
+            - { name: COOL_URL, value: "http://nubo-office-cool:9980" }
+            - { name: WOPI_SELF, value: "http://nubo-office-wopi:8080" }
+          readinessProbe: { httpGet: { path: /healthz, port: 8080 }, periodSeconds: 10 }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          securityContext: { runAsNonRoot: true, runAsUser: 10001, allowPrivilegeEscalation: false, capabilities: { drop: ["ALL"] } }
+          volumeMounts:
+            - { name: app, mountPath: /app }
+            - { name: data, mountPath: /data }
+      volumes:
+        - { name: app, configMap: { name: nubo-office-wopi-app } }
+        - { name: data, emptyDir: { sizeLimit: 4Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: nubo-office-wopi, namespace: nubo-office-web }
+spec:
+  selector: { app: nubo-office-wopi }
+  ports: [{ port: 8080, targetPort: 8080 }]
+---
+# Collabora's own paths go to the editor, everything else to the file host.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nubo-office-web
+  namespace: nubo-office-web
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [office.nubosuite.tech]
+      secretName: nubo-office-web-tls
+  rules:
+    - host: office.nubosuite.tech
+      http:
+        paths:
+          - { path: /browser, pathType: Prefix, backend: { service: { name: nubo-office-cool, port: { number: 9980 } } } }
+          - { path: /hosting, pathType: Prefix, backend: { service: { name: nubo-office-cool, port: { number: 9980 } } } }
+          - { path: /cool, pathType: Prefix, backend: { service: { name: nubo-office-cool, port: { number: 9980 } } } }
+          - { path: /coolws, pathType: Prefix, backend: { service: { name: nubo-office-cool, port: { number: 9980 } } } }
+          - { path: /, pathType: Prefix, backend: { service: { name: nubo-office-wopi, port: { number: 8080 } } } }
