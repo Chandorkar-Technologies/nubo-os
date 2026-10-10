@@ -92,6 +92,8 @@ fi
 
 if has app; then
   echo "==> app (gradle)"
+  # Google Play requires the newest target API level
+  sed -i "s/targetSdk [0-9]*/targetSdk 36/" "${SRC}/android/app/build.gradle" "${SRC}/android/lib/build.gradle"
   export JAVA_HOME="${JDKDIR}"; export PATH="${JAVA_HOME}/bin:${PATH}"
   export ANDROID_HOME="${SDKDIR}"; export ANDROID_SDK_ROOT="${SDKDIR}"
   ( cd "${SRC}/android" && ./gradlew --no-daemon bundleRelease assembleRelease ) 2>&1 | tee -a "${LOGS}/gradle.log" | tail -30
