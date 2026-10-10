@@ -55,8 +55,8 @@
     {
       "platform": "macOS",
       "name": "macOS, Apple silicon",
-      "detail": "Disk image",
-      "status": "planned",
+      "detail": "Mac App Store, in review with Apple",
+      "status": "building",
       "url": null,
       "sha256": null,
       "size": null,
@@ -95,9 +95,9 @@
     {
       "platform": "Web",
       "name": "In your browser",
-      "detail": "Any computer or phone, signed in with Nubo Email",
-      "status": "planned",
-      "url": null,
+      "detail": "Any computer or phone. No account needed",
+      "status": "available",
+      "url": "https://office.nubosuite.tech",
       "sha256": null,
       "size": null,
       "command": null

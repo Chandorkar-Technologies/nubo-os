@@ -40,12 +40,14 @@ print({k: (v['version'], len(v['images'])) if v else None for k, v in channels.i
 OFFICE = os.path.join(os.path.dirname(__file__), '..', 'data', 'office.json')
 try:
     office = json.load(open(OFFICE))
-    for arch in ('x86_64', 'aarch64'):
+    for arch in ('x86_64', 'aarch64', 'windows', 'android', 'macos'):
         try:
             latest = get('https://archive.nubosuite.tech/dl/office/latest-%s.json' % arch)
         except Exception:
             continue                       # not published yet, keep the planned row
-        office['version'] = latest.get('version')
+        office['version'] = office.get('version') or latest.get('version')
+        if arch in ('x86_64', 'aarch64'):
+            office['version'] = latest.get('version')
         for new in latest.get('variants', []):
             for row in office['variants']:
                 if row['name'] == new['name']:

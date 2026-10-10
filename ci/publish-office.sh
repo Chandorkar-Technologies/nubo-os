@@ -25,5 +25,14 @@ rclone copy "${BUNDLE_DIR}" "r2:${R2_BUCKET}/dl/office/${VER}" --exclude 'latest
 # The website reads this to show the download.
 rclone copyto "${BUNDLE_DIR}/latest-${ARCH_FP}.json" "r2:${R2_BUCKET}/dl/office/latest-${ARCH_FP}.json" \
   --header-upload "Cache-Control: public, max-age=60"
+# Windows zip, Android apk and Mac dmg built elsewhere are dropped in ${WORK}/extra and published beside the Flatpak.
+EXTRA="${WORK}/extra"
+if compgen -G "${EXTRA}/*" >/dev/null; then
+  python3 ci/make-office-extra-manifest.py "${EXTRA}" "${VER}"
+  rclone copy "${EXTRA}" "r2:${R2_BUCKET}/dl/office/${VER}" --exclude 'latest-*.json' --header-upload "Cache-Control: public, max-age=3600"
+  for j in "${EXTRA}"/latest-*.json; do
+    rclone copyto "$j" "r2:${R2_BUCKET}/dl/office/$(basename "$j")" --header-upload "Cache-Control: public, max-age=60"
+  done
+fi
 echo "Add it with: flatpak remote-add --if-not-exists nubo https://archive.nubosuite.tech/flatpak/nubo.flatpakrepo"
 echo "Download: https://archive.nubosuite.tech/dl/office/${VER}/${BUNDLE}"
