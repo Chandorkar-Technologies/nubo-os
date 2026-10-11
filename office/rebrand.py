@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply the Nubo Office names to a checkout of Collabora's monorepo.
 
-Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos|windows] [--report]
+Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos|windows|ios] [--bundle-id ID --team TEAM] [--report]
 
 Run on a fresh checkout of the release we build (for example tag coda-26.04.3.3-1).
 It is safe to run twice. It never touches:
@@ -188,6 +188,39 @@ def macos_app(root, icon_svg):
                 subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px), icon_svg, "-o", os.path.join(iconset, name)], check=True)
                 icons += 1
     return (changed, icons)
+
+
+def ios_app(root, icon_svg, bundle_id, team):
+    """The iOS app (ios/): visible names, our bundle ID and team, no iCloud/fonts/app-group entitlements, and the app icon."""
+    base = os.path.join(root, "ios")
+    if not os.path.isdir(base):
+        return (0, 0)
+    exts = {".mm", ".m", ".h", ".plist", ".in", ".strings", ".xib", ".storyboard"}
+    changed = 0
+    for d, dirs, names in os.walk(os.path.join(base, "Mobile")):
+        dirs[:] = [x for x in dirs if x not in SKIP_DIRS]
+        for n in names:
+            if os.path.splitext(n)[1] in exts or n.endswith(".in"):
+                changed += rewrite(os.path.join(d, n))
+    # signing and identity in the Xcode project
+    proj = os.path.join(base, "Mobile.xcodeproj", "project.pbxproj")
+    text = open(proj, encoding="utf-8").read()
+    text = text.replace("PRODUCT_BUNDLE_IDENTIFIER = com.collabora.office.Mobile;", "PRODUCT_BUNDLE_IDENTIFIER = %s;" % bundle_id)
+    text = text.replace("DEVELOPMENT_TEAM = J4FQ687VJK;", "DEVELOPMENT_TEAM = %s;" % team)
+    open(proj, "w", encoding="utf-8").write(text)
+    # the iCloud, user-fonts and app-group capabilities need setup in the developer account: ship without them
+    open(os.path.join(base, "Mobile", "Mobile.entitlements"), "w", encoding="utf-8").write(
+        '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict/>\n</plist>\n')
+    # app icon: one 1024 picture, opaque (the App Store rejects transparency)
+    iconset = os.path.join(base, "Mobile", "Assets.xcassets", "AppIcon.appiconset")
+    os.makedirs(iconset, exist_ok=True)
+    tmp = os.path.join(iconset, "tmp.png")
+    subprocess.run(["rsvg-convert", "-w", "1024", "-h", "1024", icon_svg, "-o", tmp], check=True)
+    subprocess.run(["magick", tmp, "-background", "#1c1e24", "-alpha", "remove", "-alpha", "off", os.path.join(iconset, "icon-1024.png")], check=True)
+    os.remove(tmp)
+    open(os.path.join(iconset, "Contents.json"), "w").write(
+        '{\n  "images" : [ { "filename" : "icon-1024.png", "idiom" : "universal", "platform" : "ios", "size" : "1024x1024" } ],\n  "info" : { "author" : "xcode", "version" : 1 }\n}\n')
+    return (changed, 1)
 
 
 def windows_app(root, icon_svg):
@@ -377,6 +410,13 @@ def main():
         icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")
         labels, icons = macos_app(root, icon_svg)
         print("macOS app: %d lines changed, %d icon sizes redrawn" % (labels, icons))
+        return 0
+    if platform == "ios":
+        icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")
+        bundle = sys.argv[sys.argv.index("--bundle-id") + 1] if "--bundle-id" in sys.argv else "tech.nubosuite.OfficeMobile"
+        team = sys.argv[sys.argv.index("--team") + 1] if "--team" in sys.argv else "8DRPWCDRML"
+        labels, icons = ios_app(root, icon_svg, bundle, team)
+        print("iOS app: %d lines changed, %d icon set" % (labels, icons))
         return 0
     if platform == "windows":
         icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")
