@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply the Nubo Office names to a checkout of Collabora's monorepo.
 
-Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos|windows|ios] [--bundle-id ID --team TEAM] [--report]
+Usage: rebrand.py CHECKOUT [--version X.Y.Z] [--platform linux|macos|windows|ios|android] [--bundle-id ID --team TEAM] [--report]
 
 Run on a fresh checkout of the release we build (for example tag coda-26.04.3.3-1).
 It is safe to run twice. It never touches:
@@ -223,6 +223,31 @@ def ios_app(root, icon_svg, bundle_id, team):
     return (changed, 1)
 
 
+def android_app(root, icons_dir):
+    """The Android app (android/): replace Collabora's stock launcher icon (a green robot) with ours, plain and adaptive."""
+    res = os.path.join(root, "android", "app", "src", "main", "res")
+    if not os.path.isdir(res):
+        return 0
+    for d, _dirs, names in os.walk(os.path.join(root, "android")):
+        if os.sep + "build" + os.sep in d + os.sep:
+            continue
+        for n in names:
+            if n.startswith(("ic_launcher", "ic_launcher_round")) and os.sep + "res" + os.sep in d + os.sep:
+                os.remove(os.path.join(d, n))
+    for dens in ("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"):
+        out = os.path.join(res, "mipmap-%s" % dens)
+        os.makedirs(out, exist_ok=True)
+        shutil.copy(os.path.join(icons_dir, "android", "ic_launcher-%s.png" % dens), os.path.join(out, "ic_launcher.png"))
+        shutil.copy(os.path.join(icons_dir, "android", "ic_launcher_foreground-%s.png" % dens), os.path.join(out, "ic_launcher_foreground.png"))
+    os.makedirs(os.path.join(res, "mipmap-anydpi-v26"), exist_ok=True)
+    open(os.path.join(res, "mipmap-anydpi-v26", "ic_launcher.xml"), "w").write(
+        '<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+        '  <background android:drawable="@color/nubo_icon_background"/>\n  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>\n</adaptive-icon>\n')
+    open(os.path.join(res, "values", "nubo_icon.xml"), "w").write(
+        '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n  <color name="nubo_icon_background">#2F323B</color>\n</resources>\n')
+    return 1
+
+
 def windows_app(root, icon_svg):
     """The Windows app (windows/coda): package names, publisher, the icon and the tile logos, in our names."""
     base = os.path.join(root, "windows", "coda")
@@ -417,6 +442,9 @@ def main():
         team = sys.argv[sys.argv.index("--team") + 1] if "--team" in sys.argv else "8DRPWCDRML"
         labels, icons = ios_app(root, icon_svg, bundle, team)
         print("iOS app: %d lines changed, %d icon set" % (labels, icons))
+        return 0
+    if platform == "android":
+        print("Android app: %d launcher icon set" % android_app(root, os.path.join(here, "icons")))
         return 0
     if platform == "windows":
         icon_svg = os.path.join(here, "icons", "tech.nubosuite.Office.svg")

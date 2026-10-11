@@ -16,7 +16,7 @@ WORK="${WORK:-/var/tmp/nubo-office-android}"
 SRC_FROM="${SRC:-/var/tmp/nubo-office/src}"
 APP_ID="${APP_ID:-tech.nubosuite.office}"
 VER="${VER:-26.04.3.3-nubo1}"
-VERCODE="${VERCODE:-2}"   # Google Play needs a higher number for every upload (1 was used by the first)
+VERCODE="${VERCODE:-3}"   # Google Play needs a higher number for every upload (1 was used by the first)
 ABI="${ABI:-arm64-v8a}"
 NDK_VER="29.0.14206865"
 SDKDIR="${WORK}/android-sdk"
@@ -93,6 +93,8 @@ fi
 
 if has app; then
   echo "==> app (gradle)"
+  # the app ships Collabora's robot launcher icon unless replaced (Play rejects an icon that differs from the store listing)
+  python3 "$(dirname "$0")/../office/rebrand.py" "${SRC}" --platform android
   # Google Play requires the newest target API level
   sed -i "s/versionCode [0-9]*$/versionCode ${VERCODE}/" "${SRC}/android/app/appSettings.gradle"
   sed -i "s/targetSdk [0-9]*/targetSdk 36/" "${SRC}/android/app/build.gradle" "${SRC}/android/lib/build.gradle"
