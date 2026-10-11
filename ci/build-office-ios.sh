@@ -23,13 +23,15 @@ PROFILE="${PROFILE:-Nubo Office iOS App Store}"
 VER="${VER:-26.4.3}"
 BUILD="${BUILD:-1}"
 OUT="${OUT:-$HOME/nubo-build/ios/out}"; LOGS="${LOGS:-$HOME/nubo-build/logs}"; mkdir -p "$OUT" "$LOGS"
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/opt/make/libexec/gnubin:$PATH"
 stages=("$@"); [[ ${#stages[@]} -eq 0 ]] && stages=(engine online app)
 has() { local s; for s in "${stages[@]}"; do [[ "$s" == "$1" ]] && return 0; done; return 1; }
 
 if has engine; then
   echo "==> engine (iOS)"
   python3 "$ROOT/office/rebrand.py" "$SRC" --platform ios --bundle-id "$BUNDLE_ID" --team "$TEAM"
+  # Xcode 27's C++ library refuses iOS 14.5 as the minimum: use the app's own (16.5)
+  sed -i '' 's/-miphoneos-version-min=14.5/-miphoneos-version-min=16.5/' "$SRC/engine/configure.ac"
   cat > "$SRC/engine/autogen.input" <<INPUT
 --with-distro=CPiOS
 --enable-ccache
