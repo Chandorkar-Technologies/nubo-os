@@ -40,7 +40,7 @@ print({k: (v['version'], len(v['images'])) if v else None for k, v in channels.i
 OFFICE = os.path.join(os.path.dirname(__file__), '..', 'data', 'office.json')
 try:
     office = json.load(open(OFFICE))
-    for arch in ('x86_64', 'aarch64', 'windows', 'android', 'macos'):
+    for arch in ('x86_64', 'aarch64', 'windows', 'android', 'macos', 'deb'):
         try:
             latest = get('https://archive.nubosuite.tech/dl/office/latest-%s.json' % arch)
         except Exception:

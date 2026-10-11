@@ -23,6 +23,16 @@
       "command": null
     },
     {
+      "platform": "Linux",
+      "name": "Nubo OS and Ubuntu 26.04 (.deb)",
+      "detail": "Package for Nubo OS, Ubuntu 26.04 and newer",
+      "status": "building",
+      "url": null,
+      "sha256": null,
+      "size": null,
+      "command": "sudo apt install ./nubo-office_*_amd64.deb"
+    },
+    {
       "platform": "Nubo OS",
       "name": "Nubo OS",
       "detail": "Included as Nubo Write, Cells, Present and Draw from the next Nubo OS release",

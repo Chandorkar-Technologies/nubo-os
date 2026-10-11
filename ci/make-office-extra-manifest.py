@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write latest-windows.json, latest-android.json and latest-macos.json for the files in DIR (Windows zip, Android apk, Mac dmg).
+"""Write latest-windows.json, latest-android.json, latest-macos.json and latest-deb.json for the files in DIR (Windows zip, Android apk, Mac dmg, Debian package).
 Usage: make-office-extra-manifest.py DIR VERSION"""
 import hashlib, json, os, sys
 d, ver = sys.argv[1:3]
@@ -7,6 +7,7 @@ KINDS = [  # file suffix, manifest name, row name, detail
     ("-win-x64-portable.zip", "windows", "Windows 11, Intel and AMD", "Portable: unzip it and run Nubo Office.exe (no installer)"),
     ("-android-arm64.apk", "android", "Android phones and tablets", "APK for 64-bit phones. Allow installs from your browser once"),
     ("-arm64.dmg", "macos", "macOS, Apple silicon", "Disk image"),
+    ("_amd64.deb", "deb", "Nubo OS and Ubuntu 26.04 (.deb)", "Package for Nubo OS, Ubuntu 26.04 and newer"),
 ]
 for name in sorted(os.listdir(d)):
     for suffix, key, row, detail in KINDS:
