@@ -207,6 +207,8 @@ def ios_app(root, icon_svg, bundle_id, team):
     text = open(proj, encoding="utf-8").read()
     text = text.replace("PRODUCT_BUNDLE_IDENTIFIER = com.collabora.office.Mobile;", "PRODUCT_BUNDLE_IDENTIFIER = %s;" % bundle_id)
     text = text.replace("DEVELOPMENT_TEAM = J4FQ687VJK;", "DEVELOPMENT_TEAM = %s;" % team)
+    text = text.replace("PRODUCT_BUNDLE_IDENTIFIER = tech.nubosuite.OfficeMobile;", "PRODUCT_BUNDLE_IDENTIFIER = %s;" % bundle_id)
+    text = text.replace("PRODUCT_BUNDLE_IDENTIFIER = com.collabora.office.Mobile.FakeQuickLook;", "PRODUCT_BUNDLE_IDENTIFIER = %s.FakeQuickLook;" % bundle_id)
     open(proj, "w", encoding="utf-8").write(text)
     # the iCloud, user-fonts and app-group capabilities need setup in the developer account: ship without them
     open(os.path.join(base, "Mobile", "Mobile.entitlements"), "w", encoding="utf-8").write(
@@ -214,6 +216,8 @@ def ios_app(root, icon_svg, bundle_id, team):
     # app icon: one 1024 picture, opaque (the App Store rejects transparency)
     iconset = os.path.join(base, "Mobile", "Assets.xcassets", "AppIcon.appiconset")
     os.makedirs(iconset, exist_ok=True)
+    for old in os.listdir(iconset):   # upstream's AppIcon set is a dangling symlink to an empty set: start clean
+        os.remove(os.path.join(iconset, old))
     tmp = os.path.join(iconset, "tmp.png")
     subprocess.run(["rsvg-convert", "-w", "1024", "-h", "1024", icon_svg, "-o", tmp], check=True)
     subprocess.run(["magick", tmp, "-background", "#1c1e24", "-alpha", "remove", "-alpha", "off", os.path.join(iconset, "icon-1024.png")], check=True)

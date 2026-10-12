@@ -17,9 +17,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
 SRC="${SRC:-$HOME/nubo-build/ios/src}"
-BUNDLE_ID="${BUNDLE_ID:-tech.nubosuite.OfficeMobile}"
+BUNDLE_ID="${BUNDLE_ID:-tech.nubosuite.Office}"
 TEAM="${TEAM:-8DRPWCDRML}"
-PROFILE="${PROFILE:-Nubo Office iOS App Store}"
+PROFILE="${PROFILE:-Nubo Office iOS App Store (shared ID)}"; PROFILE_EXT="${PROFILE_EXT:-Nubo Office iOS QuickLook}"
 VER="${VER:-26.4.3}"
 BUILD="${BUILD:-1}"
 OUT="${OUT:-$HOME/nubo-build/ios/out}"; LOGS="${LOGS:-$HOME/nubo-build/logs}"; mkdir -p "$OUT" "$LOGS"
@@ -51,11 +51,25 @@ fi
 if has app; then
   echo "==> app (Xcode archive)"
   cd "$SRC/ios"
+  python3 "$ROOT/office/rebrand.py" "$SRC" --platform ios --bundle-id "$BUNDLE_ID" --team "$TEAM"   # icon set, bundle IDs
+  # one profile per target (the app and its QuickLook extension)
+  python3 - "$SRC/ios/Mobile.xcodeproj/project.pbxproj" "$PROFILE" "$PROFILE_EXT" <<'PY'
+import re, sys
+p, app, ext = sys.argv[1:4]
+t = open(p).read()
+t = re.sub(r"\n\t*PROVISIONING_PROFILE_SPECIFIER = [^\n]*;", "", t)
+def fix(m):
+    b = m.group(0)
+    if "INFOPLIST_FILE = FakeQuickLook/Info.plist;" in b: return b.replace("buildSettings = {", 'buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "%s";' % ext, 1)
+    if "INFOPLIST_FILE = Mobile/Info.plist;" in b: return b.replace("buildSettings = {", 'buildSettings = {\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "%s";' % app, 1)
+    return b
+t = re.sub(r"buildSettings = \{.*?\n\t\t\t\};", fix, t, flags=re.S)
+open(p, "w").write(t)
+PY
   rm -rf "$OUT/Mobile.xcarchive"
   xcodebuild archive -project Mobile.xcodeproj -scheme Mobile -configuration Release -destination 'generic/platform=iOS' \
     -archivePath "$OUT/Mobile.xcarchive" \
-    PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Manual \
-    CODE_SIGN_IDENTITY="Apple Distribution" PROVISIONING_PROFILE_SPECIFIER="$PROFILE" \
+    DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Apple Distribution" \
     MARKETING_VERSION="$VER" CURRENT_PROJECT_VERSION="$BUILD" 2>&1 | tee -a "$LOGS/ios-app.log" | tail -30
   cat > "$OUT/ExportOptions.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -65,7 +79,7 @@ if has app; then
   <key>teamID</key><string>$TEAM</string>
   <key>signingStyle</key><string>manual</string>
   <key>signingCertificate</key><string>Apple Distribution</string>
-  <key>provisioningProfiles</key><dict><key>$BUNDLE_ID</key><string>$PROFILE</string></dict>
+  <key>provisioningProfiles</key><dict><key>$BUNDLE_ID</key><string>$PROFILE</string><key>$BUNDLE_ID.FakeQuickLook</key><string>$PROFILE_EXT</string></dict>
   <key>uploadSymbols</key><true/>
 </dict></plist>
 PLIST
