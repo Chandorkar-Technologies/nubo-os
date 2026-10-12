@@ -53,7 +53,8 @@ check_iso() {      # FILE
   [[ "$label" == *Nubo* || "$label" == *NUBO* ]] && ok "$b: media label '$label'" || bad "$b: media label '$label' does not name Nubo"
   local listing; listing="$(xorriso -indev "$f" -find / -maxdepth 3 -type f 2>/dev/null | tr -d "'")"
   if grep -Eq '/casper/(vmlinuz|initrd)|/boot/(vmlinuz|initrd)|/install/(vmlinuz|initrd)' <<<"$listing"; then ok "$b: kernel and initrd on the media"; else bad "$b: no kernel/initrd found"; fi
-  local cfg; cfg="$(xorriso -osirrox on -indev "$f" -extract /boot/grub/grub.cfg /dev/stdout 2>/dev/null | head -400)"
+  local tmp cfg; tmp="$(mktemp)"
+  xorriso -osirrox on -indev "$f" -extract /boot/grub/grub.cfg "$tmp" >/dev/null 2>&1; cfg="$(head -400 "$tmp" 2>/dev/null)"; rm -f "$tmp"
   if [[ -n "$cfg" ]]; then
     grep -qi "nubo" <<<"$cfg" && ok "$b: boot menu mentions Nubo" || bad "$b: boot menu does not mention Nubo"
     if grep -Eqi "menuentry[^\"']*[\"'][^\"']*ubuntu" <<<"$cfg"; then bad "$b: a boot menu entry still says Ubuntu"; else ok "$b: no 'Ubuntu' in boot menu entries"; fi
