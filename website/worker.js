@@ -31,6 +31,37 @@ async function waitlist(req, env) {
   return json({ ok: true });
 }
 
+// Download sign-up: the download page sends the visitor's email, which file they chose and whether they want news.
+// Stored in the same KV namespace as the waitlist, key dl:<email>. No IP address is kept (only a short hashed counter for rate limiting).
+async function download(req, env) {
+  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+  const origin = req.headers.get('origin');
+  if (origin !== 'https://os.nubosuite.tech' && origin !== 'https://nubosuite.tech') return json({ error: 'Not allowed' }, 403);
+  let b;
+  try { b = await req.json(); } catch { return json({ error: 'Invalid request' }, 400); }
+  if (b.company) return json({ ok: true }); // honeypot
+  const email = String(b.email || '').trim().toLowerCase();
+  if (email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
+  const product = b.product === 'os' ? 'os' : b.product === 'office' ? 'office' : null;
+  if (!product) return json({ error: 'Invalid request' }, 400);
+  const item = String(b.item || '').slice(0, 80);
+  const ip = req.headers.get('cf-connecting-ip') || 'unknown';
+  const h = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip + 'nubo')))).slice(0, 8).map(x => x.toString(16).padStart(2, '0')).join('');
+  const rk = 'rl:' + h;
+  const n = parseInt((await env.WAITLIST.get(rk)) || '0', 10);
+  if (n >= 30) return json({ error: 'Too many requests. Please try again later.' }, 429);
+  await env.WAITLIST.put(rk, String(n + 1), { expirationTtl: 3600 });
+  const now = new Date().toISOString();
+  let rec = null;
+  try { rec = JSON.parse((await env.WAITLIST.get('dl:' + email)) || 'null'); } catch { rec = null; }
+  rec = rec || { first: now, items: [], news: false };
+  rec.last = now;
+  rec.news = rec.news || b.news === true;
+  rec.items = (rec.items || []).concat([{ p: product, i: item, soon: b.soon === true ? 1 : 0, t: now }]).slice(-50);
+  await env.WAITLIST.put('dl:' + email, JSON.stringify(rec));
+  return json({ ok: true });
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -39,6 +70,7 @@ export default {
     const prefix = SITES[host];
     if (!prefix) return new Response('Not found', { status: 404 });
     if (url.pathname === '/api/waitlist' && host === 'os.nubosuite.tech') return waitlist(req, env);
+    if (url.pathname === '/api/download') return download(req, env);
     if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
 
     const path = decodeURIComponent(url.pathname);

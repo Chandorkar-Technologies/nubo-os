@@ -24,6 +24,9 @@ FLAVOURS = {
 }
 
 
+import download
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -222,7 +225,7 @@ def build_all(ctx):
 <p class="o-eyebrow" style="color:var(--amber)">Nubo Office &nbsp;·&nbsp; Free &nbsp;·&nbsp; Early access</p>
 <h1 class="o-h1 o-grad">Write. Calculate.<br>Present. Draw.</h1>
 <p class="o-lead">Four apps for the files you already have. They open Word, Excel and PowerPoint files, work without internet, and need no account for the files on your own computer.</p>
-<div class="o-row"><a class="o-btn" href="#download">Download Nubo Office</a><a class="o-btn2" href="#write">See the apps</a></div>
+<div class="o-row"><a class="o-btn" href="/download/#office">Download Nubo Office</a><a class="o-btn2" href="#write">See the apps</a></div>
 <div class="o-dots"><span>Opens Microsoft Office files</span><span>Works offline</span><span>No account for local files</span><span>Open source</span></div>
 <div class="o-frame" style="background:none;box-shadow:none;padding:0;max-width:1240px"><img src="{A}hero.jpg" alt="Nubo Write, Nubo Cells and Nubo Present open together" width="2400" height="1350" style="border-radius:0"></div>
 </section>
@@ -330,7 +333,7 @@ def build_all(ctx):
 <h2>Our websites</h2>
 <p>This site and the other Nubo sites are served by Cloudflare. Like any web host, Cloudflare receives the address of your device, the page you ask for and your browser's identifying string, and keeps standard server logs for security and to deliver the pages. We do not run advertising or analytics scripts, we do not set cookies, and the pages load their fonts and scripts from our own servers, not from third parties.</p>
 <h2>Early access list</h2>
-<p>If you ask for early access on the download page, we store your email address and the kind of machine you chose. We use it only to tell you when a build is ready and how to get it. It is kept in Cloudflare's storage. To remove it, email <a class="in" href="mailto:support@nubo.email">support@nubo.email</a> from that address and we delete it.</p>
+<p>When you download Nubo OS or Nubo Office from the download page, or ask to be told when a download is ready, we ask for your email address. We store it together with which downloads you chose and when, and whether you ticked the box for release news. We use it to help you install and update, to tell you when a download you asked for is ready, and, only if you ticked the box, to send release news. We do not store your IP address. It is kept in Cloudflare's storage. To remove it, email <a class="in" href="mailto:support@nubo.email">support@nubo.email</a> from that address and we delete it.</p>
 <h2>Downloads</h2>
 <p>Images and packages are served from <code>archive.nubosuite.tech</code> through Cloudflare. We do not tie downloads to a person.</p>
 <h2>Nubo OS itself</h2>
@@ -388,8 +391,8 @@ def build_all(ctx):
 <div class="note">These are early access builds. They install and update, but they have had limited testing on real hardware. Please keep backups, and tell us what you find.</div>
 """)
 
-    P[('os', '/download/')] = ('Download Nubo OS', 'Get Nubo OS: request desktop early access, or download the Nubo OS Server images for Intel, AMD and Arm today.', f"""
-<p class="eyebrow">Download</p><h1>Get Nubo OS.</h1>
+    P[('os', '/download/all/')] = ('All Nubo OS downloads', 'Get Nubo OS: request desktop early access, or download the Nubo OS Server images for Intel, AMD and Arm today.', f"""
+<p class="eyebrow">Download</p><h1>All Nubo OS files.</h1>
 <p class="lead">Every Nubo OS edition, as an installer, a virtual machine disk, a cloud image and more. Choose stable or beta.</p>
 {desktop_block(ctx)}
 <h2 id="server">Downloads</h2>
@@ -414,6 +417,8 @@ def build_all(ctx):
 <h2>Updates between images</h2>
 <p>Installed systems update from the package archive, not by downloading a new image. A new release goes to the <b>beta</b> channel first and moves to <b>stable</b> after testing. Switch with <code>sudo nubo-channel beta</code> or <code>sudo nubo-channel stable</code>. Details: <a class="in" href="{DOCS}/updates/channels-stable-and-beta/">channels</a>. Release notes: <a class="in" href="{DOCS}/reference/release-notes/">documentation</a>.</p>
 """)
+    for site in ('www', 'os'):
+        P[(site, '/download/')] = ('Download Nubo OS and Nubo Office', 'Download Nubo OS or Nubo Office for Windows, Mac, Linux, Android, iPhone and the web. Pick one, enter your email, and the download starts.', download.body(ctx, site))
     return P
 
 
@@ -435,4 +440,4 @@ WAITLIST_JS = """<script>
 })();
 </script>
 """
-SCRIPTS = {'/download/': WAITLIST_JS}
+SCRIPTS = {'/download/': download.JS, '/download/all/': WAITLIST_JS}

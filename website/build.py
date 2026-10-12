@@ -118,7 +118,7 @@ def nav_html(site):
     if site == 'www':
         links = [('Nubo OS', 'https://os.nubosuite.tech/'), ('Server', 'https://os.nubosuite.tech/server/'),
                  ('Office', '/office/'), ('Apps', '/apps/'), ('Email', 'https://nubo.email'), ('Docs', 'https://docs.nubosuite.tech/')]
-        dl = '<a class="dl" href="https://os.nubosuite.tech/download/">Download</a>'
+        dl = '<a class="dl" href="/download/">Download</a>'
         name = 'Nubo Suite'
     else:
         links = [('Desktop', '/'), ('Server', '/server/'), ('Releases', '/releases/'),
@@ -451,7 +451,7 @@ def static_page(site, path, title, desc, body, ld=None):
     mark = rd(os.path.join(SRC, 'mark.symbol'))
     h = head_html(site, path, title, desc, ld, '', '<style>%s%s</style>' % (STATIC_CSS, CHROME_CSS))
     out = (h + '\n<body>\n<svg width="0" height="0" style="position:absolute" aria-hidden="true">%s</svg>\n%s\n<main class="%s">\n%s\n</main>\n%s\n%s</body>\n</html>\n'
-           % (mark, nav_html(site), ('story' if path == '/office/' else 'page' + (' wide' if path in ('/download/', '/releases/', '/server/', '/apps/') else '')), body, footer_html(),
+           % (mark, nav_html(site), ('story' if path == '/office/' else 'page' + (' wide' if path in ('/download/', '/download/all/', '/releases/', '/server/', '/apps/') else '')), body, footer_html(),
               pages.SCRIPTS.get(path, '')))
     d = os.path.join(DIST, site, path.strip('/'))
     wr(os.path.join(d, 'index.html') if path != '/404.html' else os.path.join(DIST, site, '404.html'), out)
