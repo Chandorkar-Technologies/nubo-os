@@ -16,6 +16,7 @@ p.add_argument("--name", required=True); p.add_argument("--publisher", required=
 p.add_argument("--publisher-display", required=True)
 p.add_argument("--version", default="26.4.3.0"); p.add_argument("--display", default="Nubo Office")
 p.add_argument("--exe", default="Nubo Office.exe"); p.add_argument("--arch", default="x64")
+p.add_argument("--assets", help="folder with our tile and logo pictures (office/icons/windows); the source tree has Collabora's")
 a = p.parse_args()
 if not re.fullmatch(r"\d+\.\d+\.\d+\.0", a.version):
     sys.exit("the Store needs a four-part version ending in .0")
@@ -51,7 +52,11 @@ open(ini, "w", encoding="utf8").write("".join(lines))
 # the tile and logo pictures
 assets = os.path.join(files, "Assets"); os.makedirs(assets, exist_ok=True)
 for f in os.listdir(os.path.join(coda, "Assets")):
-    open(os.path.join(assets, f), "wb").write(open(os.path.join(coda, "Assets", f), "rb").read())
+    mine = os.path.join(a.assets, f) if a.assets else None
+    src = mine if mine and os.path.exists(mine) else os.path.join(coda, "Assets", f)
+    if a.assets and src != mine:
+        sys.exit("no Nubo picture for Assets/%s" % f)
+    open(os.path.join(assets, f), "wb").write(open(src, "rb").read())
 open(os.path.join(files, "AppxManifest.xml"), "w", encoding="utf8").write(m)
 
 CT = {".png": "image/png", ".xml": "application/xml", ".dll": "application/x-msdownload", ".exe": "application/x-msdownload",
